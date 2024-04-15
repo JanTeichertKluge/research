@@ -1,0 +1,129 @@
+---
+title: "PhD Course - Session 2"
+subtitle: "Donald D. Bergh: Thinking Strategically about Contribution"
+author: "Presented by: Jan Teichert-Kluge, Chair of Statistics"
+date: today
+---
+
+## Introduction
+
+::: incremental
+- Experience:
+    - Initial belief: Solid study = publication.
+    - Emphasis on methodology over theory led to rejections.
+
+- Realization:
+    - Importance of theoretical implications and not just methodological contributions.
+
+- Common Mistake:
+    - Misunderstanding what journals value, leading to repeated rejections.
+
+- How to improve submissions?
+
+:::
+
+
+---
+
+## Understanding Journal Expectations
+
+Understanding the *Publishing Environment*:
+
+::: incremental
+- Journal Space is Limited:
+    - Not all methodologically rigorous articles are published.
+
+- Using Strategic Submission:
+    - Viewing manuscript submission as a strategic game.
+    - Aligning manuscripts like firms competing for limited resources—journal pages.
+
+:::
+
+---
+
+## Aligning Manuscript with Journal
+
+::: incremental
+- Two Critical Assumptions:
+    1. Manuscript must match its journal's focus.
+    2. Closer the match, higher the publication likelihood.
+
+- Key Questions:
+    - Does your study align with the journal’s objectives?
+    - How does your manuscript contribute to the theory?
+:::
+
+---
+
+## Recommendations for Authors
+
+::: incremental
+- Crafting Your Manuscript:
+    - Highlight empirical and theoretical contributions.
+    - Explicitly match your work with the journal's needs.
+
+- Adapting Strategy:
+    - Think of your manuscript as a product needing to fit a specific market.
+:::
+
+---
+
+## Evaluating the Contribution
+
+Three Strategic Tests for Contributions:
+
+::: incremental
+1. Value: Does the contribution add meaningful insights?
+2. Imitability: Is the contribution unique to the theory being advanced?
+    - Contribution differ from existing theories?
+3. Rareness: Does the contribution provide a novel insight? 
+    - Originality?
+:::
+
+---
+
+## Implications for Authors
+
+*Identify, Explain and Argue* your contributions.
+
+::: incremental
+- Improving Publication Prospects:
+    - Not just about adding variables but explaining their theoretical relevance.
+
+- Articulation and Defense:
+    - Go beyond mentioning contributions, argue and justify their importance.
+:::
+
+---
+
+## Conclusion
+
+Authors should take the strategic approach to their submissions.
+
+::: incremental
+- Methodological Soundness is not enough:
+    - Theoretical contributions are necessary for acceptance in top journals.
+    - **Align your Contribution with a receptive journal**
+
+- Strategic Preparation:
+    - Prepare your manuscript understanding the competitive nature of submissions.
+    - **Identify, explain and argue for your contribution**
+:::
+
+---
+
+## Discussion Starters
+
+Lets talk about the optinion from Bergh.
+
+::: incremental
+- Do Bergh's points apply to all areas of research?
+    - Some areas are very fast-moving (e.g. research in ML and AI) and more applied in general.
+
+- Despite possible tests: The evaluation of whether a theoretical contribution is relevant and a real novelty is very subjective and depends on both the opinion and the specific research area of the reviewer. 
+    - For some general topics, this may be less relevant, but I have sometimes experienced a large variance in the judgment of reviewers from different disciplines when it comes to specific contributions at scientific conferences.
+:::
+
+---
+
+# Thanks for the attention!
