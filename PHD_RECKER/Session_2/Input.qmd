@@ -22,6 +22,11 @@ date: today
 
 :::
 
+::: {.notes}
+I have already had this experience myself. A few months ago, my research group submitted a paper to a highly respected conference. 
+In the double-blind review process, various people criticized us for not having made a sufficient theoretical contribution. 
+:::
+
 
 ---
 
@@ -31,12 +36,16 @@ Understanding the *Publishing Environment*:
 
 ::: incremental
 - Journal Space is Limited:
-    - Not all methodologically rigorous articles are published.
+    - Not all methodologically articles are published.
 
 - Using Strategic Submission:
     - Viewing manuscript submission as a strategic game.
     - Aligning manuscripts like firms competing for limited resources—journal pages.
 
+:::
+
+::: {.notes}
+These points seem obvious at first, but should always be considered. 
 :::
 
 ---
@@ -53,17 +62,9 @@ Understanding the *Publishing Environment*:
     - How does your manuscript contribute to the theory?
 :::
 
----
-
-## Recommendations for Authors
-
-::: incremental
-- Crafting Your Manuscript:
-    - Highlight empirical and theoretical contributions.
-    - Explicitly match your work with the journal's needs.
-
-- Adapting Strategy:
-    - Think of your manuscript as a product needing to fit a specific market.
+::: {.notes}
+The author builds his argumentation mainly on these two points, whereby the two key questions for his own work arise.
+As for the second question, I am personally unsure whether it always makes sense, but more on that in the discussion.
 :::
 
 ---
@@ -80,34 +81,10 @@ Three Strategic Tests for Contributions:
     - Originality?
 :::
 
----
-
-## Implications for Authors
-
-*Identify, Explain and Argue* your contributions.
-
-::: incremental
-- Improving Publication Prospects:
-    - Not just about adding variables but explaining their theoretical relevance.
-
-- Articulation and Defense:
-    - Go beyond mentioning contributions, argue and justify their importance.
-:::
-
----
-
-## Conclusion
-
-Authors should take the strategic approach to their submissions.
-
-::: incremental
-- Methodological Soundness is not enough:
-    - Theoretical contributions are necessary for acceptance in top journals.
-    - **Align your Contribution with a receptive journal**
-
-- Strategic Preparation:
-    - Prepare your manuscript understanding the competitive nature of submissions.
-    - **Identify, explain and argue for your contribution**
+::: {.notes}
+The author recommends applying the following three tests to your own work. 
+What about a paper that implements theoretical constructs as methods so that they can be applied? 
+For example, many machine learning variants arise from their implementation and the associated possibilities (LightGBM, XGBoost, ExtraTrees)
 :::
 
 ---
