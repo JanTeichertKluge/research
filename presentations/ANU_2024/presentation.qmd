@@ -154,7 +154,7 @@ $\Rightarrow$ simple approach to control for confounders, *if they can be used f
 - Use multimodal data (text and images) *additionally* to conventional tabular features
 
 <center>
-![Examples of directed acyclic graphs (DAGs) with image and text confounding. (a) Direct confounding via image, text and tabular data. (b) Treatment decision is driven by text and images. All backdoor paths are blocked by conditioning on both image and text data.](figures/DAG_ProblemSet.PNG){width=750}
+![Examples of directed acyclic graphs (DAGs) with image and text confounding. (a) Direct confounding via image, text and tabular data. (b) Treatment decision is driven by text and images. All backdoor paths are blocked by conditioning on both image and text data.](figures/DAG_ProblemSet.png){width=750}
 </center>
 
 ::: {.notes}
@@ -164,7 +164,7 @@ $\Rightarrow$ simple approach to control for confounders, *if they can be used f
 ## DoubleML Deep - Module Structure
 
 <center>
-![High-Level PLR Model Architecture. Both nuisance components are trained simultaneously with a combined loss.](figures/dml_deep_arch.PNG){width=500}
+![High-Level PLR Model Architecture. Both nuisance components are trained simultaneously with a combined loss.](figures/dml_deep_arch.png){width=750}
 </center>
 
 
