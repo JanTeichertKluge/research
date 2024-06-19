@@ -380,6 +380,66 @@ Martin Spindler <br> <small>University of Hamburg <br> Economic AI</small>
 </div>
 </section>
 <section>
+<section id="basics-causality-and-causal-ml" class="title-slide slide level1 center">
+<h1>Basics: Causality and Causal ML</h1>
+
+</section>
+<section id="basics-causal-ml" class="slide level2">
+<h2>Basics: Causal ML</h2>
+
+<img data-src="figures/causalml_upd.png" class="r-stretch"></section>
+<section id="basics-causal-ml-1" class="slide level2">
+<h2>Basics: Causal ML</h2>
+
+<img data-src="figures/usecases_upd.png" class="r-stretch"></section>
+<section id="basics-predictive-vs.-causal-modeling" class="slide level2">
+<h2>Basics: Predictive vs.&nbsp;Causal Modeling</h2>
+<p><br></p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<h4 id="predictive-modeling">Predictive Modeling</h4>
+<p><em>How can we build a good prediction rule, <span class="math inline">\(f(X)\)</span>, that uses features <span class="math inline">\(X\)</span> to predict <span class="math inline">\(Y\)</span>?</em></p>
+<div class="fragment">
+<p>Example: <strong>Customer Churn</strong></p>
+<blockquote>
+<p>“<em>How well can we predict whether customers churn?</em>”</p>
+</blockquote>
+<blockquote>
+<p>“<em>Which of these variables are good predictors for churn (explainability)?</em>”</p>
+</blockquote>
+</div>
+</div><div class="column" style="width:50%;">
+<h4 id="causal-modeling">Causal Modeling</h4>
+<p><em>What is the causal effect of a treatment <span class="math inline">\(D\)</span> on an outcome <span class="math inline">\(Y\)</span>?</em></p>
+<p><br></p>
+<div class="fragment">
+<blockquote>
+<p>“<em>Why do customer churn?</em>”</p>
+</blockquote>
+<blockquote>
+<p>“<em>How can we retain customers?</em>”</p>
+</blockquote>
+</div>
+</div>
+</div>
+<div class="fragment">
+<p><strong>Causal ML</strong>: How can we use state-of-the art ML methods for causal inference?</p>
+</div>
+</section>
+<section id="causal-ml" class="slide level2">
+<h2>Causal ML</h2>
+<h4 id="goal">Goal</h4>
+<ul>
+<li><p>Use <em>ML</em> to find out the <em>Why?</em></p></li>
+<li><p>Address causal relationships by using ML methods for estimation</p></li>
+<li><p>For this, we will need some basic idea on how to approach causal problems</p></li>
+</ul>
+<p><span class="emoji" data-emoji="arrow_right">➡️</span> <strong>Causal Inference</strong></p>
+<ul>
+<li>Once, we have a basic understanding of causal inference, we can use <code>DoubleML</code> to estimate causal effects</li>
+</ul>
+</section></section>
+<section>
 <section id="motivation" class="title-slide slide level1 center">
 <h1>Motivation</h1>
 

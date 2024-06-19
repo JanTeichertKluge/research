@@ -18,6 +18,80 @@
 </div>
 </div>
 
+# Basics: Causality and Causal ML
+
+## Basics: Causal ML
+
+![](figures/causalml_upd.png)
+
+## Basics: Causal ML
+
+![](figures/usecases_upd.png)
+
+## Basics: Predictive vs. Causal Modeling
+
+<br>
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+#### Predictive Modeling
+
+*How can we build a good prediction rule, $f(X)$, that uses features $X$ to predict $Y$?*
+
+::: {.fragment}
+
+Example: **Customer Churn**
+
+> "*How well can we predict whether customers churn?*"
+
+> "*Which of these variables are good predictors for churn (explainability)?*"
+
+:::
+
+:::
+
+::: {.column width="50%"}
+
+#### Causal Modeling
+
+*What is the causal effect of a treatment $D$ on an outcome $Y$?*
+
+<br>
+
+::: {.fragment}
+
+> "*Why do customer churn?*"
+
+> "*How can we retain customers?*"
+
+:::
+
+:::
+
+::::
+
+::: {.fragment}
+
+**Causal ML**: How can we use state-of-the art ML methods for causal inference?
+
+:::
+
+## Causal ML 
+
+#### Goal
+
+* Use *ML* to find out the *Why?*
+
+* Address causal relationships by using ML methods for estimation
+
+* For this, we will need some basic idea on how to approach causal problems
+
+:arrow_right: **Causal Inference**
+
+* Once, we have a basic understanding of causal inference, we can use `DoubleML` to estimate causal effects
+
 # Motivation
 
 ## Motivation
@@ -29,7 +103,6 @@
 ![](figures/Excel.png){fig-align="left"}
 
 :::
-
 
 
 ::: {.column width="45%"}
