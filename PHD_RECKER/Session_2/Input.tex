@@ -40,8 +40,8 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
 \hypersetup{
-  pdftitle={Donald D. Bergh: Thinking Strategically about Contribution},
-  pdfauthor={Presented by: Jan Teichert-Kluge},
+  pdftitle={Reading Group},
+  pdfauthor={Scott Cunningham},
   colorlinks=true,
   linkcolor=blue,
   filecolor=Maroon,
@@ -133,10 +133,16 @@
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
 
-\title{\textbf{Donald D. Bergh: Thinking Strategically about
-Contribution}}
-\author{Presented by: Jan Teichert-Kluge}
-\date{2024-04-16}
+\title{\textbf{Reading Group}}
+\usepackage{etoolbox}
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+}
+\makeatother
+\subtitle{Lalonde - 40 Years Later: Imbens and Xu's Review}
+\author{Scott Cunningham}
+\date{2024-07-16}
 
 % my preamble additions =============================================================
 
@@ -148,8 +154,7 @@ Contribution}}
 \pagestyle{fancy}
 \fancyhf{}
 \renewcommand{\headrulewidth}{0pt}
-\fancyfoot[C]{\footnotesize\textcolor{gray}{Donald D. Bergh: Thinking
-Strategically about Contribution}}
+\fancyfoot[C]{\footnotesize\textcolor{gray}{Reading Group}}
 \fancyfoot[R]{\footnotesize\textcolor{gray}{\thepage}}
 
 % change default spacing before each new paragraph (sets as text height) =======
@@ -240,8 +245,7 @@ Strategically about Contribution}}
       % \maketitle
     \begin{center}
     \vspace*{5cm}
-    {\Huge\bfseries Donald D. Bergh: Thinking Strategically about
-Contribution}\\
+    {\Huge\bfseries Reading Group}\\
         \end{center}  
     % turn off page numbering for titlepage
     \thispagestyle{empty}
@@ -290,6 +294,17 @@ Contribution}\\
   How to improve submissions?
 \end{itemize}
 
+\vfill
+
+\begin{tcolorbox}[beforeafter skip=1cm, ignore nobreak=true, breakable, colframe=notes-frame, colback=notes-bg, coltext=notes-text, boxsep=2mm, arc=0mm, boxrule=0.5mm]
+
+I have already had this experience myself. A few months ago, my research
+group submitted a paper to a highly respected conference. In the
+double-blind review process, various people criticized us for not having
+made a sufficient theoretical contribution.
+
+\end{tcolorbox}
+
 \newpage
 
 \newpage
@@ -307,7 +322,7 @@ Understanding the \emph{Publishing Environment}:
   \begin{itemize}
   \tightlist
   \item
-    Not all methodologically rigorous articles are published.
+    Not all methodologically articles are published.
   \end{itemize}
 \item
   Using Strategic Submission:
@@ -321,6 +336,14 @@ Understanding the \emph{Publishing Environment}:
     resources---journal pages.
   \end{itemize}
 \end{itemize}
+
+\vfill
+
+\begin{tcolorbox}[beforeafter skip=1cm, ignore nobreak=true, breakable, colframe=notes-frame, colback=notes-bg, coltext=notes-text, boxsep=2mm, arc=0mm, boxrule=0.5mm]
+
+These points seem obvious at first, but should always be considered.
+
+\end{tcolorbox}
 
 \newpage
 
@@ -354,35 +377,16 @@ Journal}\label{aligning-manuscript-with-journal}
   \end{itemize}
 \end{itemize}
 
-\newpage
+\vfill
 
-\newpage
+\begin{tcolorbox}[beforeafter skip=1cm, ignore nobreak=true, breakable, colframe=notes-frame, colback=notes-bg, coltext=notes-text, boxsep=2mm, arc=0mm, boxrule=0.5mm]
 
-\subsection{Recommendations for
-Authors}\label{recommendations-for-authors}
+The author builds his argumentation mainly on these two points, whereby
+the two key questions for his own work arise. As for the second
+question, I am personally unsure whether it always makes sense, but more
+on that in the discussion.
 
-\begin{itemize}
-\tightlist
-\item
-  Crafting Your Manuscript:
-
-  \begin{itemize}
-  \tightlist
-  \item
-    Highlight empirical and theoretical contributions.
-  \item
-    Explicitly match your work with the journal's needs.
-  \end{itemize}
-\item
-  Adapting Strategy:
-
-  \begin{itemize}
-  \tightlist
-  \item
-    Think of your manuscript as a product needing to fit a specific
-    market.
-  \end{itemize}
-\end{itemize}
+\end{tcolorbox}
 
 \newpage
 
@@ -416,69 +420,17 @@ Three Strategic Tests for Contributions:
   \end{itemize}
 \end{enumerate}
 
-\newpage
+\vfill
 
-\newpage
+\begin{tcolorbox}[beforeafter skip=1cm, ignore nobreak=true, breakable, colframe=notes-frame, colback=notes-bg, coltext=notes-text, boxsep=2mm, arc=0mm, boxrule=0.5mm]
 
-\subsection{Implications for Authors}\label{implications-for-authors}
+The author recommends applying the following three tests to your own
+work. What about a paper that implements theoretical constructs as
+methods so that they can be applied? For example, many machine learning
+variants arise from their implementation and the associated
+possibilities (LightGBM, XGBoost, ExtraTrees)
 
-\emph{Identify, Explain and Argue} your contributions-
-
-\begin{itemize}
-\tightlist
-\item
-  Improving Publication Prospects:
-
-  \begin{itemize}
-  \tightlist
-  \item
-    Not just about adding variables but explaining their theoretical
-    relevance.
-  \end{itemize}
-\item
-  Articulation and Defense:
-
-  \begin{itemize}
-  \tightlist
-  \item
-    Go beyond mentioning contributions---argue and justify their
-    importance.
-  \end{itemize}
-\end{itemize}
-
-\newpage
-
-\newpage
-
-\subsection{Conclusion}\label{conclusion}
-
-Authors should take the strategic approach to their submissions.
-
-\begin{itemize}
-\tightlist
-\item
-  Methodological Soundness is not enough:
-
-  \begin{itemize}
-  \tightlist
-  \item
-    Theoretical contributions are necessary for acceptance in top
-    journals.
-  \item
-    \textbf{Align your Contribution with a receptive journal}
-  \end{itemize}
-\item
-  Strategic Preparation:
-
-  \begin{itemize}
-  \tightlist
-  \item
-    Prepare your manuscript understanding the competitive nature of
-    submissions.
-  \item
-    \textbf{Identify, explain and argue for your contribution}
-  \end{itemize}
-\end{itemize}
+\end{tcolorbox}
 
 \newpage
 
@@ -516,5 +468,15 @@ Lets talk about the optinion from Bergh.
 \end{itemize}
 
 \newpage
+
+\newpage
+
+\vspace*{2.5cm}
+
+\begin{center}
+
+\section{Thanks for the attention!}\label{thanks-for-the-attention}
+
+\end{center}
 
 \end{document}
