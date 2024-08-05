@@ -164,7 +164,9 @@ $\Rightarrow$ simple approach to control for confounders, *if they can be used f
 ## DoubleML Deep - Module Structure
 
 <center>
+
 ![High-Level PLR Model Architecture. Both nuisance components are trained simultaneously with a combined loss.](figures/dml_deep_arch.png){width=1000}
+
 </center>
 
 
@@ -411,7 +413,9 @@ random train-test splits
 * Specifically in online marketplaces, unstructured data is available
 
 <div class="image-container">
-<img src="figures/amazon_ss.PNG" alt="Amazon Webshop">
+
+<img src="figures/amazon_ss.png" alt="Amazon Webshop">
+
 <div class="annotation1" style="font-size: 16px; color: white; font-weight: bold;"> Image Data</div>
 <div class="annotation2" style="font-size: 16px; color: white; font-weight: bold;">Text Data</div>
 <div class="annotation3" style="font-size: 16px; color: white; font-weight: bold;">Tabular Data</div>
