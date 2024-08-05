@@ -18,6 +18,80 @@
 </div>
 </div>
 
+# Basics: Causality and Causal ML
+
+## Basics: Causal ML
+
+![](figures/causalml_upd.png)
+
+## Basics: Causal ML
+
+![](figures/usecases_upd.png)
+
+## Basics: Predictive vs. Causal Modeling
+
+<br>
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+#### Predictive Modeling
+
+*How can we build a good prediction rule, $f(X)$, that uses features $X$ to predict $Y$?*
+
+::: {.fragment}
+
+Example: **Customer Churn**
+
+> "*How well can we predict whether customers churn?*"
+
+> "*Which of these variables are good predictors for churn (explainability)?*"
+
+:::
+
+:::
+
+::: {.column width="50%"}
+
+#### Causal Modeling
+
+*What is the causal effect of a treatment $D$ on an outcome $Y$?*
+
+<br>
+
+::: {.fragment}
+
+> "*Why do customer churn?*"
+
+> "*How can we retain customers?*"
+
+:::
+
+:::
+
+::::
+
+::: {.fragment}
+
+**Causal ML**: How can we use state-of-the art ML methods for causal inference?
+
+:::
+
+## Causal ML 
+
+#### Goal
+
+* Use *ML* to find out the *Why?*
+
+* Address causal relationships by using ML methods for estimation
+
+* For this, we will need some basic idea on how to approach causal problems
+
+:arrow_right: **Causal Inference**
+
+* Once, we have a basic understanding of causal inference, we can use `DoubleML` to estimate causal effects
+
 # Motivation
 
 ## Motivation
@@ -29,8 +103,6 @@
 ![](figures/Excel.png){fig-align="left"}
 
 :::
-
-
 
 ::: {.column width="45%"}
 
@@ -154,8 +226,7 @@ $\Rightarrow$ simple approach to control for confounders, *if they can be used f
 - Use multimodal data (text and images) *additionally* to conventional tabular features
 
 <center>
-![Examples of directed acyclic graphs (DAGs) with image and text confounding. (a) Direct confounding via image, text and tabular data. (b) Treatment decision is driven by text and images. All backdoor paths are blocked by conditioning on both image and text data.](figures/DAG_ProblemSet.PNG){width=750}
-</center>
+![Examples of directed acyclic graphs (DAGs) with image and text confounding. (a) Direct confounding via image, text and tabular data. (b) Treatment decision is driven by text and images. All backdoor paths are blocked by conditioning on both image and text data.](figures/DAG_ProblemSet.png){width=1000}
 
 ::: {.notes}
   
@@ -164,8 +235,8 @@ $\Rightarrow$ simple approach to control for confounders, *if they can be used f
 ## DoubleML Deep - Module Structure
 
 <center>
-![High-Level PLR Model Architecture. Both nuisance components are trained simultaneously with a combined loss.](figures/dml_deep_arch.PNG)
-</center>
+![High-Level PLR Model Architecture. Both nuisance components are trained simultaneously with a combined loss.](figures/dml_deep_arch.png)
+
 
 
 ## DoubleML Deep - Workflow
@@ -412,7 +483,8 @@ random train-test splits
 * Specifically in online marketplaces, unstructured data is available
 
 <div class="image-container">
-<img src="figures/amazon_ss.png" alt="Amazon Webshop">
+<img src="figures/amazon_ss.PNG" alt="Amazon Webshop">
+
 <div class="annotation1" style="font-size: 16px; color: white; font-weight: bold;"> Image Data</div>
 <div class="annotation2" style="font-size: 16px; color: white; font-weight: bold;">Text Data</div>
 <div class="annotation3" style="font-size: 16px; color: white; font-weight: bold;">Tabular Data</div>
