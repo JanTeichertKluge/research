@@ -7,17 +7,18 @@ execute:
   
 format:
   revealjs:
+    pagetitle: "DoubleMLDeep: Estimation of Causal Effects with Multimodal Data"
     highlight-style: breezedark
     slide-number: true
     code-copy: true
     code-link: true
-    footer: "DoubleML Deep"
+    footer: "DoubleMLDeep"
     theme: [default, ../shared_files/doubleml_theme.scss]
     chalkboard: # enables chalkboard see https://rajgoel.github.io/reveal.js-demos/chalkboard-demo.html#/
       boardmarker-width: 5
       theme: "chalkboard"
     css: styles.css
-    filters: [slidenumber_filter.lua]
+    filters: [slidenumber_filter.lua] # include lua script for filtering the appendix slides
     lightbox: true
 
 from: markdown+emoji # enables emojis see https://gist.github.com/rxaviers/7360908

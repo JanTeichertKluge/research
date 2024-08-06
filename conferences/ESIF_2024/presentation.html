@@ -13,7 +13,7 @@
 <link href="presentation_files/libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.5.52">
 
-  <title>presentation</title>
+  <title>DoubleMLDeep: Estimation of Causal Effects with Multimodal Data</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -386,7 +386,7 @@ Suhas Vijaykumar <br> <small>Massachusetts Institute<br>of Technology</small>
 </div>
 </section>
 <section>
-<section id="motivation" class="title-slide slide level1 center">
+<section id="motivation" class="title-slide slide level1 center" data-transition="concave-in">
 <h1>Motivation</h1>
 
 </section>
@@ -485,12 +485,12 @@ m_0(X)&amp;:=\mathbb{E}[D|X]
 </div>
 </section></section>
 <section>
-<section id="doubleml-deep" class="title-slide slide level1 center">
-<h1>DoubleML Deep</h1>
+<section id="doublemldeep" class="title-slide slide level1 center" data-transition="concave-in">
+<h1>DoubleMLDeep</h1>
 
 </section>
-<section id="doubleml-deep---motivation" class="slide level2">
-<h2>DoubleML Deep - Motivation</h2>
+<section id="doublemldeep---motivation" class="slide level2">
+<h2>DoubleMLDeep - Motivation</h2>
 <ul>
 <li>Use multimodal data (text and images) <em>additionally</em> to conventional tabular features</li>
 </ul>
@@ -516,8 +516,8 @@ m_0(X)&amp;:=\mathbb{E}[D|X]
           display:block!important;
       }</style></aside>
 </section>
-<section id="doubleml-deep---module-structure" class="slide level2" data-transition="zoom-out">
-<h2>DoubleML Deep - Module Structure</h2>
+<section id="doublemldeep---module-structure" class="slide level2" data-transition="zoom-out">
+<h2>DoubleMLDeep - Module Structure</h2>
 <center>
 <div class="quarto-figure quarto-figure-center">
 <figure>
@@ -527,8 +527,8 @@ m_0(X)&amp;:=\mathbb{E}[D|X]
 </div>
 </center>
 </section>
-<section id="doubleml-deep---module-structure-1" class="slide level2" data-transition="zoom-in">
-<h2>DoubleML Deep - Module Structure</h2>
+<section id="doublemldeep---module-structure-1" class="slide level2" data-transition="zoom-in">
+<h2>DoubleMLDeep - Module Structure</h2>
 <center>
 <div class="quarto-figure quarto-figure-center">
 <figure>
@@ -538,8 +538,8 @@ m_0(X)&amp;:=\mathbb{E}[D|X]
 </div>
 </center>
 </section>
-<section id="doubleml-deep---workflow" class="slide level2">
-<h2>DoubleML Deep - Workflow</h2>
+<section id="doublemldeep---workflow" class="slide level2">
+<h2>DoubleMLDeep - Workflow</h2>
 <center>
 <div class="quarto-figure quarto-figure-center">
 <figure>
@@ -567,7 +567,7 @@ m_0(X)&amp;:=\mathbb{E}[D|X]
       }</style></aside>
 </section></section>
 <section>
-<section id="application" class="title-slide slide level1 center">
+<section id="application" class="title-slide slide level1 center" data-transition="concave-in">
 <h1>Application</h1>
 
 </section>
@@ -917,7 +917,7 @@ Tabular Data
 </ul>
 <aside><ol class="aside-footnotes"><li id="fn2"><p>Mean values of the <span class="math inline">\(\texttt{DoubleMLDeep}\)</span> Model with tabular, text and image data as covariates.</p></li></ol></aside></section></section>
 <section>
-<section id="thank-you-for-your-attention" class="title-slide slide level1 center">
+<section id="thank-you-for-your-attention" class="title-slide slide level1 center" data-transition="concave-in">
 <h1>Thank you for your attention!</h1>
 
 </section>
@@ -966,7 +966,7 @@ DoubleML
 </div>
 </section></section>
 <section>
-<section id="references" class="title-slide slide level1 center">
+<section id="references" class="title-slide slide level1 center" data-transition="concave-in">
 <h1>References</h1>
 
 </section>
@@ -997,7 +997,7 @@ Wickham, Hadley. 2016. <em>Ggplot2: Elegant Graphics for Data Analysis</em>. Spr
 </div>
 </section></section>
 <section>
-<section id="appendix-double-machine-learning" class="title-slide slide level1 appendix center" data-visibility="uncounted">
+<section id="appendix-double-machine-learning" class="title-slide slide level1 appendix center" data-transition="concave-in" data-visibility="uncounted">
 <h1>Appendix: Double Machine Learning</h1>
 
 </section>
@@ -1158,8 +1158,8 @@ min_{\theta} \mathbb{E}\big[\big(Y - \mathbb{E}[Y|X] - (D-\mathbb{E}[D|X])\theta
 <li>See <a href="https://doubleml.shinyapps.io/BasicsDMLApp/">this example</a> based on <span class="citation" data-cites="dml2018">Chernozhukov et al. (<a href="#/references-1" role="doc-biblioref" onclick="">2018</a>)</span></li>
 </ul>
 </section>
-<section id="doubleml-deep---more-details" class="slide level2" data-visibility="uncounted">
-<h2>DoubleML Deep - More Details</h2>
+<section id="doublemldeep---more-details" class="slide level2" data-visibility="uncounted">
+<h2>DoubleMLDeep - More Details</h2>
 <p><br></p>
 <ul>
 <li><p>Use pretrained models for unstructured data e.g.&nbsp;Bert and Beit</p></li>
@@ -1194,7 +1194,7 @@ min_{\theta} \mathbb{E}\big[\big(Y - \mathbb{E}[Y|X] - (D-\mathbb{E}[D|X])\theta
       }</style></aside>
 </section></section>
 <section>
-<section id="appendix-semi-synthetic-data" class="title-slide slide level1 appendix center" data-visibility="uncounted">
+<section id="appendix-semi-synthetic-data" class="title-slide slide level1 appendix center" data-transition="concave-in" data-visibility="uncounted">
 <h1>Appendix: Semi-Synthetic Data</h1>
 
 </section>
@@ -1460,7 +1460,7 @@ D &amp;= \tilde{m}_0(\tilde{X}) + \vartheta,
 </div>
 <div class="quarto-auto-generated-content">
 <div class="footer footer-default">
-<p>DoubleML Deep</p>
+<p>DoubleMLDeep</p>
 </div>
 </div>
 </section></section>
@@ -1864,7 +1864,7 @@ D &amp;= \tilde{m}_0(\tilde{X}) + \vartheta,
       }
     });
     </script>
-    <script>var lightboxQuarto = GLightbox({"openEffect":"zoom","closeEffect":"zoom","loop":false,"selector":".lightbox","descPosition":"bottom"});
+    <script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","selector":".lightbox","descPosition":"bottom","loop":false,"openEffect":"zoom"});
     (function() {
       let previousOnload = window.onload;
       window.onload = () => {

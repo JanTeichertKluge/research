@@ -19,7 +19,7 @@
 </div>
 </div>
 
-# Motivation
+# Motivation {transition="concave-in"}
 
 ## Motivation
 
@@ -121,9 +121,9 @@ $$
 $\Rightarrow$ simple approach to control for confounders, *if they can be used for ML models!*
 
 
-# DoubleML Deep
+# DoubleMLDeep {transition="concave-in"}
 
-## DoubleML Deep - Motivation
+## DoubleMLDeep - Motivation
 
 - Use multimodal data (text and images) *additionally* to conventional tabular features
 
@@ -135,19 +135,19 @@ $\Rightarrow$ simple approach to control for confounders, *if they can be used f
   
 :::
 
-## DoubleML Deep - Module Structure {transition="zoom-out"}
+## DoubleMLDeep - Module Structure {transition="zoom-out"}
 
 <center>
 ![High-Level PLR Model Architecture. Both nuisance components are trained simultaneously with a combined loss.](figures/dml_deep_arch.png){data-id="id1" width=1000}
 </center>
 
-## DoubleML Deep - Module Structure {transition="zoom-in"}
+## DoubleMLDeep - Module Structure {transition="zoom-in"}
 
 <center>
 ![Combined Loss in case of multiple treatments. It is crucial to closely monitor losses of each nuisance component.](figures/dml_deep_arch_loss.png){data-id="id1" width=700}
 </center>
 
-## DoubleML Deep - Workflow
+## DoubleMLDeep - Workflow
 
 <center>
 ![High-Level Workflow of *DoubleMLDeep*](figures/DMLDeep_Workflow2.png)
@@ -168,7 +168,8 @@ The network can now be trained with the pytorch Lightning Trainer. The correspon
 :::
 
 
-# Application
+# Application {transition="concave-in"}
+
 
 ## Application: Estimation of Price Elasticity
 
@@ -438,7 +439,7 @@ $\Rightarrow$ The aim is to emphasize the benefits of utilizing unstructured dat
 [^1]: Mean values of the $\texttt{DoubleMLDeep}$ Model with tabular, text and image data as covariates.
 
 
-# Thank you for your attention!
+# Thank you for your attention! {transition="concave-in"}
 
 ## Affiliations
 
@@ -473,7 +474,7 @@ $\Rightarrow$ The aim is to emphasize the benefits of utilizing unstructured dat
 </div>
 
 
-# References
+# References {transition="concave-in"}
 
 ## References
 
@@ -481,7 +482,7 @@ $\Rightarrow$ The aim is to emphasize the benefits of utilizing unstructured dat
 :::
 
 
-# Appendix: Double Machine Learning {.appendix}
+# Appendix: Double Machine Learning {.appendix transition="concave-in"}
 
 ## Motivating Example - PLR
 
@@ -682,7 +683,7 @@ $$\begin{align}\begin{aligned}\sigma^2 := J_0^{-2} \mathbb{E}(\psi^2(W; \theta_0
 
 * See [this example](https://doubleml.shinyapps.io/BasicsDMLApp/) based on @dml2018
 
-## DoubleML Deep - More Details
+## DoubleMLDeep - More Details
 
 <br>
 
@@ -708,7 +709,7 @@ $$\begin{align}\begin{aligned}\sigma^2 := J_0^{-2} \mathbb{E}(\psi^2(W; \theta_0
   These conditions help maintain the validity of our estimates by ensuring that the discrepancies between our estimated nuisance functions and their true counterparts, along with stochastic errors, remain within acceptable bounds.
 :::
 
-# Appendix: Semi-Synthetic Data {.appendix}
+# Appendix: Semi-Synthetic Data {.appendix transition="concave-in"}
 
 ## Original Datasets
 
