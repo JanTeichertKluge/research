@@ -1,0 +1,166 @@
+\documentclass{article}
+\usepackage{tikz}
+\usepackage{fontawesome} 
+% icons available under https://fontawesome.com/search?q=text&o=r
+\usepackage{bm}
+\usepackage{caption}
+\usepackage{subcaption}
+
+\begin{document}
+
+\begin{figure}
+\centering
+    \tikzset{> = stealth,
+    circ_targets/.style = {
+        draw = black,
+        fill=lightgray,
+        shape = circle,
+        inner sep = 1pt
+    },
+    circ/.style = {
+        draw = black,
+        shape = circle,
+        inner sep = 1pt
+    }}
+    \tikz{
+        \node[circ_targets] (D) at (0,0) {\bm{$D$}};
+        \node[circ_targets] (y) at (2,0) {\bm{$Y$}};
+        \node[black] (txt) at (0,2) {\faFileText};
+        \node[black] (img) at (2,2) {\faImage};
+        \node[circ] (features) at (1,1) {$\bm{X}$};
+        \path[->, black] (txt) edge (features);
+        \path[->, black] (img) edge (features);
+        \path[->, black] (features) edge (D);
+        \path[->, black] (features) edge (y);
+        \path[->, black, line width=1.5pt] (D) edge (y);
+        \draw (D) -- (y) node [midway, fill=white] {$\theta_0$};
+    }
+\caption{DAG with Text and Image as Controls }
+\label{fig:DAG_txt_img}
+\end{figure}
+
+\begin{figure}
+\centering
+    \tikzset{> = stealth,
+    circ_targets/.style = {
+        draw = black,
+        fill=lightgray,
+        shape = circle,
+        inner sep = 1pt
+    },
+    circ/.style = {
+        draw = black,
+        shape = circle,
+        inner sep = 1pt
+    }}
+    \tikz{
+        \node[circ_targets] (D) at (0,0) {\bm{$D$}};
+        \node[circ_targets] (y) at (2,0) {\bm{$Y$}};
+        \node[circ, align=center] (features) at (1,1.2) {\faFileText\quad \faImage \\ \faTable};
+        \path[->, black] (features) edge (D);
+        \path[->, black] (features) edge (y);
+        \path[->, black, line width=1.5pt] (D) edge (y);
+        \draw (D) -- (y) node [midway, fill=white] {$\theta_0$};
+    }
+\caption{DAG with Text and Image as Controls }
+\label{fig:DAG_txt_img}
+\end{figure}
+
+\begin{figure}
+\centering
+    \tikzset{> = stealth,
+    circ_targets/.style = {
+        draw = black,
+        fill=lightgray,
+        shape = circle,
+        inner sep = 1pt
+    },
+    circ/.style = {
+        draw = black,
+        shape = circle,
+        inner sep = 1pt
+    }}
+    \tikz{
+        \node[circ_targets] (D) at (0,0) {\bm{$D$}};
+        \node[circ_targets] (y) at (2,0) {\bm{$Y$}};
+        \node[circ] (features_X) at (2,1) {\bm{$X$}};
+        \node[black] (txt) at (1,0.75) {\faFileText};
+        \node[black] (img) at (1,1.5) {\faImage};
+        \path[->, black] (features_X) edge (txt);
+        \path[->, black] (features_X) edge (img);
+        \path[->, black] (txt) edge (D);
+        \path[->, black] (img) edge (D);
+        \path[->, black] (features_X) edge (y);
+        \path[->, black, line width=1.5pt] (D) edge (y);
+        \draw (D) -- (y) node [midway, fill=white] {$\theta_0$};
+    }
+\caption{DAG with Text and Image as Controls }
+\label{fig:DAG_txt_img}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \tikzset{> = stealth,
+        circ_targets/.style = {
+            draw = black,
+            fill=lightgray,
+            shape = circle,
+            inner sep = 1pt
+        },
+        circ/.style = {
+            draw = black,
+            shape = circle,
+            inner sep = 1pt
+        }}
+        \begin{tikzpicture}
+            \node[circ_targets] (D) at (0,0) {\bm{$D$}};
+            \node[circ_targets] (y) at (2,0) {\bm{$Y$}};
+            \node[circ, align=center] (features) at (1,1.2) {\faFileText\quad \faImage \\ \faTable};
+            \path[->, black] (features) edge (D);
+            \path[->, black] (features) edge (y);
+            \path[->, black, line width=1.5pt] (D) edge (y);
+            \draw (D) -- (y) node [midway, fill=white] {$\theta_0$};
+        \end{tikzpicture}
+        \caption{}
+        \label{fig:DAG_txt_img_a}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \tikzset{> = stealth,
+        circ_targets/.style = {
+            draw = black,
+            fill=lightgray,
+            shape = circle,
+            inner sep = 1pt
+        },
+        circ/.style = {
+            draw = black,
+            shape = circle,
+            inner sep = 1pt
+        }}
+        \begin{tikzpicture}
+            \node[circ_targets] (D) at (0,0) {\bm{$D$}};
+            \node[circ_targets] (y) at (2,0) {\bm{$Y$}};
+            \node[circ] (features_X) at (2,1) {\bm{$X$}};
+            \node[black] (txt) at (1,0.75) {\faFileText};
+            \node[black] (img) at (1,1.5) {\faImage};
+            \path[->, black] (features_X) edge (txt);
+            \path[->, black] (features_X) edge (img);
+            \path[->, black] (txt) edge (D);
+            \path[->, black] (img) edge (D);
+            \path[->, black] (features_X) edge (y);
+            \path[->, black, line width=1.5pt] (D) edge (y);
+            \draw (D) -- (y) node [midway, fill=white] {$\theta_0$};
+        \end{tikzpicture}
+        \caption{}
+        \label{fig:DAG_txt_img_b}
+    \end{subfigure}
+    \caption{Examples of DAGs with with image and text confounding. (a) direct confounding via image, text and tabular data. (b) Treatment decision is driven by text and images. All backdoor paths are block by conditioning on both image and text data.}
+    \label{fig:DAG_txt_img}
+\end{figure}
+
+
+\end{document}

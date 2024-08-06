@@ -1,0 +1,32 @@
+bibliography: ../shared_files/bibliography.bib
+
+execute:
+  eval: true
+  echo: true
+  include: true
+  
+format:
+  revealjs:
+    highlight-style: breezedark
+    slide-number: true
+    code-copy: true
+    code-link: true
+    footer: "DoubleML Deep"
+    theme: [default, ../shared_files/doubleml_theme.scss]
+    chalkboard: # enables chalkboard see https://rajgoel.github.io/reveal.js-demos/chalkboard-demo.html#/
+      boardmarker-width: 5
+      theme: "chalkboard"
+    pointer:
+      - pointerSize: 16
+      - pointerColor: "red"
+
+revealjs-plugins:
+  - pointer
+
+pptx:
+    reference-doc: _resources/templates/pptx/cosmic-latte.pptx
+
+css: styles.css
+
+nocite: |
+  @bach2022doubleml

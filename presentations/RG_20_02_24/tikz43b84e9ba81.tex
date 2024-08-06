@@ -1,0 +1,51 @@
+\documentclass[
+%% TIKZ_CLASSOPTION %%
+tikz
+]{standalone}
+\usepackage{amsmath}
+\usetikzlibrary{matrix}
+%% EXTRA_TIKZ_PREAMBLE_CODE %%
+\begin{document}
+%% TIKZ_CODE %%
+\begin{figure}
+    \centering
+    \tikzset{> = stealth,
+    circ_targets/.style = {
+        draw = black,
+        fill=lightgray,
+        shape = circle,
+        inner sep = 1pt
+    },
+    circ/.style = {
+        draw = black,
+        shape = circle,
+        inner sep = 1pt
+    }}
+    \tikz{
+        \node[circ_targets] (D) at (0,0) {\bm{$D$}};
+        \node[circ_targets] (y) at (2,0) {\bm{$Y$}};
+        \node[circ] (x_tab) at (0,1) {$X_{\text{tab}}$};
+        \node[circ] (x_txt) at (1,1.5) {$X_{\text{txt}}$};
+        \node[circ] (x_img) at (2,1) {$X_{\text{img}}$};
+        \node[circ] (U_tab) at (0,-1) {$U_{\text{tab}}$};
+        \node[circ] (U_txt) at (1,-1.5) {$U_{\text{txt}}$};
+        \node[circ] (U_img) at (2,-1) {$U_{\text{img}}$};
+        \path[->, black] (x_tab) edge (D);
+        \path[->, black] (x_tab) edge (y);
+        \path[->, black] (U_tab) edge (D);
+        \path[->, black] (U_tab) edge (y);
+        \path[->, black] (x_txt) edge (D);
+        \path[->, black] (x_txt) edge (y);
+        \path[->, black] (U_txt) edge (D);
+        \path[->, black] (U_txt) edge (y);
+        \path[->, black] (x_img) edge (D);
+        \path[->, black] (x_img) edge (y);
+        \path[->, black] (U_img) edge (D);
+        \path[->, black] (U_img) edge (y);
+        \path[->, black, line width=1.5pt] (D) edge (y);
+        \draw (D) -- (y) node [midway, fill=white] {$\theta_0$};
+    }
+    \caption{DAG for the semi-synthetic dataset. The confounding via the features $X=(X_{\text{tab}}, X_{\text{txt}}, X_{\text{img}})$ can be adjusted for, whereas the unexplained/noise parts $U=(U_{\text{tab}}, U_{\text{txt}}, U_{\text{img}})$ are unobserved.}
+    \label{fig:conf_dag}
+\end{figure}
+\end{document}

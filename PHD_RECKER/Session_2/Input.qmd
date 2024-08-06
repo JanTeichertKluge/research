@@ -1,0 +1,198 @@
+---
+title: "Reading Group"
+subtitle: "Lalonde - 40 Years Later: Imbens and Xu's Review"
+author: "Scott Cunningham"
+date: "July 17, 2024"
+format: revealjs
+code-fold: true
+code-summary: "Show code"
+---
+
+# Introduction
+- The paper "LaLonde (1986) after Nearly Four Decades: Lessons Learned" by Guido Imbens and Yiqing Xu reflecting Robert LaLonde’s 1986 Study.
+- Significance in labor economics and the **credibility revolution**.
+    - Rigorous research design and advanced econometric techniques such as difference-in-differences, instrumental variables, and randomized experiments to enhance the reliability and validity.
+    - Introduction of propensity score-based methods 
+        - Leading to doubly robust estimators.
+    - Significantly improved the ability to distinguish between correlation and causation in economic research.
+
+---
+
+## Context of the 1970s Crisis
+- Empirical crisis in labor economics during the 1970s.
+  - Issues not due to data or model flaws but human error.
+- LaLonde’s 1986 paper as an exemplar of these issues.
+- Epistemological (= *"Theory of knowledge"* in philosophie) concerns in labor and macro studies.
+
+---
+
+## LaLonde’s 1986 Study
+- Title: “Evaluating the Econometric Evaluations of Training Programs with Experimental Data.”
+- Focus: Job training programs, specifically the National Support Work Demonstration (NSW).
+
+---
+
+## Methodology of LaLonde’s Study
+::: incremental
+1. Part 1: Evaluate RCT on job training and its effect on earnings ($800-900).
+2. Part 2: Replace the experimental control group with non-experimental groups to replicate the effect.
+:::
+
+---
+
+## Findings and Implications
+- LaLonde’s findings:
+  - Wide range of estimates, mostly inaccurate.
+- Importance of randomness:
+  - RCT shows that ATE equals ATT.
+  - Emphasizes the importance of randomization in evaluations.
+---
+
+
+## Study
+```{python}
+#| echo: true
+#| include: true
+
+import numpy as np
+import pandas as pd
+import statsmodels.api as sm
+
+# Set seed for reproducibility
+np.random.seed(20200403)
+num_people = 100000
+
+# Generate potential outcomes (Y0): life-span if no vent, (Y1): life-span if assigned to vents
+y0 = np.maximum(np.random.normal(9.4, 4, num_people), 0)
+y1 = np.maximum(np.random.normal(10, 4, num_people), 0)
+delta = y1 - y0
+
+d = np.array([1]*50000 + [0]*50000)
+
+df = pd.DataFrame({
+    'person': np.arange(1, num_people + 1),
+    'y0': y0,
+    'y1': y1,
+    'delta': delta,
+    'd': d
+})
+
+# Calculate all aggregate Causal Parameters (ATE, ATT, ATU)
+ate = df['delta'].mean()
+att = df.loc[df['d'] == 1, 'delta'].mean()
+atu = df.loc[df['d'] == 0, 'delta'].mean()
+
+# Use the switching equation
+df['y'] = df['d'] * df['y1'] + (1 - df['d']) * df['y0']
+
+# Calculate EY0 for vent group and no vent group (separately)
+ey0_vent = df.loc[df['d'] == 1, 'y0'].mean()
+ey01 = ey0_vent
+
+ey0_novent = df.loc[df['d'] == 0, 'y0'].mean()
+ey00 = ey0_novent
+
+# Calculate selection bias based on the previous conditional expectations
+selection_bias = ey01 - ey00
+
+# Calculate the share of units treated with vents (pi)
+pi = df['d'].mean()
+
+# Manually calculate the simple difference in mean health outcomes between the vent and non-vent group
+ey_vent = df.loc[df['d'] == 1, 'y'].mean()
+ey1 = ey_vent
+
+ey_novent = df.loc[df['d'] == 0, 'y'].mean()
+ey0 = ey_novent
+
+sdo = ey1 - ey0
+
+# Calculate the simple difference in mean health outcomes between the vent and non-vent group using an OLS specification
+X = sm.add_constant(df['d'])
+model = sm.OLS(df['y'], X).fit(cov_type='HC3')  # robust standard errors
+ols_result = model.summary()
+
+# Display the results, ate and att should be same number
+print(f"ATE: {ate}")
+print(f"ATT: {att}")
+print(f"ATU: {atu}")
+print(f"Selection Bias: {selection_bias}")
+print(f"Share treated with vents (pi): {pi}")
+print(f"Simple Difference in Outcomes (SDO): {sdo}")
+print("\nOLS Regression Results:")
+print(ols_result)
+```
+
+# Imbens and Xu’s Review
+
+## Imbens and Xu’s Review
+- Title: "LaLonde (1986) after Nearly Four Decades: Lessons Learned."
+    - Emphasis on unconfoundedness and its challenges.
+    - Addressing conditional independence in econometrics.
+---
+
+## Heterogeneity and Comparability Issues
+- De-Emphasis on Heterogeneity: LaLonde's specifications did not focus on heterogeneity, complicating results’ evaluation.
+- Comparison Group: The comparison group included a random sample of Americans (~16,000) vs. 297 experimental treated units.
+- Population Differences: Participants were from extremely disadvantaged groups, which differed significantly from the comparison group (ex-convicts, people with substance abuse disorders, clearly from the far left tail of the income distribution compared the non-experimental controls)
+---
+
+## Conclusion of LaLonde's Original Study
+- Pessimistic Outcome: LaLonde was unable to recover the original $800 - $900 estimate using non-experimental data.
+- Recommendation: Advocate for explicit randomization in evaluating job training programs and other interventions.
+- Historical Context: At the time, RCTs were rare and seen as radical in empirical labor research.
+---
+
+# Where Are We Now?
+
+## Where Are We Now?
+- Ongoing discussions about methodological rigor
+  
+::: incremental
+- Despite initial pessimism, there is optimism for non-experimental studies when well-executed.
+- Two key assumptions stated by Imbens and Xu:
+    1. **Unconfoundedness (= exogeneity, ignorability, conditional independence, or selection-on-observables)**
+    2. **Overlap and Balance (= the propensity score is between zero and one)**
+:::
+---
+
+## Unconfoundedness
+
+- Emphasis on conditional assignment (binary treatment $W_i$)
+     $$ W_i\ \perp\!\!\!\!\perp \ \left\{(Y_i(0),Y_i(1)\right\} |\ X_i $$
+    - Conditional on the covariates $X_i$, the treatment assignment is independent of the pair of potential outcomes.
+---
+
+## Overlap and Balance
+- Ensure that we can estimate the average effect at every value for the covariates $X_i$, requiring overlap
+     $$0 < \Pr(W_i = 1\ |\ X_i) < 1$$
+    - e.g. trimming, dropping observations
+
+---
+
+## Economic Perspective on Unconfoundedness (by Cunningham?)
+
+- Conditional Independence: Economists are skeptical because they rely less on economic models for natural experiments.
+- Unconfoundedness conflicts with the rational choice model intrinsic to economic theory.
+    - It’s difficult to ensure that treatment selection is random, which challenges the methodology.
+
+---
+
+# Conclusion
+
+## Evaluating Nonexperimental Methods
+- Robert LaLonde's 1986 paper critiqued nonexperimental methods, finding they produce variable estimates that often deviate from experimental results.
+- Modern nonexperimental evaluation methodology has advanced significantly since LaLonde.
+- Revisiting the LaLonde and IRS datasets illustrates the effectiveness of modern methods in estimating adjusted group differences, with a caveat of sufficient overlap.
+- Estimates should be interpreted cautiously regarding causality, especially with limited understanding of the assignment mechanism.
+---
+
+## Recommendations for Practitioners
+- Begin analyses by **understanding the assignment mechanism** for credibility of unconfoundedness assumption.
+- Estimate propensity scores with **flexible methods, assess overlap, and trim data** for group comparability.
+- Utilize **modern estimators (e.g., doubly-robust)** to estimate average causal effects and explore alternative estimands.
+- Perform placebo (e.g. using pretreatment outcomes) and sensitivity analyses to validate unconfoundedness and gauge robustness.
+---
+
+# Thanks for your attention!
+
