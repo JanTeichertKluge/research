@@ -467,13 +467,6 @@ $\Rightarrow$ The aim is to emphasize the benefits of utilizing unstructured dat
 </div>
 
 
-<div style="text-align: center">
-**In case you have questions or comments, feel free to contact me:**
-<br>
-<jan.teichertkluge@uni-hamburg.de>
-</div>
-
-
 # References {transition="concave-in"}
 
 ## References
@@ -800,7 +793,7 @@ where $U_{\text{mod}}$ can not be controlled for
 * Due to the negative sign and the additive structure, the confounding effect will ensure that higher outcomes $Y$ occur with lower treatment values $D$, creating a **negative bias**
 - The independence of all three original datasets and the additive negative confounding results in a negative bias even if we only control for a subset of confounding factors
 
-![DAG for the semi-synthetic dataset. The confounding via the features $X=(X_{\text{tab}}, X_{\text{txt}}, X_{\text{img}})$ can be adjusted for, whereas the unexplained/noise parts $U=(U_{\text{tab}}, U_{\text{txt}}, U_{\text{img}})$ are unobserved.](figures\DAG_SemiSynth.png){width=500}
+![DAG for the semi-synthetic dataset. The confounding via the features $X=(X_{\text{tab}}, X_{\text{txt}}, X_{\text{img}})$ can be adjusted for, whereas the unexplained/noise parts $U=(U_{\text{tab}}, U_{\text{txt}}, U_{\text{img}})$ are unobserved.](figures\DAG_SemiSynth.png){width=300}
 
 
 ## Bounds for the estimation of $\theta_0$
