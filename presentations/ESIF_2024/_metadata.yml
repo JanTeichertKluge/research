@@ -17,6 +17,8 @@ format:
       boardmarker-width: 5
       theme: "chalkboard"
     css: styles.css
+    filters: [slidenumber_filter.lua]
+    lightbox: true
 
 from: markdown+emoji # enables emojis see https://gist.github.com/rxaviers/7360908
 nocite: |

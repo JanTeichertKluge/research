@@ -7,7 +7,10 @@
 <link href="presentation_files/libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="presentation_files/libs/quarto-html/light-border.css" rel="stylesheet">
 <link href="presentation_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
-<link href="presentation_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+<link href="presentation_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="presentation_files/libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="presentation_files/libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="presentation_files/libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.5.52">
 
   <title>presentation</title>
@@ -354,11 +357,11 @@
 <div class="logo-container">
 <p><img src="../shared_files/uhh_logo.png" alt="UHH" height="125px"> <img src="../shared_files/mit_logo.png" alt="MIT" height="100px"> <img src="../shared_files/logo_eai_full.png" alt="EAI" height="70px"> <img src="../shared_files/logo.png" alt="DML" height="90px"></p>
 </div>
-<h2 style="text-align: left; margin-top: 1.5cm;">
+<h2 style="text-align: left; margin-top: 0.5cm;">
 DoubleMLDeep: Estimation of Causal Effects with Multimodal Data
 </h2>
 <p style="text-align: left;">
-<b>Cornell University Ithaca, United States</b><br>2024 ESIF Economics and AI+ML Meeting <br> August 13 - 14, 2024
+2024 ESIF Economics and AI+ML Meeting <br> August 13 - 14, 2024; Ithaca, United States
 </p>
 <div class="author-container">
 <p class="author">
@@ -376,6 +379,9 @@ Victor Chernozhukov <br> <small>Massachusetts Institute<br>of Technology</small>
 <p class="author">
 Martin Spindler <br> <small>University of Hamburg <br> Economic AI</small>
 </p>
+<p class="author">
+Suhas Vijaykumar <br> <small>Massachusetts Institute<br>of Technology</small>
+</p>
 </div>
 </div>
 </section>
@@ -392,7 +398,7 @@ Martin Spindler <br> <small>University of Hamburg <br> Economic AI</small>
 </ul>
 <div class="quarto-figure quarto-figure-left">
 <figure>
-<p><img data-src="figures/Excel.png" class="quarto-figure quarto-figure-left"></p>
+<p><a href="figures/Excel.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img data-src="figures/Excel.png" class="quarto-figure quarto-figure-left"></a></p>
 </figure>
 </div>
 </div><div class="column" style="width:45%;">
@@ -401,7 +407,7 @@ Martin Spindler <br> <small>University of Hamburg <br> Economic AI</small>
 </ul>
 <div class="quarto-figure quarto-figure-right">
 <figure>
-<p><img data-src="figures/booking_com.png" class="quarto-figure quarto-figure-right"></p>
+<p><a href="figures/booking_com.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img data-src="figures/booking_com.png" class="quarto-figure quarto-figure-right"></a></p>
 </figure>
 </div>
 </div><div class="fragment">
@@ -417,7 +423,7 @@ Martin Spindler <br> <small>University of Hamburg <br> Economic AI</small>
 </section>
 <section id="motivating-example---plr" class="slide level2">
 <h2>Motivating Example - PLR</h2>
-<h4 id="partially-linear-regression-model-plr">Partially linear regression model (PLR)</h4>
+<h3 id="partially-linear-regression-model-plr">Partially linear regression model (PLR)</h3>
 <p><span class="math display">\[
 \begin{align}
 Y &amp;= \theta_0 D + g_0(X) + \varepsilon, &amp; \mathbb{E}[\varepsilon | X, D] = 0 \label{eq:plr1} \\
@@ -437,36 +443,13 @@ D &amp;= m_0(X) + \vartheta, &amp; \mathbb{E}[\vartheta | X] = 0 \label{eq:plr2}
 <center>
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="figures/DAG_plr_001.png" width="300"></p>
+<p><a href="figures/DAG_plr_001.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="DAG for PLR Model"><img data-src="figures/DAG_plr_001.png" width="300" alt="DAG for PLR Model"></a></p>
 <figcaption>DAG for PLR Model</figcaption>
 </figure>
 </div>
 </center>
 </div></div>
 </section>
-<section id="motivating-example---regularization-bias" class="slide level2">
-<h2>Motivating Example - Regularization Bias</h2>
-<ul>
-<li>What if we simply plug-in ML predictions <span class="math inline">\(\hat{g}(X)\)</span> for <span class="math inline">\(g_0(X)\)</span> into <span class="math inline">\(Y = \theta_0D + g_0(X) + \varepsilon\)</span>?</li>
-</ul>
-<center>
-<p><img data-src="figures/naive_approach.png" style="width:50.0%"></p>
-<center>
-</center></center></section>
-<section id="motivating-example---orthogonalization" class="slide level2">
-<h2>Motivating Example - Orthogonalization</h2>
-<ul>
-<li><p><em>Frisch-Waugh-Lovell</em> style approach: <span class="math inline">\(\theta_0\)</span> can be consistently estimated by <strong>partialling out</strong> <span class="math inline">\(X\)</span>, i.e,</p>
-<ol type="1">
-<li>Predict <span class="math inline">\(Y\)</span> and <span class="math inline">\(D\)</span> by <span class="math inline">\(\mathbb{E}[Y|X]\)</span> and <span class="math inline">\(\mathbb{E}[D|X]\)</span>, obtained using ML methods</li>
-<li>Residualize <span class="math inline">\(\tilde{Y} = Y - \mathbb{E}[Y|X]\)</span> and <span class="math inline">\(\tilde{D} = D - \mathbb{E}[D|X]\)</span></li>
-<li>Regress <span class="math inline">\(\tilde{Y}\)</span> on <span class="math inline">\(\tilde{D}\)</span> to obtain <span class="math inline">\(\hat{\theta}\)</span></li>
-</ol></li>
-</ul>
-<center>
-<p><img data-src="figures/dml_approach.png" style="width:40.0%"></p>
-<center>
-</center></center></section>
 <section id="doubledebiased-machine-learning-dml" class="slide level2">
 <h2>Double/Debiased Machine Learning (DML)</h2>
 <ul>
@@ -490,9 +473,11 @@ m_0(X)&amp;:=\mathbb{E}[D|X]
 <li><p><strong>Neyman Orthogonality</strong> <span class="math display">\[
 \left.\partial_\eta \mathbb{E}[\psi(W; \theta_0, \eta)] \right|_{\eta=\eta_0} = 0
 \]</span> ensures that the moment condition identifying <span class="math inline">\(\theta_0\)</span> is <strong>insensitive to small pertubations</strong> of the nuisance function <span class="math inline">\(\eta\)</span> around <span class="math inline">\(\eta_0\)</span></p></li>
-<li><p>Assumptions for the nuisance elements (see <span class="citation" data-cites="dml2018">Chernozhukov et al. (<a href="#/references-1" role="doc-biblioref" onclick="">2018</a>)</span>) <span class="math inline">\(\lVert \hat{m} - m_0 \rVert_{P,2} \times \big( \lVert \hat{m} - m_0 \rVert_{P,2} +  \lVert \hat{\ell} - \ell_0\rVert _{P,2}\big) \le \delta_N N^{-1/2}\)</span></p></li>
-<li><p>Under some regularity conditions the estimator <span class="math inline">\(\hat{\theta}\)</span> concentrates in <span class="math inline">\(1/\sqrt{n}\)</span>-neighborhood of <span class="math inline">\(\theta_0\)</span> and <span class="math display">\[
-\sqrt{n}(\hat{\theta} - \theta_0) \to \mathcal{N}(0,\sigma^2)
+<li><p>Assumptions for the nuisance elements (see <span class="citation" data-cites="dml2018">Chernozhukov et al. (<a href="#/references-1" role="doc-biblioref" onclick="">2018</a>)</span>) <span class="math display">\[
+\lVert \hat{m} - m_0 \rVert_{P,2} \times \big( \lVert \hat{m} - m_0 \rVert_{P,2} +  \lVert \hat{\ell} - \ell_0\rVert _{P,2}\big) \le \delta_N N^{-1/2}
+\]</span></p></li>
+<li><p>Under some regularity conditions the estimator <span class="math inline">\(\hat{\theta}\)</span> concentrates in <span class="math inline">\(1/\sqrt{N}\)</span>-neighborhood of <span class="math inline">\(\theta_0\)</span> and <span class="math display">\[
+\sqrt{N}(\hat{\theta} - \theta_0) \to \mathcal{N}(0,\sigma^2)
 \]</span></p></li>
 </ul>
 <div class="fragment">
@@ -512,7 +497,7 @@ m_0(X)&amp;:=\mathbb{E}[D|X]
 <center>
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="figures/DAG_ProblemSet.png" width="750"></p>
+<p><a href="figures/DAG_ProblemSet.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" title="Examples of directed acyclic graphs (DAGs) with image and text confounding. (a) Direct confounding via image, text and tabular data. (b) Treatment decision is driven by text and images. All backdoor paths are blocked by conditioning on both image and text data."><img data-src="figures/DAG_ProblemSet.png" width="750" alt="Examples of directed acyclic graphs (DAGs) with image and text confounding. (a) Direct confounding via image, text and tabular data. (b) Treatment decision is driven by text and images. All backdoor paths are blocked by conditioning on both image and text data."></a></p>
 <figcaption>Examples of directed acyclic graphs (DAGs) with image and text confounding. (a) Direct confounding via image, text and tabular data. (b) Treatment decision is driven by text and images. All backdoor paths are blocked by conditioning on both image and text data.</figcaption>
 </figure>
 </div>
@@ -531,13 +516,24 @@ m_0(X)&amp;:=\mathbb{E}[D|X]
           display:block!important;
       }</style></aside>
 </section>
-<section id="doubleml-deep---module-structure" class="slide level2">
+<section id="doubleml-deep---module-structure" class="slide level2" data-transition="zoom-out">
 <h2>DoubleML Deep - Module Structure</h2>
 <center>
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="figures/dml_deep_arch.png" width="1000"></p>
+<p><a href="figures/dml_deep_arch.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5" title="High-Level PLR Model Architecture. Both nuisance components are trained simultaneously with a combined loss."><img data-src="figures/dml_deep_arch.png" data-id="id1" width="1000" alt="High-Level PLR Model Architecture. Both nuisance components are trained simultaneously with a combined loss."></a></p>
 <figcaption>High-Level PLR Model Architecture. Both nuisance components are trained simultaneously with a combined loss.</figcaption>
+</figure>
+</div>
+</center>
+</section>
+<section id="doubleml-deep---module-structure-1" class="slide level2" data-transition="zoom-in">
+<h2>DoubleML Deep - Module Structure</h2>
+<center>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="figures/dml_deep_arch_loss.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6" title="Combined Loss in case of multiple treatments. It is crucial to closely monitor losses of each nuisance component."><img data-src="figures/dml_deep_arch_loss.png" data-id="id1" width="700" alt="Combined Loss in case of multiple treatments. It is crucial to closely monitor losses of each nuisance component."></a></p>
+<figcaption>Combined Loss in case of multiple treatments. It is crucial to closely monitor losses of each nuisance component.</figcaption>
 </figure>
 </div>
 </center>
@@ -547,13 +543,14 @@ m_0(X)&amp;:=\mathbb{E}[D|X]
 <center>
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="figures/DMLDeep_Workflow2.png"></p>
+<p><a href="figures/DMLDeep_Workflow2.png" class="lightbox" data-gallery="quarto-lightbox-gallery-7" title="High-Level Workflow of DoubleMLDeep"><img data-src="figures/DMLDeep_Workflow2.png" alt="High-Level Workflow of DoubleMLDeep"></a></p>
 <figcaption>High-Level Workflow of <em>DoubleMLDeep</em></figcaption>
 </figure>
 </div>
 </center>
 <aside class="notes">
-<p>Now I would like to briefly explain the workflow of DoubleMLDeep in Python. wor First of all, some necessary input parameters must be defined. Then the actual DoubleMLDeep network can be created, which uses Hugging Face Transformer models and the Pytorch framework, among other things.</p>
+<p>Now I would like to briefly explain the workflow of DoubleMLDeep in Python.</p>
+<p>First of all, some necessary input parameters must be defined. Then the actual DoubleMLDeep network can be created, which uses Hugging Face Transformer models and the Pytorch framework, among other things.</p>
 <p>A DoubleMLDeep Data Module must be created and handles the various input data such as texts and images. This uses the Pytorch Lightning Framework.</p>
 <p>The DoubleMLDeep Lightning Module also uses Pytorch Lightning and contains additional training parameters.</p>
 <p>The network can now be trained with the pytorch Lightning Trainer. The corresponding predictions in the DoubleML package can then be used to obtain the estimate of the causal parameter.</p>
@@ -568,298 +565,7 @@ m_0(X)&amp;:=\mathbb{E}[D|X]
           overflow: hidden!important;
           display:block!important;
       }</style></aside>
-</section>
-<section id="doubleml-deep---more-details" class="slide level2">
-<h2>DoubleML Deep - More Details</h2>
-<p><br></p>
-<ul>
-<li><p>Use pretrained models for unstructured data e.g.&nbsp;Bert and Beit</p></li>
-<li><p>Basic models for tabular data seem sufficient</p></li>
-<li><p>Monitor the nuisance losses</p>
-<ul>
-<li><span class="math inline">\(\lVert Y - \hat{l}(X) \rVert_{P,2} \le \lVert l_0(X) - \hat{l}(X) \rVert_{P,2} + \sigma_{\epsilon}\)</span></li>
-<li><span class="math inline">\(\lVert D - \hat{m}(X) \rVert_{P,2} \le \lVert m_0(X) - \hat{m}(X)\rVert_{P, 2} + \sigma_{\vartheta}\)</span></li>
-</ul></li>
-</ul>
-<aside class="notes">
-<ul>
-<li><p><strong>Unstructured Data Models:</strong> We employ pre-trained models like BERT and BEiT to extract valuable information from unstructured data, including product descriptions and images.</p></li>
-<li><p><strong>Tabular Data Models:</strong> Basic models for tabular data have proven to be effective.</p></li>
-<li><p><strong>Monitoring Nuisance Losses:</strong> To ensure the reliability of our estimations, we diligently monitor nuisance losses. The following conditions are crucial for assessing the quality of our models:</p>
-<ul>
-<li><p><span class="math inline">\(\lVert Y - \hat{l}(X) \rVert_{P,2} &amp;\le \lVert l_0 - \hat{l}(X) \rVert_{P,2} + \sigma_{\epsilon}\)</span></p></li>
-<li><p>$ D - (X) <em>{P,2} &amp;m_0(X) - (X)</em>{P,2} + _{}$</p></li>
-</ul>
-<p>These conditions help maintain the validity of our estimates by ensuring that the discrepancies between our estimated nuisance functions and their true counterparts, along with stochastic errors, remain within acceptable bounds.</p></li>
-</ul>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
 </section></section>
-<section>
-<section id="semi-synthetic-data" class="title-slide slide level1 center">
-<h1>Semi-Synthetic Data</h1>
-
-</section>
-<section id="original-datasets" class="slide level2">
-<h2>Original Datasets</h2>
-<ul>
-<li><p>We generate a semi-synthetic dataset with a known treatment effect parameter</p></li>
-<li><p>To generate credible confounding wil be based on the <strong>labels</strong> or <strong>outcomes</strong> of the corresponding supervised learning task</p></li>
-<li><p>We use the following datasets:</p></li>
-</ul>
-<table class="caption-top">
-<colgroup>
-<col style="width: 26%">
-<col style="width: 23%">
-<col style="width: 26%">
-<col style="width: 23%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Modality</th>
-<th>Dataset</th>
-<th>Target <span class="math inline">\(\tilde{X}\)</span></th>
-<th>Control <span class="math inline">\(X\)</span></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Tabular</td>
-<td>DIAMONDS <br> <span class="citation" data-cites="ggplot2_book">Wickham (<a href="#/references-1" role="doc-biblioref" onclick="">2016</a>)</span></td>
-<td><span class="math inline">\(\log(\text{Price})\)</span></td>
-<td>Carat, Cut, Color, Clarity, …</td>
-</tr>
-<tr class="even">
-<td>Text</td>
-<td>IMDB <br> <span class="citation" data-cites="maas-EtAl:2011:ACL-HLT2011">Maas et al. (<a href="#/references-1" role="doc-biblioref" onclick="">2011</a>)</span></td>
-<td>Sentiment</td>
-<td>Review Text</td>
-</tr>
-<tr class="odd">
-<td>Image</td>
-<td>CIFAR-10 <br> <span class="citation" data-cites="Krizhevsky09learningmultiple">Krizhevsky (<a href="#/references-1" role="doc-biblioref" onclick="">2009</a>)</span></td>
-<td>Label</td>
-<td>Image</td>
-</tr>
-</tbody>
-</table>
-<aside class="notes">
-<p>…</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section>
-<section id="data-generating-process" class="slide level2">
-<h2>Data Generating Process</h2>
-<p>We generate a semi-synthetic dataset according to the underlying PLR model <span class="math display">\[
-\begin{align}
-Y &amp;= \theta_0 D + \tilde{g}_0(\tilde{X}) + \varepsilon, \\
-D &amp;= \tilde{m}_0(\tilde{X}) + \vartheta,
-\end{align}
-\]</span> where <span class="math inline">\(\tilde{X}= (\tilde{X}_{\text{tab}}, \tilde{X}_{\text{txt}}, \tilde{X}_{\text{img}})\)</span> with the following additive structure <span class="math display">\[
-\begin{align}
-\tilde{g}_0(\tilde{X}) &amp;= \sum_{\text{mod}\in\{\text{tab},\text{txt},\text{img}\}} \tilde{g}_{\text{mod}}(\tilde{X}_{\text{mod}}) \\
-\tilde{m}_0(\tilde{X}) &amp;= \sum_{\text{mod}\in\{\text{tab},\text{txt},\text{img}\}} \tilde{m}_{\text{mod}}(\tilde{X}_{\text{mod}})
-\end{align}
-\]</span> and <span class="math inline">\(\varepsilon, \vartheta \sim \mathcal{N}(0, 1)\)</span>.</p>
-<aside class="notes">
-<p>…</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section>
-<section id="data-generating-process-1" class="slide level2">
-<h2>Data Generating Process</h2>
-<ul>
-<li><p>The effect on the outcome <span class="math inline">\(Y\)</span> is generated via a standardized version of target variable to balance the confounding impact of all modalities: <span class="math display">\[
-\begin{align}
-  \tilde{g}_{\text{mod}}(\tilde{X}_{\text{mod}}) = \frac{\tilde{X}_{\text{mod}} - \mathbb{E}[\tilde{X}_{\text{mod}}]}{\sigma_{\tilde{X}_{\text{mod}}}}, \quad \text{mod}\in\{\text{tab}, \text{txt}, \text{img}\}
-\end{align}
-\]</span></p></li>
-<li><p>Further, to ensure a strong confounding, the impact on the treatment <span class="math inline">\(D\)</span> is defined via: <span class="math display">\[
-\begin{align}
-  \tilde{m}_{\text{mod}}(\tilde{X}_{\text{mod}}) = -\tilde{g}_{\text{mod}}(\tilde{X}_{\text{mod}}), \quad \text{mod}\in\{\text{tab}, \text{txt}, \text{img}\}
-\end{align}
-\]</span></p></li>
-<li><p>The treatment effect is set to <span class="math inline">\(\theta_0=0.5\)</span> with <span class="math inline">\(n=50.000\)</span> samples in the dataset</p></li>
-<li><p>Both <span class="math inline">\(\tilde{g}_0(X)\)</span> and <span class="math inline">\(\tilde{m}_0(X)\)</span> are rescaled to ensure a signal-to-noise ratio of <span class="math inline">\(2\)</span> for <span class="math inline">\(Y\)</span> and <span class="math inline">\(D\)</span> (given unit variances of the error terms)</p></li>
-</ul>
-<aside class="notes">
-<p>…</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section>
-<section id="challenges" class="slide level2">
-<h2>Challenges</h2>
-<ul>
-<li>Dependency on the target of the modality <span class="math inline">\(\tilde{X}_{\text{mod}}\)</span>
-<ul>
-<li>Might not be fully explained by the corresponding features <span class="math inline">\(X_{\text{mod}}\)</span></li>
-<li>E.g. price of diamonds can not be fully explained by the carat, cut, color, etc.</li>
-</ul></li>
-<li>Consequently, the estimate <span class="math inline">\(\hat{\theta}\)</span> might only be able to account for the part of confounding which can be explained by the input features: <span class="math display">\[
-\begin{align}
-  \tilde{X}_{\text{mod}} = \mathbb{E}[\tilde{X}_{\text{mod}}|X_{\text{mod}}] + U_{\text{mod}},
-\end{align}
-\]</span> where <span class="math inline">\(U_{\text{mod}}\)</span> can not be controlled for</li>
-</ul>
-</section>
-<section id="challenges-1" class="slide level2">
-<h2>Challenges</h2>
-<ul>
-<li>Due to the negative sign and the additive structure, the confounding effect will ensure that higher outcomes <span class="math inline">\(Y\)</span> occur with lower treatment values <span class="math inline">\(D\)</span>, creating a <strong>negative bias</strong></li>
-<li>The independence of all three original datasets and the additive negative confounding results in a negative bias even if we only control for a subset of confounding factors</li>
-</ul>
-
-<img data-src="figures\DAG_SemiSynth.png" width="500" class="r-stretch quarto-figure-center"><p class="caption">DAG for the semi-synthetic dataset. The confounding via the features <span class="math inline">\(X=(X_{\text{tab}}, X_{\text{txt}}, X_{\text{img}})\)</span> can be adjusted for, whereas the unexplained/noise parts <span class="math inline">\(U=(U_{\text{tab}}, U_{\text{txt}}, U_{\text{img}})\)</span> are unobserved.</p></section>
-<section id="bounds-for-the-estimation-of-theta_0" class="slide level2">
-<h2>Bounds for the estimation of <span class="math inline">\(\theta_0\)</span></h2>
-<ul>
-<li>Since all modalities contribute a negative bias, the semi-synthetic dataset can be used as a benchmark with an oracle upper bound of an effect estimate of <span class="math display">\[
-\theta_0=0.5
-\]</span></li>
-<li>For the lower bound, one can not account for confounding at all and evaluate a basic ordinary least squares model with outcome <span class="math inline">\(Y\)</span> on the treatment variable <span class="math inline">\(D\)</span> (excluding all confounding variables) <span class="math display">\[
-\hat{\theta}_{\text{OLS}} = -0.4594
-\]</span></li>
-</ul>
-</section>
-<section id="bounds-for-the-estimation-of-eta_0" class="slide level2">
-<h2>Bounds for the estimation of <span class="math inline">\(\eta_0\)</span></h2>
-<ul>
-<li>To access the predictive performance of the nuisance models, we can rely on oracle predictions of <span class="math display">\[
-\begin{align}
-  \tilde{m}_0(\tilde{X}):= \mathbb{E}[D|\tilde{X}] \\
-  \tilde{l}_0(\tilde{X}):= \mathbb{E}[Y|\tilde{X}] &amp;= \theta_0 \tilde{m}_0(\tilde{X}) + \tilde{g}_0(\tilde{X})
-\end{align}
-\]</span></li>
-<li>Evaluating the oracle predictions <span class="math inline">\(\tilde{m}_0(\tilde{X})\)</span> and <span class="math inline">\(\tilde{l}_0(\tilde{X})\)</span> results in the following upper bounds for the performance of the nuisance estimators <span class="math display">\[
-\begin{align}
-  R^2(D, \tilde{m}_0(\tilde{X})) &amp;= 0.6713\\
-  R^2(Y, \tilde{l}_0(\tilde{X})) &amp;= 0.5845
-\end{align}
-\]</span> on the whole dataset of <span class="math inline">\(n=50.000\)</span> observations</li>
-</ul>
-</section>
-<section id="bounds-for-the-estimation-of-eta_0-1" class="slide level2">
-<h2>Bounds for the estimation of <span class="math inline">\(\eta_0\)</span></h2>
-<ul>
-<li>In order to compare the predictive performance of different models, a relative <span class="math inline">\(r^2\)</span>-score with respect to the upper bound is defined as <span class="math display">\[
-\begin{align}
-  0 \leq r^2(D, \hat{m}) &amp;:= \frac{R^2(D, \hat{m}(X))}{R^2(D, \tilde{m}_0(\tilde{X}))} \leq 1\\
-  0 \leq r^2(Y, \hat{l}) &amp;:= \frac{R^2(Y, \hat{l}(X))}{R^2(Y, \tilde{l}_0(\tilde{X}))} \leq 1
-\end{align}
-\]</span></li>
-</ul>
-</section>
-<section id="models" class="slide level2">
-<h2>Models</h2>
-<div class="columns">
-<div class="column" style="width:30%;">
-<ul>
-<li><strong>Baseline Model</strong>
-<ul>
-<li>Standard DML approach, relying only on tabular data <span class="math inline">\(X_{\text{tab}}\)</span> <br> <br> <br></li>
-<li>Based on the LightGBM package for estimation of the nuisance elements</li>
-</ul></li>
-</ul>
-</div><div class="column" style="width:30%;">
-<ul>
-<li><strong>Deep Model</strong>
-<ul>
-<li>Uses the out-of-sample predictions of <span class="math inline">\(\hat{m}(X)\)</span> and <span class="math inline">\(\hat{l}(X)\)</span> generated from the model <br> <br></li>
-<li>Based on the RoBERTa Model for text modality, a VIT Model for images and a SAINT model for the tabular data</li>
-</ul></li>
-</ul>
-</div><div class="column" style="width:30%;">
-<ul>
-<li><strong>Embedding Model</strong>
-<ul>
-<li>Generated embedding <span class="math inline">\(H_E\)</span> is used together with the tabular features <span class="math inline">\(X_{\text{tab}}\)</span> as input for LightGBM</li>
-<li>Based on the RoBERTa Model for text modality, a VIT Model for images and a SAINT model for the tabular data</li>
-</ul></li>
-</ul>
-</div></div>
-</section>
-<section id="simulation-results" class="slide level2">
-<h2>Simulation Results</h2>
-<p><br> <br></p>
-<p>Results of Simulation Study. Reported: mean ± sd. over five random train-test splits</p>
-<table class="caption-top">
-<colgroup>
-<col style="width: 10%">
-<col style="width: 33%">
-<col style="width: 36%">
-<col style="width: 20%">
-</colgroup>
-<thead>
-<tr class="header">
-<th></th>
-<th>Baseline</th>
-<th>Embedding</th>
-<th>Deep</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><span class="math inline">\(r^2(Y, \hat{l}_0)\)</span></td>
-<td><span class="math inline">\(0.31  \pm  0.01\)</span></td>
-<td><span class="math inline">\(0.87 \pm  0.02\)</span></td>
-<td><span class="math inline">\(\mathbf{0.90 \pm  0.01}\)</span></td>
-</tr>
-<tr class="even">
-<td><span class="math inline">\(r^2(D, \hat{m}_0)\)</span></td>
-<td><span class="math inline">\(0.31 \pm  0.01\)</span></td>
-<td><span class="math inline">\(0.87 \pm  0.02\)</span></td>
-<td><span class="math inline">\(\mathbf{0.90 \pm  0.01}\)</span></td>
-</tr>
-<tr class="odd">
-<td><span class="math inline">\(\hat{\theta}\)</span></td>
-<td><span class="math inline">\(-0.32 \pm  0.01\)</span></td>
-<td><span class="math inline">\(\mathbf{0.28 \pm  0.01}\)</span></td>
-<td><span class="math inline">\(0.27 \pm  0.01\)</span></td>
-</tr>
-</tbody>
-</table>
-<p><em>Higher = better (best in bold)</em></p>
-</section>
-<section id="simulation-results---performance-of-hattheta" class="slide level2">
-<h2>Simulation Results - Performance of <span class="math inline">\(\hat{\theta}\)</span></h2>
-
-<img data-src="figures/theta_comp.png" class="r-stretch quarto-figure-center"><p class="caption">Boxplots of <span class="math inline">\(\hat{\theta}\)</span>. The Embedding Model and Deep Model have similar estimates. This indicates a stable and information-rich embedding <span class="math inline">\(H_E\)</span>, which provides a high explanatory contribution independent of the subsequent ML method for predicting <span class="math inline">\(Y\)</span> and <span class="math inline">\(D\)</span>. <span class="math inline">\(\theta_0\)</span> represents the upper bound.</p></section></section>
 <section>
 <section id="application" class="title-slide slide level1 center">
 <h1>Application</h1>
@@ -1023,7 +729,7 @@ Tabular Data
 </div><div class="column" style="width:55%;">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="figures/baseline_binned_plot.png"></p>
+<p><a href="figures/baseline_binned_plot.png" class="lightbox" data-gallery="quarto-lightbox-gallery-8" title="Centered logarithmic negative sales rank over centered logarithmic price as binned plot"><img data-src="figures/baseline_binned_plot.png" alt="Centered logarithmic negative sales rank over centered logarithmic price as binned plot"></a></p>
 <figcaption>Centered logarithmic negative sales rank over centered logarithmic price as binned plot</figcaption>
 </figure>
 </div>
@@ -1065,7 +771,7 @@ Tabular Data
 </div><div class="column" style="width:55%;">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="figures/baseline_dmlplr.png"></p>
+<p><a href="figures/baseline_dmlplr.png" class="lightbox" data-gallery="quarto-lightbox-gallery-9" title="Residualised logarithmic negative sales rank over residualised logarithmic price as binned plot"><img data-src="figures/baseline_dmlplr.png" alt="Residualised logarithmic negative sales rank over residualised logarithmic price as binned plot"></a></p>
 <figcaption>Residualised logarithmic negative sales rank over residualised logarithmic price as binned plot</figcaption>
 </figure>
 </div>
@@ -1121,12 +827,12 @@ Tabular Data
 <ul>
 <li>Combined RMSE Score (Training)</li>
 </ul>
-<p><img data-src="figures/train_comb_loss_mod.png"></p>
+<p><a href="figures/train_comb_loss_mod.png" class="lightbox" data-gallery="quarto-lightbox-gallery-10"><img data-src="figures/train_comb_loss_mod.png"></a></p>
 </div><div class="column" style="width:50%;">
 <ul>
 <li>Combined RMSE Score (Validation)</li>
 </ul>
-<p><img data-src="figures/val_comb_loss_mod.png"></p>
+<p><a href="figures/val_comb_loss_mod.png" class="lightbox" data-gallery="quarto-lightbox-gallery-11"><img data-src="figures/val_comb_loss_mod.png"></a></p>
 </div></div>
 </section>
 <section id="deep-learning-models-r2-scores" class="slide level2">
@@ -1136,12 +842,12 @@ Tabular Data
 <ul>
 <li><span class="math inline">\(R^2\)</span> of log(Quantity) on Validation Set</li>
 </ul>
-<p><img data-src="figures/R2_ml_l_mod.png"></p>
+<p><a href="figures/R2_ml_l_mod.png" class="lightbox" data-gallery="quarto-lightbox-gallery-12"><img data-src="figures/R2_ml_l_mod.png"></a></p>
 </div><div class="column" style="width:50%;">
 <ul>
 <li><span class="math inline">\(R^2\)</span> of log(Price) on Validation Set</li>
 </ul>
-<p><img data-src="figures/R2_ml_m_mod.png"></p>
+<p><a href="figures/R2_ml_m_mod.png" class="lightbox" data-gallery="quarto-lightbox-gallery-13"><img data-src="figures/R2_ml_m_mod.png"></a></p>
 </div></div>
 </section>
 <section id="first-results" class="slide level2">
@@ -1151,18 +857,18 @@ Tabular Data
 <ul>
 <li>Using different combinations of tabular, image and text data we obtain the following estimates</li>
 </ul>
-<p><img data-src="figures/theta_ln_p.png"></p>
+<p><a href="figures/theta_ln_p.png" class="lightbox" data-gallery="quarto-lightbox-gallery-14"><img data-src="figures/theta_ln_p.png"></a></p>
 </div><div class="column" style="width:50%;">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="figures/cont_dml_sub.png"></p>
+<p><a href="figures/cont_dml_sub.png" class="lightbox" data-gallery="quarto-lightbox-gallery-15" title="Continous Estimates from \texttt{DoubleMLPLR} on Validation Set during the Training Process"><img data-src="figures/cont_dml_sub.png" alt="Continous Estimates from \texttt{DoubleMLPLR} on Validation Set during the Training Process"></a></p>
 <figcaption>Continous Estimates from <span class="math inline">\(\texttt{DoubleMLPLR}\)</span> on Validation Set during the Training Process</figcaption>
 </figure>
 </div>
 </div></div>
 </section>
-<section id="comparison-to-baseline-estimates" class="slide level2">
-<h2>Comparison to Baseline Estimates</h2>
+<section id="first-results-1" class="slide level2">
+<h2>(First) Results</h2>
 <table class="caption-top">
 <colgroup>
 <col style="width: 20%">
@@ -1204,43 +910,60 @@ Tabular Data
 </tr>
 </tbody>
 </table>
-<center>
-<img data-src="figures/baseline_vs_deep.png" width="800">
-</center>
-<aside><ol class="aside-footnotes"><li id="fn2"><p>Mean values of the <span class="math inline">\(\texttt{DoubleMLDeep}\)</span> Model with tabular, text and image data as covariates.</p></li></ol></aside></section>
-<section id="more-on-double-machine-learning" class="slide level2">
-<h2>More on Double Machine Learning</h2>
-<div class="columns">
-<div class="column" style="width:75%;">
-<h4 id="papers-book">Papers &amp; Book</h4>
 <ul>
-<li><p><a href="https://causalml-book.org/">CausalML Book</a></p></li>
-<li><p>R package- with a nontechnical introduction to DML: <span class="citation" data-cites="DoubleMLR">Bach et al. (<a href="#/references-1" role="doc-biblioref" onclick="">2021</a>)</span></p></li>
-<li><p>Python package: <span class="citation" data-cites="bach2022doubleml">Bach et al. (<a href="#/references-1" role="doc-biblioref" onclick="">2022</a>)</span></p></li>
+<li>Estimates <span class="math inline">\(\hat{\theta}\)</span> become more negative with the inclusion of unstructured data</li>
+<li>The <span class="math inline">\(R^2\)</span>-scores of the nuisance functions improve with the inclusion of unstructured data</li>
+<li>Semi-synthetic data can illustrate the potential of unstructured data (see Appendix)</li>
 </ul>
-<p><br></p>
-<h4 id="software-implementation">Software implementation:</h4>
-<ul>
-<li><a href="https://github.com/DoubleML/doubleml-for-py" class="uri">https://github.com/DoubleML/doubleml-for-py</a></li>
-<li><a href="https://github.com/DoubleML/doubleml-for-r" class="uri">https://github.com/DoubleML/doubleml-for-r</a></li>
-<li>Docu and examples: <a href="https://docs.doubleml.org/stable/index.html">docs.doubleml.org</a></li>
-</ul>
-</div><div class="column" style="width:25%;">
-<p><a href="https://docs.doubleml.org/stable/index.html"><img data-src="figures/logo.png"></a></p>
-</div></div>
+<aside><ol class="aside-footnotes"><li id="fn2"><p>Mean values of the <span class="math inline">\(\texttt{DoubleMLDeep}\)</span> Model with tabular, text and image data as covariates.</p></li></ol></aside></section></section>
+<section>
+<section id="thank-you-for-your-attention" class="title-slide slide level1 center">
+<h1>Thank you for your attention!</h1>
+
 </section>
-<section id="thank-you" class="slide level2">
-<h2>Thank you!</h2>
-<h4 id="github-repository">GitHub Repository</h4>
-<p><a href="https://github.com/DoubleML/doubleml-for-py"><img data-src="figures/qr_doubleml_github.svg"></a></p>
-<center>
-If you like our package, you can leave us a <span class="emoji" data-emoji="star">⭐</span> on <a href="https://github.com/DoubleML/doubleml-for-py">GitHub</a>
-</center>
-<h4 id="contact">Contact</h4>
-<p>In case you have questions or comments, feel free to contact me</p>
-<center>
-<p><a href="mailto:jan.teichertkluge@uni-hamburg.de" class="email">jan.teichertkluge@uni-hamburg.de</a></p>
-</center>
+<section id="affiliations" class="slide level2">
+<h2>Affiliations</h2>
+<div class="affiliation-grid">
+<div class="affiliation">
+<a href="https://www.bwl.uni-hamburg.de/en/statistik/allgemein.html"><img src="../shared_files/uhh_logo.png" alt="UHH" height="150px"></a>
+<p>
+University of Hamburg
+</p>
+<p>
+<small>https://www.bwl.uni-hamburg.de/en/statistik/allgemein.html</small>
+</p>
+</div>
+<div class="affiliation">
+<a href="https://stat.mit.edu/about/"><img src="../shared_files/mit_logo.png" alt="MIT" height="150px"></a>
+<p>
+Massachusetts Institute of Technology
+</p>
+<p>
+<small>https://stat.mit.edu/about/</small>
+</p>
+</div>
+<div class="affiliation">
+<a href="https://economicai.com/"><img src="../shared_files/logo_eai_full.png" alt="EAI" height="100px"></a>
+<p>
+Economic AI
+</p>
+<p>
+<small>https://economicai.com/</small>
+</p>
+</div>
+<div class="affiliation">
+<a href="https://docs.doubleml.org/stable/index.html"><img src="../shared_files/logo.png" alt="DML" height="100px"></a>
+<p>
+DoubleML
+</p>
+<p>
+<small>https://docs.doubleml.org/stable/index.html</small>
+</p>
+</div>
+</div>
+<div style="text-align: center">
+<p><strong>In case you have questions or comments, feel free to contact me:</strong> <br> <a href="mailto:jan.teichertkluge@uni-hamburg.de" class="email">jan.teichertkluge@uni-hamburg.de</a></p>
+</div>
 </section></section>
 <section>
 <section id="references" class="title-slide slide level1 center">
@@ -1250,11 +973,8 @@ If you like our package, you can leave us a <span class="emoji" data-emoji="star
 <section id="references-1" class="slide level2 smaller scrollable">
 <h2>References</h2>
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
-<div id="ref-DoubleMLR" class="csl-entry" role="listitem">
-Bach, Philipp, Victor Chernozhukov, Malte S Kurz, and Martin Spindler. 2021. <span>“<span>DoubleML</span> – <span>A</span>n Object-Oriented Implementation of Double Machine Learning in <span>R</span>.”</span> <a href="https://arxiv.org/abs/2103.09603">https://arxiv.org/abs/2103.09603</a>.
-</div>
 <div id="ref-bach2022doubleml" class="csl-entry" role="listitem">
-———. 2022. <span>“DoubleML-an Object-Oriented Implementation of Double Machine Learning in Python.”</span> <em>Journal of Machine Learning Research</em> 23: 53–51.
+Bach, Philipp, Victor Chernozhukov, Malte S Kurz, and Martin Spindler. 2022. <span>“DoubleML-an Object-Oriented Implementation of Double Machine Learning in Python.”</span> <em>Journal of Machine Learning Research</em> 23: 53–51.
 </div>
 <div id="ref-bajari2023hedonic" class="csl-entry" role="listitem">
 Bajari, Patrick, Zhihao Cen, Victor Chernozhukov, Manoj Manukonda, Suhas Vijaykumar, Jin Wang, Ramon Huerta, et al. 2023. <span>“Hedonic Prices and Quality Adjusted Price Indices Powered by AI.”</span> <a href="https://arxiv.org/abs/2305.00044">https://arxiv.org/abs/2305.00044</a>.
@@ -1277,21 +997,65 @@ Wickham, Hadley. 2016. <em>Ggplot2: Elegant Graphics for Data Analysis</em>. Spr
 </div>
 </section></section>
 <section>
-<section id="appendix" class="title-slide slide level1 center">
-<h1>Appendix</h1>
+<section id="appendix-double-machine-learning" class="title-slide slide level1 appendix center" data-visibility="uncounted">
+<h1>Appendix: Double Machine Learning</h1>
 
 </section>
-<section id="amazon-toys-dataset-2" class="slide level2">
-<h2>Amazon Toys Dataset</h2>
-<h4 id="data-examples">Data Examples</h4>
+<section id="motivating-example---plr-1" class="slide level2" data-visibility="uncounted">
+<h2>Motivating Example - PLR</h2>
+<ul>
+<li>Revisit the PLR model from the beginning:</li>
+</ul>
+<p><span class="math display">\[
+\begin{align}
+Y &amp;= \theta_0 D + g_0(X) + \varepsilon, &amp; \mathbb{E}[\varepsilon | X, D] = 0 \\
+D &amp;= m_0(X) + \vartheta, &amp; \mathbb{E}[\vartheta | X] = 0
+\end{align}
+\]</span></p>
+<p>with</p>
 <div class="columns">
 <div class="column" style="width:50%;">
-<p>Kinsmart Set of 4 McLaren 720s Toy | … <img data-src="figures/img0.png"></p>
+<ul>
+<li><span class="math inline">\(Y\)</span> - outcome variable</li>
+<li><span class="math inline">\(D\)</span> - policy/treatment variable</li>
+<li><span class="math inline">\(X = (X_1, \dots)^T\)</span> - vector of additional controls</li>
+<li><span class="math inline">\(\varepsilon\)</span>, <span class="math inline">\(\vartheta\)</span> - stochastic errors</li>
+</ul>
 </div><div class="column" style="width:50%;">
-<p>Pixar Cars Mack Uncle Lightning… <img data-src="figures/img1.png"></p>
+<center>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="figures/DAG_plr_001.png" class="lightbox" data-gallery="quarto-lightbox-gallery-16" title="DAG for PLR Model"><img data-src="figures/DAG_plr_001.png" width="300" alt="DAG for PLR Model"></a></p>
+<figcaption>DAG for PLR Model</figcaption>
+</figure>
+</div>
+</center>
 </div></div>
 </section>
-<section id="neyman-orthogonality" class="slide level2">
+<section id="motivating-example---regularization-bias" class="slide level2" data-visibility="uncounted">
+<h2>Motivating Example - Regularization Bias</h2>
+<ul>
+<li>What if we simply plug-in ML predictions <span class="math inline">\(\hat{g}(X)\)</span> for <span class="math inline">\(g_0(X)\)</span> into <span class="math inline">\(Y = \theta_0D + g_0(X) + \varepsilon\)</span>?</li>
+</ul>
+<center>
+<p><a href="figures/naive_approach.png" class="lightbox" data-gallery="quarto-lightbox-gallery-17"><img data-src="figures/naive_approach.png" style="width:50.0%"></a></p>
+<center>
+</center></center></section>
+<section id="motivating-example---orthogonalization" class="slide level2" data-visibility="uncounted">
+<h2>Motivating Example - Orthogonalization</h2>
+<ul>
+<li><p><em>Frisch-Waugh-Lovell</em> style approach: <span class="math inline">\(\theta_0\)</span> can be consistently estimated by <strong>partialling out</strong> <span class="math inline">\(X\)</span>, i.e,</p>
+<ol type="1">
+<li>Predict <span class="math inline">\(Y\)</span> and <span class="math inline">\(D\)</span> by <span class="math inline">\(\mathbb{E}[Y|X]\)</span> and <span class="math inline">\(\mathbb{E}[D|X]\)</span>, obtained using ML methods</li>
+<li>Residualize <span class="math inline">\(\tilde{Y} = Y - \mathbb{E}[Y|X]\)</span> and <span class="math inline">\(\tilde{D} = D - \mathbb{E}[D|X]\)</span></li>
+<li>Regress <span class="math inline">\(\tilde{Y}\)</span> on <span class="math inline">\(\tilde{D}\)</span> to obtain <span class="math inline">\(\hat{\theta}\)</span></li>
+</ol></li>
+</ul>
+<center>
+<p><a href="figures/dml_approach.png" class="lightbox" data-gallery="quarto-lightbox-gallery-18"><img data-src="figures/dml_approach.png" style="width:40.0%"></a></p>
+<center>
+</center></center></section>
+<section id="neyman-orthogonality" class="slide level2" data-visibility="uncounted">
 <h2>Neyman Orthogonality</h2>
 <p>The naive approach minimizes the following MSE</p>
 <p><span class="math display">\[\begin{align}
@@ -1312,7 +1076,7 @@ min_{\theta} \mathbb{E}\big[\big(Y - \mathbb{E}[Y|X] - (D-\mathbb{E}[D|X])\theta
 \end{align}\]</span></p>
 </div>
 </section>
-<section id="neyman-orthogonality-1" class="slide level2">
+<section id="neyman-orthogonality-1" class="slide level2" data-visibility="uncounted">
 <h2>Neyman Orthogonality</h2>
 <div class="columns">
 <div class="column" style="width:50%;">
@@ -1341,16 +1105,16 @@ min_{\theta} \mathbb{E}\big[\big(Y - \mathbb{E}[Y|X] - (D-\mathbb{E}[D|X])\theta
 \end{align}\]</span></p>
 </div></div>
 </section>
-<section id="dml-key-ingredients" class="slide level2">
+<section id="dml-key-ingredients" class="slide level2" data-visibility="uncounted">
 <h2>DML Key Ingredients</h2>
-<h4 id="neyman-orthogonality-2">1. Neyman Orthogonality</h4>
+<h3 id="neyman-orthogonality-2">1. Neyman Orthogonality</h3>
 <ul>
 <li><p>Inference is based on a moment condition that satisfies the <strong>Neyman orthogonality condition</strong> <span class="math inline">\(\psi(W; \theta, \eta)\)</span> <span class="math display">\[E[\psi(W; \theta_0, \eta_0)] = 0,\]</span></p></li>
 <li><p>where <span class="math inline">\(W:=(Y,D,X,Z)\)</span> and with <span class="math inline">\(\theta_0\)</span> being the unique solution that obeys the <strong>Neyman orthogonality condition</strong> <span class="math display">\[\left.\partial_\eta \mathbb{E}[\psi(W; \theta_0, \eta)] \right|_{\eta=\eta_0} = 0.\]</span></p></li>
 <li><p><span class="math inline">\(\partial_{\eta}\)</span> denotes the pathwise (Gateaux) derivative operator</p></li>
 </ul>
 </section>
-<section id="dml-key-ingredients-1" class="slide level2">
+<section id="dml-key-ingredients-1" class="slide level2" data-visibility="uncounted">
 <h2>DML Key Ingredients</h2>
 <h4 id="neyman-orthogonality-3">1. Neyman Orthogonality</h4>
 <ul>
@@ -1359,7 +1123,7 @@ min_{\theta} \mathbb{E}\big[\big(Y - \mathbb{E}[Y|X] - (D-\mathbb{E}[D|X])\theta
 <li><p>PLR example: Partialling-out score function <span class="math display">\[\psi(\cdot)= (Y-E[Y|X]-\theta (D - E[D|X]))(D-E[D|X])\]</span></p></li>
 </ul>
 </section>
-<section id="dml-key-ingredients-2" class="slide level2">
+<section id="dml-key-ingredients-2" class="slide level2" data-visibility="uncounted">
 <h2>DML Key Ingredients</h2>
 <h4 id="high-quality-machine-learning-estimators">2. High-Quality Machine Learning Estimators</h4>
 <ul>
@@ -1372,7 +1136,7 @@ min_{\theta} \mathbb{E}\big[\big(Y - \mathbb{E}[Y|X] - (D-\mathbb{E}[D|X])\theta
 </ul></li>
 </ul>
 </section>
-<section id="dml-key-ingredients-3" class="slide level2">
+<section id="dml-key-ingredients-3" class="slide level2" data-visibility="uncounted">
 <h2>DML Key Ingredients</h2>
 <h4 id="sample-splitting">3. Sample Splitting</h4>
 <ul>
@@ -1384,7 +1148,7 @@ min_{\theta} \mathbb{E}\big[\big(Y - \mathbb{E}[Y|X] - (D-\mathbb{E}[D|X])\theta
 </iframe>
 <center>
 </center></center></section>
-<section id="dml-key-ingredients-4" class="slide level2">
+<section id="dml-key-ingredients-4" class="slide level2" data-visibility="uncounted">
 <h2>DML Key Ingredients</h2>
 <h4 id="main-result-in-dml2018">Main result in <span class="citation" data-cites="dml2018">Chernozhukov et al. (<a href="#/references-1" role="doc-biblioref" onclick="">2018</a>)</span></h4>
 <blockquote>
@@ -1393,6 +1157,307 @@ min_{\theta} \mathbb{E}\big[\big(Y - \mathbb{E}[Y|X] - (D-\mathbb{E}[D|X])\theta
 <ul>
 <li>See <a href="https://doubleml.shinyapps.io/BasicsDMLApp/">this example</a> based on <span class="citation" data-cites="dml2018">Chernozhukov et al. (<a href="#/references-1" role="doc-biblioref" onclick="">2018</a>)</span></li>
 </ul>
+</section>
+<section id="doubleml-deep---more-details" class="slide level2" data-visibility="uncounted">
+<h2>DoubleML Deep - More Details</h2>
+<p><br></p>
+<ul>
+<li><p>Use pretrained models for unstructured data e.g.&nbsp;Bert and Beit</p></li>
+<li><p>Basic models for tabular data seem sufficient</p></li>
+<li><p>Monitor the nuisance losses</p>
+<ul>
+<li><span class="math inline">\(\lVert Y - \hat{l}(X) \rVert_{P,2} \le \lVert l_0(X) - \hat{l}(X) \rVert_{P,2} + \sigma_{\epsilon}\)</span></li>
+<li><span class="math inline">\(\lVert D - \hat{m}(X) \rVert_{P,2} \le \lVert m_0(X) - \hat{m}(X)\rVert_{P, 2} + \sigma_{\vartheta}\)</span></li>
+</ul></li>
+</ul>
+<aside class="notes">
+<ul>
+<li><p><strong>Unstructured Data Models:</strong> We employ pre-trained models like BERT and BEiT to extract valuable information from unstructured data, including product descriptions and images.</p></li>
+<li><p><strong>Tabular Data Models:</strong> Basic models for tabular data have proven to be effective.</p></li>
+<li><p><strong>Monitoring Nuisance Losses:</strong> To ensure the reliability of our estimations, we diligently monitor nuisance losses. The following conditions are crucial for assessing the quality of our models:</p>
+<ul>
+<li><p><span class="math inline">\(\lVert Y - \hat{l}(X) \rVert_{P,2} &amp;\le \lVert l_0 - \hat{l}(X) \rVert_{P,2} + \sigma_{\epsilon}\)</span></p></li>
+<li><p>$ D - (X) <em>{P,2} &amp;m_0(X) - (X)</em>{P,2} + _{}$</p></li>
+</ul>
+<p>These conditions help maintain the validity of our estimates by ensuring that the discrepancies between our estimated nuisance functions and their true counterparts, along with stochastic errors, remain within acceptable bounds.</p></li>
+</ul>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="appendix-semi-synthetic-data" class="title-slide slide level1 appendix center" data-visibility="uncounted">
+<h1>Appendix: Semi-Synthetic Data</h1>
+
+</section>
+<section id="original-datasets" class="slide level2" data-visibility="uncounted">
+<h2>Original Datasets</h2>
+<ul>
+<li><p>We generate a semi-synthetic dataset with a known treatment effect parameter</p></li>
+<li><p>To generate credible confounding wil be based on the <strong>labels</strong> or <strong>outcomes</strong> of the corresponding supervised learning task</p></li>
+<li><p>We use the following datasets:</p></li>
+</ul>
+<table class="caption-top">
+<colgroup>
+<col style="width: 26%">
+<col style="width: 23%">
+<col style="width: 26%">
+<col style="width: 23%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Modality</th>
+<th>Dataset</th>
+<th>Target <span class="math inline">\(\tilde{X}\)</span></th>
+<th>Control <span class="math inline">\(X\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Tabular</td>
+<td>DIAMONDS <br> <span class="citation" data-cites="ggplot2_book">Wickham (<a href="#/references-1" role="doc-biblioref" onclick="">2016</a>)</span></td>
+<td><span class="math inline">\(\log(\text{Price})\)</span></td>
+<td>Carat, Cut, Color, Clarity, …</td>
+</tr>
+<tr class="even">
+<td>Text</td>
+<td>IMDB <br> <span class="citation" data-cites="maas-EtAl:2011:ACL-HLT2011">Maas et al. (<a href="#/references-1" role="doc-biblioref" onclick="">2011</a>)</span></td>
+<td>Sentiment</td>
+<td>Review Text</td>
+</tr>
+<tr class="odd">
+<td>Image</td>
+<td>CIFAR-10 <br> <span class="citation" data-cites="Krizhevsky09learningmultiple">Krizhevsky (<a href="#/references-1" role="doc-biblioref" onclick="">2009</a>)</span></td>
+<td>Label</td>
+<td>Image</td>
+</tr>
+</tbody>
+</table>
+<aside class="notes">
+<p>…</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="data-generating-process" class="slide level2" data-visibility="uncounted">
+<h2>Data Generating Process</h2>
+<p>We generate a semi-synthetic dataset according to the underlying PLR model <span class="math display">\[
+\begin{align}
+Y &amp;= \theta_0 D + \tilde{g}_0(\tilde{X}) + \varepsilon, \\
+D &amp;= \tilde{m}_0(\tilde{X}) + \vartheta,
+\end{align}
+\]</span> where <span class="math inline">\(\tilde{X}= (\tilde{X}_{\text{tab}}, \tilde{X}_{\text{txt}}, \tilde{X}_{\text{img}})\)</span> with the following additive structure <span class="math display">\[
+\begin{align}
+\tilde{g}_0(\tilde{X}) &amp;= \sum_{\text{mod}\in\{\text{tab},\text{txt},\text{img}\}} \tilde{g}_{\text{mod}}(\tilde{X}_{\text{mod}}) \\
+\tilde{m}_0(\tilde{X}) &amp;= \sum_{\text{mod}\in\{\text{tab},\text{txt},\text{img}\}} \tilde{m}_{\text{mod}}(\tilde{X}_{\text{mod}})
+\end{align}
+\]</span> and <span class="math inline">\(\varepsilon, \vartheta \sim \mathcal{N}(0, 1)\)</span>.</p>
+<aside class="notes">
+<p>…</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="data-generating-process-1" class="slide level2" data-visibility="uncounted">
+<h2>Data Generating Process</h2>
+<ul>
+<li><p>The effect on the outcome <span class="math inline">\(Y\)</span> is generated via a standardized version of target variable to balance the confounding impact of all modalities: <span class="math display">\[
+\begin{align}
+  \tilde{g}_{\text{mod}}(\tilde{X}_{\text{mod}}) = \frac{\tilde{X}_{\text{mod}} - \mathbb{E}[\tilde{X}_{\text{mod}}]}{\sigma_{\tilde{X}_{\text{mod}}}}, \quad \text{mod}\in\{\text{tab}, \text{txt}, \text{img}\}
+\end{align}
+\]</span></p></li>
+<li><p>Further, to ensure a strong confounding, the impact on the treatment <span class="math inline">\(D\)</span> is defined via: <span class="math display">\[
+\begin{align}
+  \tilde{m}_{\text{mod}}(\tilde{X}_{\text{mod}}) = -\tilde{g}_{\text{mod}}(\tilde{X}_{\text{mod}}), \quad \text{mod}\in\{\text{tab}, \text{txt}, \text{img}\}
+\end{align}
+\]</span></p></li>
+<li><p>The treatment effect is set to <span class="math inline">\(\theta_0=0.5\)</span> with <span class="math inline">\(n=50.000\)</span> samples in the dataset</p></li>
+<li><p>Both <span class="math inline">\(\tilde{g}_0(X)\)</span> and <span class="math inline">\(\tilde{m}_0(X)\)</span> are rescaled to ensure a signal-to-noise ratio of <span class="math inline">\(2\)</span> for <span class="math inline">\(Y\)</span> and <span class="math inline">\(D\)</span> (given unit variances of the error terms)</p></li>
+</ul>
+<aside class="notes">
+<p>…</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="challenges" class="slide level2" data-visibility="uncounted">
+<h2>Challenges</h2>
+<ul>
+<li>Dependency on the target of the modality <span class="math inline">\(\tilde{X}_{\text{mod}}\)</span>
+<ul>
+<li>Might not be fully explained by the corresponding features <span class="math inline">\(X_{\text{mod}}\)</span></li>
+<li>E.g. price of diamonds can not be fully explained by the carat, cut, color, etc.</li>
+</ul></li>
+<li>Consequently, the estimate <span class="math inline">\(\hat{\theta}\)</span> might only be able to account for the part of confounding which can be explained by the input features: <span class="math display">\[
+\begin{align}
+  \tilde{X}_{\text{mod}} = \mathbb{E}[\tilde{X}_{\text{mod}}|X_{\text{mod}}] + U_{\text{mod}},
+\end{align}
+\]</span> where <span class="math inline">\(U_{\text{mod}}\)</span> can not be controlled for</li>
+</ul>
+</section>
+<section id="challenges-1" class="slide level2" data-visibility="uncounted">
+<h2>Challenges</h2>
+<ul>
+<li>Due to the negative sign and the additive structure, the confounding effect will ensure that higher outcomes <span class="math inline">\(Y\)</span> occur with lower treatment values <span class="math inline">\(D\)</span>, creating a <strong>negative bias</strong></li>
+<li>The independence of all three original datasets and the additive negative confounding results in a negative bias even if we only control for a subset of confounding factors</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="figures\DAG_SemiSynth.png" class="lightbox" data-gallery="quarto-lightbox-gallery-19" title="DAG for the semi-synthetic dataset. The confounding via the features X=(X_{\text{tab}}, X_{\text{txt}}, X_{\text{img}}) can be adjusted for, whereas the unexplained/noise parts U=(U_{\text{tab}}, U_{\text{txt}}, U_{\text{img}}) are unobserved."><img data-src="figures\DAG_SemiSynth.png" width="500" alt="DAG for the semi-synthetic dataset. The confounding via the features X=(X_{\text{tab}}, X_{\text{txt}}, X_{\text{img}}) can be adjusted for, whereas the unexplained/noise parts U=(U_{\text{tab}}, U_{\text{txt}}, U_{\text{img}}) are unobserved."></a></p>
+<figcaption>DAG for the semi-synthetic dataset. The confounding via the features <span class="math inline">\(X=(X_{\text{tab}}, X_{\text{txt}}, X_{\text{img}})\)</span> can be adjusted for, whereas the unexplained/noise parts <span class="math inline">\(U=(U_{\text{tab}}, U_{\text{txt}}, U_{\text{img}})\)</span> are unobserved.</figcaption>
+</figure>
+</div>
+</section>
+<section id="bounds-for-the-estimation-of-theta_0" class="slide level2" data-visibility="uncounted">
+<h2>Bounds for the estimation of <span class="math inline">\(\theta_0\)</span></h2>
+<ul>
+<li>Since all modalities contribute a negative bias, the semi-synthetic dataset can be used as a benchmark with an oracle upper bound of an effect estimate of <span class="math display">\[
+\theta_0=0.5
+\]</span></li>
+<li>For the lower bound, one can not account for confounding at all and evaluate a basic ordinary least squares model with outcome <span class="math inline">\(Y\)</span> on the treatment variable <span class="math inline">\(D\)</span> (excluding all confounding variables) <span class="math display">\[
+\hat{\theta}_{\text{OLS}} = -0.4594
+\]</span></li>
+</ul>
+</section>
+<section id="bounds-for-the-estimation-of-eta_0" class="slide level2" data-visibility="uncounted">
+<h2>Bounds for the estimation of <span class="math inline">\(\eta_0\)</span></h2>
+<ul>
+<li>To access the predictive performance of the nuisance models, we can rely on oracle predictions of <span class="math display">\[
+\begin{align}
+  \tilde{m}_0(\tilde{X}):= \mathbb{E}[D|\tilde{X}] \\
+  \tilde{l}_0(\tilde{X}):= \mathbb{E}[Y|\tilde{X}] &amp;= \theta_0 \tilde{m}_0(\tilde{X}) + \tilde{g}_0(\tilde{X})
+\end{align}
+\]</span></li>
+<li>Evaluating the oracle predictions <span class="math inline">\(\tilde{m}_0(\tilde{X})\)</span> and <span class="math inline">\(\tilde{l}_0(\tilde{X})\)</span> results in the following upper bounds for the performance of the nuisance estimators <span class="math display">\[
+\begin{align}
+  R^2(D, \tilde{m}_0(\tilde{X})) &amp;= 0.6713\\
+  R^2(Y, \tilde{l}_0(\tilde{X})) &amp;= 0.5845
+\end{align}
+\]</span> on the whole dataset of <span class="math inline">\(n=50.000\)</span> observations</li>
+</ul>
+</section>
+<section id="bounds-for-the-estimation-of-eta_0-1" class="slide level2" data-visibility="uncounted">
+<h2>Bounds for the estimation of <span class="math inline">\(\eta_0\)</span></h2>
+<ul>
+<li>In order to compare the predictive performance of different models, a relative <span class="math inline">\(r^2\)</span>-score with respect to the upper bound is defined as <span class="math display">\[
+\begin{align}
+  0 \leq r^2(D, \hat{m}) &amp;:= \frac{R^2(D, \hat{m}(X))}{R^2(D, \tilde{m}_0(\tilde{X}))} \leq 1\\
+  0 \leq r^2(Y, \hat{l}) &amp;:= \frac{R^2(Y, \hat{l}(X))}{R^2(Y, \tilde{l}_0(\tilde{X}))} \leq 1
+\end{align}
+\]</span></li>
+</ul>
+</section>
+<section id="models" class="slide level2" data-visibility="uncounted">
+<h2>Models</h2>
+<div class="columns">
+<div class="column" style="width:30%;">
+<ul>
+<li><strong>Baseline Model</strong>
+<ul>
+<li>Standard DML approach, relying only on tabular data <span class="math inline">\(X_{\text{tab}}\)</span> <br> <br> <br></li>
+<li>Based on the LightGBM package for estimation of the nuisance elements</li>
+</ul></li>
+</ul>
+</div><div class="column" style="width:30%;">
+<ul>
+<li><strong>Deep Model</strong>
+<ul>
+<li>Uses the out-of-sample predictions of <span class="math inline">\(\hat{m}(X)\)</span> and <span class="math inline">\(\hat{l}(X)\)</span> generated from the model <br> <br></li>
+<li>Based on the RoBERTa Model for text modality, a VIT Model for images and a SAINT model for the tabular data</li>
+</ul></li>
+</ul>
+</div><div class="column" style="width:30%;">
+<ul>
+<li><strong>Embedding Model</strong>
+<ul>
+<li>Generated embedding <span class="math inline">\(H_E\)</span> is used together with the tabular features <span class="math inline">\(X_{\text{tab}}\)</span> as input for LightGBM</li>
+<li>Based on the RoBERTa Model for text modality, a VIT Model for images and a SAINT model for the tabular data</li>
+</ul></li>
+</ul>
+</div></div>
+</section>
+<section id="simulation-results" class="slide level2" data-visibility="uncounted">
+<h2>Simulation Results</h2>
+<p><br> <br></p>
+<p>Results of Simulation Study. Reported: mean ± sd. over five random train-test splits</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 10%">
+<col style="width: 33%">
+<col style="width: 36%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>Baseline</th>
+<th>Embedding</th>
+<th>Deep</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(r^2(Y, \hat{l}_0)\)</span></td>
+<td><span class="math inline">\(0.31  \pm  0.01\)</span></td>
+<td><span class="math inline">\(0.87 \pm  0.02\)</span></td>
+<td><span class="math inline">\(\mathbf{0.90 \pm  0.01}\)</span></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(r^2(D, \hat{m}_0)\)</span></td>
+<td><span class="math inline">\(0.31 \pm  0.01\)</span></td>
+<td><span class="math inline">\(0.87 \pm  0.02\)</span></td>
+<td><span class="math inline">\(\mathbf{0.90 \pm  0.01}\)</span></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\hat{\theta}\)</span></td>
+<td><span class="math inline">\(-0.32 \pm  0.01\)</span></td>
+<td><span class="math inline">\(\mathbf{0.28 \pm  0.01}\)</span></td>
+<td><span class="math inline">\(0.27 \pm  0.01\)</span></td>
+</tr>
+</tbody>
+</table>
+<p><em>Higher = better (best in bold)</em></p>
+</section>
+<section id="simulation-results---performance-of-hattheta" class="slide level2" data-visibility="uncounted">
+<h2>Simulation Results - Performance of <span class="math inline">\(\hat{\theta}\)</span></h2>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="figures/theta_comp.png" class="lightbox" data-gallery="quarto-lightbox-gallery-20" title="Boxplots of \hat{\theta}. The Embedding Model and Deep Model have similar estimates. This indicates a stable and information-rich embedding H_E, which provides a high explanatory contribution independent of the subsequent ML method for predicting Y and D. \theta_0 represents the upper bound."><img data-src="figures/theta_comp.png" alt="Boxplots of \hat{\theta}. The Embedding Model and Deep Model have similar estimates. This indicates a stable and information-rich embedding H_E, which provides a high explanatory contribution independent of the subsequent ML method for predicting Y and D. \theta_0 represents the upper bound."></a></p>
+<figcaption>Boxplots of <span class="math inline">\(\hat{\theta}\)</span>. The Embedding Model and Deep Model have similar estimates. This indicates a stable and information-rich embedding <span class="math inline">\(H_E\)</span>, which provides a high explanatory contribution independent of the subsequent ML method for predicting <span class="math inline">\(Y\)</span> and <span class="math inline">\(D\)</span>. <span class="math inline">\(\theta_0\)</span> represents the upper bound.</figcaption>
+</figure>
+</div>
 <div class="quarto-auto-generated-content">
 <div class="footer footer-default">
 <p>DoubleML Deep</p>
@@ -1799,6 +1864,38 @@ min_{\theta} \mathbb{E}\big[\big(Y - \mathbb{E}[Y|X] - (D-\mathbb{E}[D|X])\theta
       }
     });
     </script>
+    <script>var lightboxQuarto = GLightbox({"openEffect":"zoom","closeEffect":"zoom","loop":false,"selector":".lightbox","descPosition":"bottom"});
+    (function() {
+      let previousOnload = window.onload;
+      window.onload = () => {
+        if (previousOnload) {
+          previousOnload();
+        }
+        lightboxQuarto.on('slide_before_load', (data) => {
+          const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+          const href = trigger.getAttribute('href');
+          if (href !== null) {
+            const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+            if (imgEl !== null) {
+              const srcAttr = imgEl.getAttribute("src");
+              if (srcAttr && srcAttr.startsWith("data:")) {
+                slideConfig.href = srcAttr;
+              }
+            }
+          } 
+        });
+      
+        lightboxQuarto.on('slide_after_load', (data) => {
+          const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(slideNode);
+          }
+        });
+      
+      };
+      
+    })();
+              </script>
     
 
 </body></html>
