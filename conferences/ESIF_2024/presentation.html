@@ -525,18 +525,36 @@ m_0(X)&amp;:=\mathbb{E}[D|X]
 <figcaption>High-Level PLR Model Architecture. Both nuisance components are trained simultaneously with a combined loss.</figcaption>
 </figure>
 </div>
+<div class="fragment" data-id="box1" style="background: #265a93; opacity:0.3; padding: 5px; border: 2px solid black; width: 300px; height: 300px; margin: 10px; position: absolute; top: 40px; right: 10px">
+<p><span style="color:white;"><strong>Nuisance Estimation</strong></span></p>
+</div>
 </center>
 </section>
 <section id="doublemldeep---module-structure-1" class="slide level2" data-transition="zoom-in">
 <h2>DoubleMLDeep - Module Structure</h2>
+<div class="columns">
+<div class="column" style="width:65%;">
 <center>
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><a href="figures/dml_deep_arch_loss.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6" title="Combined Loss in case of multiple treatments. It is crucial to closely monitor losses of each nuisance component."><img data-src="figures/dml_deep_arch_loss.png" data-id="id1" width="700" alt="Combined Loss in case of multiple treatments. It is crucial to closely monitor losses of each nuisance component."></a></p>
-<figcaption>Combined Loss in case of multiple treatments. It is crucial to closely monitor losses of each nuisance component.</figcaption>
+<p><a href="figures/dml_deep_arch_loss_1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6" title="Nuisance Estimation with Combined Loss in case of multiple treatments with nuisance loss monitoring."><img data-src="figures/dml_deep_arch_loss_1.png" data-id="id1" width="700" alt="Nuisance Estimation with Combined Loss in case of multiple treatments with nuisance loss monitoring."></a></p>
+<figcaption>Nuisance Estimation with Combined Loss in case of multiple treatments with nuisance loss monitoring.</figcaption>
 </figure>
 </div>
 </center>
+</div><div class="column" style="width:35%;">
+<div class="fragment r-fit-text">
+<ul>
+<li><p>It is possible to use binary treatment variables <span class="math inline">\(D \in \{0,1\}\)</span> by adjusting the loss function: <span class="math display">\[L = L_{log}(D, \hat{m}(X))\lVert Y - \hat{l}(X)  \rVert_{P_n,2}\]</span> with <span class="math display">\[
+\begin{align}
+L_{log}(D, \hat{m}(X)) = &amp;-(D \log (\hat{m}(X))\\
+                       &amp;+(1 - D) \log (1 - \hat{m}(X)))
+\end{align}                      
+\]</span></p></li>
+<li><p><span class="math inline">\(\hat{m}(X)\)</span> can be understood as a propensity score: <span class="math inline">\(\hat{m}(X) = \Pr(D=1 | X=x)\)</span></p></li>
+</ul>
+</div>
+</div></div>
 </section>
 <section id="doublemldeep---workflow" class="slide level2">
 <h2>DoubleMLDeep - Workflow</h2>
@@ -1861,7 +1879,7 @@ D &amp;= \tilde{m}_0(\tilde{X}) + \vartheta,
       }
     });
     </script>
-    <script>var lightboxQuarto = GLightbox({"openEffect":"zoom","selector":".lightbox","loop":false,"descPosition":"bottom","closeEffect":"zoom"});
+    <script>var lightboxQuarto = GLightbox({"openEffect":"zoom","descPosition":"bottom","closeEffect":"zoom","selector":".lightbox","loop":false});
     (function() {
       let previousOnload = window.onload;
       window.onload = () => {

@@ -139,13 +139,45 @@ $\Rightarrow$ simple approach to control for confounders, *if they can be used f
 
 <center>
 ![High-Level PLR Model Architecture. Both nuisance components are trained simultaneously with a combined loss.](figures/dml_deep_arch.png){data-id="id1" width=1000}
+
+::: {.fragment data-id="box1" style="background: #265a93; opacity:0.3; padding: 5px; border: 2px solid black; width: 300px; height: 300px; margin: 10px; position: absolute; top: 40px; right: 10px"}
+<span style="color:white;">**Nuisance Estimation**</span>
+:::
 </center>
 
 ## DoubleMLDeep - Module Structure {transition="zoom-in"}
 
+
+:::: {.columns}
+
+::: {.column width="65%"}
+
 <center>
-![Combined Loss in case of multiple treatments. It is crucial to closely monitor losses of each nuisance component.](figures/dml_deep_arch_loss.png){data-id="id1" width=700}
+![Nuisance Estimation with Combined Loss in case of multiple treatments with nuisance loss monitoring.](figures/dml_deep_arch_loss_1.png){data-id="id1" width=700}
 </center>
+
+
+:::
+
+::: {.column width="35%"}
+
+::: {.fragment .r-fit-text}
+* It is possible to use binary treatment variables $D \in \{0,1\}$ by adjusting the loss function: 
+$$L = L_{log}(D, \hat{m}(X))\lVert Y - \hat{l}(X)  \rVert_{P_n,2}$$
+with 
+$$
+\begin{align}
+L_{log}(D, \hat{m}(X)) = &-(D \log (\hat{m}(X))\\
+                         &+(1 - D) \log (1 - \hat{m}(X)))
+\end{align}                      
+$$
+
+* $\hat{m}(X)$ can be understood as a propensity score: $\hat{m}(X) = \Pr(D=1 | X=x)$
+:::
+
+:::
+
+::::
 
 ## DoubleMLDeep - Workflow
 
