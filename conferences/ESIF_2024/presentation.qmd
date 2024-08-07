@@ -138,7 +138,7 @@ $\Rightarrow$ simple approach to control for confounders, *if they can be used f
 ## DoubleMLDeep - Module Structure {transition="zoom-out"}
 
 <center>
-![High-Level PLR Model Architecture. Both nuisance components are trained simultaneously with a combined loss.](figures/dml_deep_arch.png){data-id="id1" width=1000}
+![High-Level PLR Model Architecture. Both nuisance components are trained simultaneously with a combined loss.](figures\dml_deep_arch.png){data-id="id1" width=1000}
 
 ::: {.fragment data-id="box1" style="background: #265a93; opacity:0.3; padding: 5px; border: 2px solid black; width: 300px; height: 300px; margin: 10px; position: absolute; top: 40px; right: 10px"}
 <span style="color:white;">**Nuisance Estimation**</span>
