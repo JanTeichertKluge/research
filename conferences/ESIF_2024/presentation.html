@@ -530,29 +530,17 @@ m_0(X)&amp;:=\mathbb{E}[D|X]
 </section>
 <section id="doublemldeep---module-structure-1" class="slide level2" data-transition="zoom-in">
 <h2>DoubleMLDeep - Module Structure</h2>
-<div class="columns">
-<div class="column" style="width:65%;">
-<center>
 <div class="quarto-figure quarto-figure-center">
 <figure>
 <p><a href="figures/dml_deep_arch_loss_1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6" title="Nuisance Estimation with Combined Loss in case of multiple treatments with nuisance loss monitoring."><img data-src="figures/dml_deep_arch_loss_1.png" data-id="id1" width="700" alt="Nuisance Estimation with Combined Loss in case of multiple treatments with nuisance loss monitoring."></a></p>
 <figcaption>Nuisance Estimation with Combined Loss in case of multiple treatments with nuisance loss monitoring.</figcaption>
 </figure>
 </div>
-</center>
-</div><div class="column" style="width:35%;">
-<div class="fragment r-fit-text">
+<div class="fragment" style="font-size: 75%;">
 <ul>
-<li><p>It is possible to use binary treatment variables <span class="math inline">\(D \in \{0,1\}\)</span> by adjusting the loss function: <span class="math display">\[L = L_{log}(D, \hat{m}(X))\lVert Y - \hat{l}(X)  \rVert_{P_n,2}\]</span> with <span class="math display">\[
-\begin{align}
-L_{log}(D, \hat{m}(X)) = &amp;-(D \log (\hat{m}(X))\\
-                       &amp;+(1 - D) \log (1 - \hat{m}(X)))
-\end{align}                      
-\]</span></p></li>
-<li><p><span class="math inline">\(\hat{m}(X)\)</span> can be understood as a propensity score: <span class="math inline">\(\hat{m}(X) = \Pr(D=1 | X=x)\)</span></p></li>
+<li>It is possible to use binary treatment variables <span class="math inline">\(D \in \{0,1\}\)</span> by adjusting the loss function: <span class="math display">\[L = L_{log}(D, \hat{m}(X))\lVert Y - \hat{l}(X)  \rVert_{P_n,2}\]</span></li>
 </ul>
 </div>
-</div></div>
 </section>
 <section id="doublemldeep---workflow" class="slide level2">
 <h2>DoubleMLDeep - Workflow</h2>
@@ -1877,7 +1865,7 @@ D &amp;= \tilde{m}_0(\tilde{X}) + \vartheta,
       }
     });
     </script>
-    <script>var lightboxQuarto = GLightbox({"descPosition":"bottom","selector":".lightbox","openEffect":"zoom","loop":false,"closeEffect":"zoom"});
+    <script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","openEffect":"zoom","selector":".lightbox","loop":false,"descPosition":"bottom"});
     (function() {
       let previousOnload = window.onload;
       window.onload = () => {
