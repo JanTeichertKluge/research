@@ -1,13 +1,14 @@
 <div style="text-align: center;">
+<!--
 <div class="logo-container">
 <img src='../shared_files/uhh_logo.png' alt="UHH" height='125px'>
 <img src='../shared_files/mit_logo.png' alt="MIT" height='100px'>
 <img src='../shared_files/logo_eai_full.png' alt="EAI" height='70px'>
 <img src='../shared_files/logo.png' alt="DML" height='90px'>
 </div>
-
-<h2 style="text-align: left; margin-top: 0.5cm;">DoubleMLDeep: Estimation of Causal Effects with Multimodal Data</h2>
-<p style="text-align: left;">2024 ESIF Economics and AI+ML Meeting <br> August 13 - 14, 2024; Ithaca, United States</p>
+-->
+<h1 style="text-align: left; margin-top: 1.5cm;">DoubleMLDeep: Estimation of Causal Effects with Multimodal Data</h1>
+<p style="text-align: left; margin-top: 0.5cm;">2024 ESIF Economics and AI+ML Meeting <br> August 13 - 14, 2024; Ithaca, United States</p>
 
 <div class="author-container">
 <p class="author">Sven Klaassen <br> <small>University of Hamburg <br> Economic AI</small></p>
@@ -35,11 +36,11 @@ Good morning, everyone. Thank you for joining us today. My name is Jan Teichert-
 
 :::
 
-::: {.column width="45%"}
+::: {.column width="45%" .fragment}
 
 - In a lot of applications additional unstructured data is available
 
-![](figures/booking_com.png){fig-align="right"}
+![](figures/amazon_ss.PNG){fig-align="right"}
 
 :::
 
@@ -53,6 +54,62 @@ Good morning, everyone. Thank you for joining us today. My name is Jan Teichert-
 ::: {.notes}
 Causal inference has traditionally relied on tabular data as the primary source of information. However, many applications generate or contain a significant amount of unstructured data that can be valuable in this context. For instance, in marketing, medicine, and finance, the combination of tabular data with text, images, and other types of unstructured data can improve the accuracy of causal estimates. Our research explores the effective integration of multimodal data as confounders.
 :::
+
+
+## Motivation
+
+- Use multimodal data (text and images) *additionally* to conventional tabular features
+
+<center>
+![Examples of directed acyclic graphs (DAGs) with image and text confounding. (a) Direct confounding via image, text and tabular data. (b) Treatment decision is driven by text and images. All backdoor paths are blocked by conditioning on both image and text data.](figures/DAG_ProblemSet.png){width=700}
+</center>
+
+. . .
+
+$\Rightarrow$ Adjust for confounding encoded in unstructured data
+
+::: {.notes}
+"Why use multimodal data"? ..."to adjust for confounding encoded in text and image data"
+:::
+
+## Motivation
+
+:::: {.columns}
+
+::: {.column width="33%"}
+
+**Opportunities**
+
+- Exploit state-of-the art architectures for causal estimation (for example LLMs)
+- Example: Demand estimation, account for description, images, reviews
+- Huge potential for future research
+
+:::
+
+::: {.column width="33%" .fragment}
+
+**Challenges**
+
+- Recent innovations in deep learning for prediction
+- Limitations of ML-based estimation due to regularization in causal estimation
+- Need for effective Deep Learning architecture
+- Challenges in identifying causal effects even in idealized simulations
+
+:::
+
+::: {.column width="33%" .fragment}
+
+**Our approach**
+
+- Integrate state-of-the art Deep Learning tools for estimation of Causal Parameters
+- *DoubleML[^dml]*: Use DML to account for ML regularization bias
+- Combination: *DoubleML* + Deep Learning = **DoubleMLDeep**
+
+:::
+
+::::
+
+[^dml]: Double / debiased machine learning framework of @chern2018. The Python (@bach2022doubleml) and R (@dml_R) package provide an implementation.
 
 ## Motivating Example - PLR
 
@@ -73,7 +130,7 @@ with
 
 - $Y$ - outcome variable
 - $D$ - policy/treatment variable
-- $X = (X_1, \dots)^T$ - vector of additional controls
+- $X = (X_1, \dots X_p)^T$ - vector of additional controls
 - $\varepsilon$, $\vartheta$ - stochastic errors
 
 :::
@@ -116,42 +173,9 @@ The technique of double/debiasing machine learning (DML) employs machine learnin
 :::
 
 
-
-##  Double/Debiased Machine Learning (DML)
-
-- **Neyman Orthogonality** 
-  $$
-  \left.\partial_\eta \mathbb{E}[\psi(W; \theta_0, \eta)] \right|_{\eta=\eta_0} = 0
-  $$
-  ensures that the moment condition identifying $\theta_0$ is **insensitive to small pertubations** of the nuisance function $\eta$ around $\eta_0$
-
-- Assumptions for the nuisance elements (see @dml2018)
-$$
-\lVert \hat{m} - m_0 \rVert_{P,2} \times \big( \lVert \hat{m} - m_0 \rVert_{P,2} +  \lVert \hat{\ell} - \ell_0\rVert _{P,2}\big) \le \delta_N N^{-1/2}
-$$
-
-- Under some regularity conditions the estimator $\hat{\theta}$ concentrates in $1/\sqrt{N}$-neighborhood of $\theta_0$ and
-$$
-\sqrt{N}(\hat{\theta} - \theta_0) \to \mathcal{N}(0,\sigma^2)
-$$
-
-. . .
-
-$\Rightarrow$ simple approach to control for confounders, *if they can be used for ML models!*
-
-::: {.notes}
-Neyman Orthogonality is a crucial concept in DML. It ensures that the moment condition identifying the parameter \( \theta_0 \) is insensitive to small perturbations in the nuisance function \( \eta \) around its true value \( \eta_0 \). This robustness is achieved through the orthogonalization of the score function.
-
-For the nuisance elements, certain assumptions must hold, as detailed in the literature (e.g., @dml2018). Specifically, the product of the norms of the deviations of the estimated nuisance functions from their true counterparts must be bounded by a term proportional to \( N^{-1/2} \).
-
-Under regularity conditions, the estimator \( \hat{\theta} \) will concentrate within a \( 1/\sqrt{N} \)-neighborhood of the true parameter \( \theta_0 \). Moreover, the normalized difference \( \sqrt{N}(\hat{\theta} - \theta_0) \) converges in distribution to a normal distribution \( \mathcal{N}(0, \sigma^2) \).
-
-This orthogonalization approach provides a straightforward method to control for confounders, provided they can be included in machine learning models.
-:::
-
 # DoubleMLDeep {transition="concave-in"}
 
-## DoubleMLDeep - Motivation
+## DoubleMLDeep - Motivation {visibility="hidden"}
 
 - Use multimodal data (text and images) *additionally* to conventional tabular features
 
@@ -194,31 +218,9 @@ The unstructured and confounding representations are used for making final predi
 $$L = L_{log}(D, \hat{m}(X))\lVert Y - \hat{l}(X)  \rVert_{P_n,2}$$
 :::
 
-## DoubleMLDeep - Workflow
-
-<center>
-![High-Level Workflow of *DoubleMLDeep*](figures/DMLDeep_Workflow2.png)
-</center>
-
-
-::: {.notes}
-Now I would like to briefly explain the workflow of DoubleMLDeep in Python.
-
-First of all, some necessary input parameters must be defined. 
-Then the actual DoubleMLDeep network can be created, which uses Hugging Face Transformer models and the Pytorch framework, among other things.
-
-A DoubleMLDeep Data Module must be created and handles the various input data such as texts and images. This uses the Pytorch Lightning Framework.
-
-The DoubleMLDeep Lightning Module also uses Pytorch Lightning and contains additional training parameters.
-
-The network can now be trained with the pytorch Lightning Trainer. The corresponding predictions in the DoubleML package can then be used to obtain the estimate of the causal parameter. 
-:::
-
-
 # Application {transition="concave-in"}
 
-
-## Application: Estimation of Price Elasticity
+## Application: Estimation of Price Elasticity {visibility="hidden"}
 
 * Understanding price elasticity is crucial for economic analysis and business decisions
   - It influences strategies, pricing, and market dynamics
@@ -260,7 +262,7 @@ The network can now be trained with the pytorch Lightning Trainer. The correspon
 </script>
 
 ::: {.notes}
-One of the applications of DoubleMLDeep is in estimating price elasticity. In online marketplaces, where a substantial amount of unstructured data is available, the combination of this data with traditional tabular features can significantly enhance our understanding of market dynamics and inform more effective pricing strategies.
+One of the applications of DoubleMLDeep is in estimating the causal effect of change in price on change on the demand. In online marketplaces, where a substantial amount of unstructured data is available, the combination of this data with traditional tabular features can significantly enhance our understanding of market dynamics and inform more effective pricing strategies.
 :::
 
 ## Amazon Toys Dataset
@@ -269,47 +271,18 @@ One of the applications of DoubleMLDeep is in estimating price elasticity. In on
 - Using the Sales Rank as a proxy for quantities, as shown in @bajari2023hedonic.
 
 | Variable   | Description |
-| --------   | ------- |
+| --------   | -------     |
 | Sales Rank | Sales rank as weighted mean for the last 30 days  |
 | Price      | Price as weighted mean for the last 30 days       |
+| Tabular    | Tabular features as reviews, ratings, etc.        |
 | Text       | Combination of Title, Category, Description, etc. |
-| Image      | Image of the product                        |
+| Image      | Image of the product                              |
+
 
 
 ::: {.notes}
 In order to illustrate our methodology, we used the Amazon Toys Dataset. This dataset comprises sales data from the toys and games category, specifically vehicles, cars, and trucks. We employed the sales rank as a surrogate for quantities sold, in accordance with the methodology proposed by Bajari et al. The dataset encompasses a range of variables, including sales rank, price, textual descriptions, and product images, offering a comprehensive source of multimodal data for our analysis.
 :::
-
-
-## Amazon Toys Dataset
-:::: {.columns .my-table}
-
-::: {.column width="50%"}
-
-**Continous Variables**
-
-  * Reviews: Rating                                   
-  * Reviews: Review Count                             
-  * New Offer Count: Current                          
-  * Count of retrieved live offers: New, FBA          
-  * Count of retrieved live offers: New, FBM     
-
-:::
-
-::: {.column width="50%"}
-**Categorical Variables**
-
-  * Lightning Deals: Upcoming Deal  
-  * Buy Box: Is FBA      
-
-:::
-
-::::
-
-
-Scatterplots with OLS Regression of Tabular Variables and $\ln(Q)$
-![](figures/tab_pairplot.png)
-
 
 ## Model
 
@@ -324,9 +297,6 @@ $$
 ![](figures/DAG_application_002.png){width=300}
 </center>
 
-. . .
-
-$\Rightarrow$ In our illustration, the causal parameter $\theta_0$ can be interpreted as price elasticity of demand!
 
 ::: {.notes}
 Our model involves running a simple log-log regression. By incorporating images and text, we block potential backdoor paths from price to demand or sales rank. The regression equation, \( \ln(Q) = \theta_0 \ln(P) + g_0(X) + \epsilon \), allows us to interpret the causal parameter \( \theta_0 \) as the price elasticity of demand. This approach leverages the strengths of multimodal data to provide more accurate and interpretable estimates.
@@ -396,130 +366,74 @@ In our baseline model, we employ ordinary least squares (OLS) regression with ta
 ::::
 
 ::: {.notes}
-In the baseline DML model, the DoubleMLPLR model with RandomForest regressors is employed to estimate the nuisance parameters with tabular data covariates, denoted as X_(tab). The expected log-quantity and log-price are represented by the functions l₀(X_(tab)) and m₀(X_(tab)), respectively, with R² values of 0.5986 and 0.1884. The estimated price elasticity ranges from -0.132 to -0.080, with a central estimate of -0.1098.
+In the baseline DML model, the DoubleMLPLR model with RandomForest regressors is employed to estimate the nuisance parameters with tabular data covariates, denoted as X_(tab). The expected log-quantity and log-price are represented by the functions l₀(X_(tab)) and m₀(X_(tab)), respectively, with R² values of 0.5986 and 0.1884. The estimated causal effect ranges from -0.132 to -0.080, with a central estimate of -0.1098.
 :::
+
 
 ## Deep Learning Models
 
-* In this study, a variety of input data combinations were used to train $\texttt{DoubleMLPLRDeep}$ models [^top]:
+* The $\texttt{DoubleMLPLRDeep}$ was trained using sets of covariates augmented with text, image, or both modalities:
 
-| Key | Used Confounders |
-| --------   | ------- |
-| $\texttt{img}$ | $X = (X_{img})$ |
-| $\texttt{imgtab}$ | $X = (X_{img}, X_{tab})$ |
-| $\texttt{txtimg}$ | $X = (X_{txt}, X_{img})$ |
-| $\texttt{txt}$ | $X = (X_{txt})$ |
-| $\texttt{txttab}$ | $X = (X_{txt}, X_{tab})$ |
-| $\texttt{txtimgtab}$ | $X = (X_{txt}, X_{img}, X_{tab})$ |
+| Used Confounders |
+| ------- |
+| $X = (X_{txt}, X_{tab})$ |
+| $X = (X_{img}, X_{tab})$ |
+| $X = (X_{txt}, X_{img}, X_{tab})$ |
+
+
+:::{style="font-size: 75%;"}
+
+* With each set of covariates $X$, 5 runs are evaluated.
+* The models were trained over 10 epochs with early stopping callback.
+* The data was split into 80% training and 20% validation data.
+:::
 
 
 . . .
 
 $\Rightarrow$ The aim is to emphasize the benefits of utilizing unstructured data.
 
-[^top]: Subsequently, the top 5 performing instances for each combination were evaluated based on the minimum RMSE score of the validation data.
-
-::: {.notes}
-In the present study, a variety of DoubleMLPLRDeep models were trained using distinct combinations of input data. The objective of this study is to demonstrate the advantages of incorporating unstructured data into causal inference models.
-:::
-
-## Deep Learning Models: RMSE-Scores
-
-:::: {.columns}
-
-::: {.column width="50%"}
-
-- Combined RMSE Score (Training)
-
-![](figures/train_comb_loss_mod.png)
-
-
-:::
-
-::: {.column width="50%"}
-
-- Combined RMSE Score (Validation)
-
-![](figures/val_comb_loss_mod.png)
-
-
-:::
-
-::::
-
-
-## Deep Learning Models: $R^2$-Scores
-
-:::: {.columns}
-
-::: {.column width="50%"}
-
-- $R^2$ of log(Quantity) on Validation Set
-
-![](figures/R2_ml_l_mod.png)
-
-
-:::
-
-::: {.column width="50%"}
-
-- $R^2$ of log(Price) on Validation Set
-
-![](figures/R2_ml_m_mod.png)
-
-
-:::
-
-::::
-
 
 ## (First) Results
 
+:::{style="font-size: 75%;"}
 
-:::: {.columns}
-
-::: {.column width="50%"}
-
-* Using different combinations of tabular, image and text data we obtain the following estimates
-
-![](figures/theta_ln_p.png)
-:::
-
-::: {.column width="50%"}
-
-![Continous Estimates from $\texttt{DoubleMLPLR}$ on Validation Set during the Training Process](figures/cont_dml_sub.png)
-
-:::
-
-::::
-
-::: {.notes}
-Our initial results demonstrate the estimates obtained using different combinations of tabular, image, and text data. These continuous estimates are derived from the DoubleMLPLR model on the validation set during the training process. By comparing these estimates, we can assess the impact of each data combination on the accuracy and reliability of our causal effect estimates.
-:::
-
-
-## (First) Results
-
-| Model | Covariates | $R^2_{l_0}$ |$R^2_{m_0}$ | $\hat{\theta}_0$
+| Model[^1] | Covariates | $R^2_{l_0}$ |$R^2_{m_0}$ | $\hat{\theta}_0$
 | --- | --- | --- | --- | --- |
 | $\texttt{OLS}$ | $X=X_{tab}$ | $0.3300$ | - | $-0.0455$ |
 | $\texttt{DoubleMLPLR}$ | $X=X_{tab}$ | $0.5986$ | $0.1884$ | $-0.1098$ |
-| $\texttt{DoubleMLPLRDeep}$[^1] | $X=(X_{tab}, X_{txt}, X_{img})$ | $0.5990$	 | $0.6765$ | $-0.2794$|
+| $\texttt{DoubleMLPLRDeep}$ | $X=(X_{txt}, X_{tab})$ | $0.5574 \pm 0.025$	 | $0.6188 \pm 0.015$ | $-0.2137 \pm 0.053$|
+| $\texttt{DoubleMLPLRDeep}$ | $X=(X_{img}, X_{tab})$ | $0.4518 \pm 0.029$	 | $0.5085 \pm 0.028$ | $-0.2721 \pm 0.038$|
+| $\texttt{DoubleMLPLRDeep}$ | $X=(X_{txt}, X_{img}, X_{tab})$ | $0.5829 \pm 0.015$	 | $0.6532 \pm 0.018$ | $-0.2794 \pm 0.044$|
+:::
 
+::: {.fragment style="font-size: 85%;"}
 * Estimates $\hat{\theta}$ become more negative with the inclusion of unstructured data
 * The $R^2$-scores of the nuisance functions improve with the inclusion of unstructured data
 * Semi-synthetic data can illustrate the potential of unstructured data (see Appendix)
+:::
 
-[^1]: Mean values of the $\texttt{DoubleMLDeep}$ Model with tabular, text and image data as covariates.
+[^1]: Mean values $\pm$ standard error of the $\texttt{DoubleMLDeep}$ Model with tabular, text and image data as covariates.
 
 ::: {.notes}
 This table summarizes the performance of our models with different covariates. For the OLS model using tabular data, the \(R^2\) score is 0.3300 with a \(\hat{\theta}_0\) estimate of -0.0455. The DoubleMLPLR model with tabular data shows improved \(R^2\) scores of 0.5986 and 0.1884 for the nuisance functions, with a \(\hat{\theta}_0\) of -0.1098. The DoubleMLPLRDeep model incorporating tabular, text, and image data further improves the \(R^2\) scores to 0.5990 and 0.6765, with a \(\hat{\theta}_0\) estimate of -0.2794. These results indicate that incorporating unstructured data improves both the accuracy of the nuisance function estimates and the overall model performance.
 :::
 
 
-# Thank you for your attention! {transition="concave-in"}
+## Future Directions
 
-## Affiliations
+- Explore settings with multiple treatment variables.
+- Investigate heterogeneous treatment effects.
+- Apply the DoubleMLDeep framework in Difference-in-Differences (DiD) and Instrumental Variables (IV) settings.
+- Conduct extensive simulation studies to test the robustness and accuracy of the DoubleMLDeep framework under various conditions.
+
+
+. . .
+
+
+$\Rightarrow$ **You can find more information in our paper: @klaassen2024doublemldeepestimationcausaleffects**
+
+# Thank you for your attention!
 
 <div class="affiliation-grid">
 <div class="affiliation">
@@ -579,7 +493,7 @@ with
 
 - $Y$ - outcome variable
 - $D$ - policy/treatment variable
-- $X = (X_1, \dots)^T$ - vector of additional controls
+- $X = (X_1, \dots X_p)^T$ - vector of additional controls
 - $\varepsilon$, $\vartheta$ - stochastic errors
 
 :::
@@ -618,6 +532,40 @@ $Y = \theta_0D + g_0(X) + \varepsilon$?
 ![](figures/dml_approach.png){width=40%}
 
 <center>
+
+
+##  Double/Debiased Machine Learning (DML)
+
+- **Neyman Orthogonality** 
+  $$
+  \left.\partial_\eta \mathbb{E}[\psi(W; \theta_0, \eta)] \right|_{\eta=\eta_0} = 0
+  $$
+  ensures that the moment condition identifying $\theta_0$ is **insensitive to small pertubations** of the nuisance function $\eta$ around $\eta_0$
+
+- Assumptions for the nuisance elements (see @dml2018)
+$$
+\lVert \hat{m} - m_0 \rVert_{P,2} \times \big( \lVert \hat{m} - m_0 \rVert_{P,2} +  \lVert \hat{\ell} - \ell_0\rVert _{P,2}\big) \le \delta_N N^{-1/2}
+$$
+
+- Under some regularity conditions the estimator $\hat{\theta}$ concentrates in $1/\sqrt{N}$-neighborhood of $\theta_0$ and
+$$
+\sqrt{N}(\hat{\theta} - \theta_0) \to \mathcal{N}(0,\sigma^2)
+$$
+
+. . .
+
+$\Rightarrow$ simple approach to control for confounders, *if they can be used for ML models!*
+
+::: {.notes}
+Neyman Orthogonality is a crucial concept in DML. It ensures that the moment condition identifying the parameter \( \theta_0 \) is insensitive to small perturbations in the nuisance function \( \eta \) around its true value \( \eta_0 \). This robustness is achieved through the orthogonalization of the score function.
+
+For the nuisance elements, certain assumptions must hold, as detailed in the literature (e.g., @dml2018). Specifically, the product of the norms of the deviations of the estimated nuisance functions from their true counterparts must be bounded by a term proportional to \( N^{-1/2} \).
+
+Under regularity conditions, the estimator \( \hat{\theta} \) will concentrate within a \( 1/\sqrt{N} \)-neighborhood of the true parameter \( \theta_0 \). Moreover, the normalized difference \( \sqrt{N}(\hat{\theta} - \theta_0) \) converges in distribution to a normal distribution \( \mathcal{N}(0, \sigma^2) \).
+
+This orthogonalization approach provides a straightforward method to control for confounders, provided they can be included in machine learning models.
+:::
+
 
 ## Neyman Orthogonality
 
@@ -781,6 +729,156 @@ $$\begin{align}\begin{aligned}\sigma^2 := J_0^{-2} \mathbb{E}(\psi^2(W; \theta_0
   - $ \lVert D - \hat{m}(X) \rVert_{P,2} &\le \lVert m_0(X) - \hat{m}(X)\rVert_{P,2} + \sigma_{\vartheta}$
 
   These conditions help maintain the validity of our estimates by ensuring that the discrepancies between our estimated nuisance functions and their true counterparts, along with stochastic errors, remain within acceptable bounds.
+:::
+
+
+## DoubleMLDeep - Workflow
+
+<center>
+![High-Level Workflow of *DoubleMLDeep*](figures/DMLDeep_Workflow2.png)
+</center>
+
+
+::: {.notes}
+Now I would like to briefly explain the workflow of DoubleMLDeep in Python.
+
+First of all, some necessary input parameters must be defined. 
+Then the actual DoubleMLDeep network can be created, which uses Hugging Face Transformer models and the Pytorch framework, among other things.
+
+A DoubleMLDeep Data Module must be created and handles the various input data such as texts and images. This uses the Pytorch Lightning Framework.
+
+The DoubleMLDeep Lightning Module also uses Pytorch Lightning and contains additional training parameters.
+
+The network can now be trained with the pytorch Lightning Trainer. The corresponding predictions in the DoubleML package can then be used to obtain the estimate of the causal parameter. 
+:::
+
+# Appendix: Application (Amazon Toys Data) {.appendix}
+
+## Amazon Toys Dataset
+:::: {.columns .my-table}
+
+::: {.column width="50%"}
+
+**Continous Variables**
+
+  * Reviews: Rating                                   
+  * Reviews: Review Count                             
+  * New Offer Count: Current                          
+  * Count of retrieved live offers: New, FBA          
+  * Count of retrieved live offers: New, FBM     
+
+:::
+
+::: {.column width="50%"}
+**Categorical Variables**
+
+  * Lightning Deals: Upcoming Deal  
+  * Buy Box: Is FBA      
+
+:::
+
+::::
+
+## Deep Learning Models
+
+* In this study, a variety of input data combinations were used to train $\texttt{DoubleMLPLRDeep}$ models [^top1]:
+
+| Key | Used Confounders |
+| --------   | ------- |
+| $\texttt{img}$ | $X = (X_{img})$ |
+| $\texttt{imgtab}$ | $X = (X_{img}, X_{tab})$ |
+| $\texttt{txtimg}$ | $X = (X_{txt}, X_{img})$ |
+| $\texttt{txt}$ | $X = (X_{txt})$ |
+| $\texttt{txttab}$ | $X = (X_{txt}, X_{tab})$ |
+| $\texttt{txtimgtab}$ | $X = (X_{txt}, X_{img}, X_{tab})$ |
+
+
+. . .
+
+$\Rightarrow$ The aim is to emphasize the benefits of utilizing unstructured data.
+
+[^top1]: Subsequently, the top 5 performing instances for each combination were evaluated based on the minimum RMSE score of the validation data.
+
+::: {.notes}
+In the present study, a variety of DoubleMLPLRDeep models were trained using distinct combinations of input data. The objective of this study is to demonstrate the advantages of incorporating unstructured data into causal inference models.
+:::
+
+## Deep Learning Models: RMSE-Scores
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+- Combined RMSE Score (Training)
+
+![](figures/train_comb_loss_mod.png)
+
+
+:::
+
+::: {.column width="50%"}
+
+- Combined RMSE Score (Validation)
+
+![](figures/val_comb_loss_mod.png)
+
+
+:::
+
+::::
+
+
+## Deep Learning Models: $R^2$-Scores
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+- $R^2$ of log(Quantity) on Validation Set
+
+![](figures/R2_ml_l_mod.png)
+
+
+:::
+
+::: {.column width="50%"}
+
+- $R^2$ of log(Price) on Validation Set
+
+![](figures/R2_ml_m_mod.png)
+
+
+:::
+
+::::
+
+
+Scatterplots with OLS Regression of Tabular Variables and $\ln(Q)$
+![](figures/tab_pairplot.png)
+
+
+## (First) Results
+
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+* Using different combinations of tabular, image and text data we obtain the following estimates
+
+![](figures/theta_ln_p.png)
+:::
+
+::: {.column width="50%"}
+
+![Continous Estimates from $\texttt{DoubleMLPLR}$ on Validation Set during the Training Process](figures/cont_dml_sub.png)
+
+:::
+
+::::
+
+::: {.notes}
+Our initial results demonstrate the estimates obtained using different combinations of tabular, image, and text data. These continuous estimates are derived from the DoubleMLPLR model on the validation set during the training process. By comparing these estimates, we can assess the impact of each data combination on the accuracy and reliability of our causal effect estimates.
 :::
 
 # Appendix: Semi-Synthetic Data {.appendix transition="concave-in"}
