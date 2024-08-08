@@ -59,6 +59,7 @@
   <link href="presentation_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
   <link href="presentation_files/libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
   <link href="presentation_files/libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
+  <link href="presentation_files/libs/revealjs/plugin/reveal-pointer/pointer.css" rel="stylesheet">
   <link href="presentation_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
   <style type="text/css">
 
@@ -384,6 +385,19 @@ Suhas Vijaykumar <br> <small>Massachusetts Institute<br>of Technology</small>
 </p>
 </div>
 </div>
+<aside class="notes">
+<p>Good morning, everyone. Thank you for joining us today. My name is Jan Teichert-Kluge from the University of Hamburg. Today I will present our work on ‘DoubleMLDeep: Estimation of Causal Effects with Multimodal Data’ which is a project together with my colleagues, Sven Klaassen, Philipp Bach, Martin Spindler, and from the Massachusetts Institute of Technology, Victor Chernozhukov and Suhas Vijaykumar.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section>
 <section>
 <section id="motivation" class="title-slide slide level1 center" data-transition="concave-in">
@@ -419,6 +433,19 @@ Suhas Vijaykumar <br> <small>Massachusetts Institute<br>of Technology</small>
 <li>Estimation of treatment effects conditioning on X-ray images</li>
 </ul></li>
 </ul>
+<aside class="notes">
+<p>Causal inference has traditionally relied on tabular data as the primary source of information. However, many applications generate or contain a significant amount of unstructured data that can be valuable in this context. For instance, in marketing, medicine, and finance, the combination of tabular data with text, images, and other types of unstructured data can improve the accuracy of causal estimates. Our research explores the effective integration of multimodal data as confounders.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </div>
 </section>
 <section id="motivating-example---plr" class="slide level2">
@@ -449,6 +476,19 @@ D &amp;= m_0(X) + \vartheta, &amp; \mathbb{E}[\vartheta | X] = 0 \label{eq:plr2}
 </div>
 </center>
 </div></div>
+<aside class="notes">
+<p>To illustrate, let us consider a partially linear regression model, or PLR. In this model, the outcome variable, denoted by Y, is influenced by a treatment variable, D, and a set of controls, X. The model assumes that the errors, denoted by epsilon and lower theta, are uncorrelated with X and D.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section>
 <section id="doubledebiased-machine-learning-dml" class="slide level2">
 <h2>Double/Debiased Machine Learning (DML)</h2>
@@ -466,6 +506,19 @@ m_0(X)&amp;:=\mathbb{E}[D|X]
 0 = \frac{1}{n}\sum_{i=1}^n \psi(W,\hat{\theta},\hat{\eta})
 \]</span></li>
 </ul>
+<aside class="notes">
+<p>The technique of double/debiasing machine learning (DML) employs machine learning to estimate nuisance parameters, specifically, the expected values of Y and D given X, represented by l0(X) and m0(X), respectively. These estimates are then used to construct an orthogonalized score. This approach allows for the isolation of the causal effect, θ, through the solving of a moment equation. This method ensures robustness and improves the accuracy of causal estimates.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section>
 <section id="doubledebiased-machine-learning-dml-1" class="slide level2">
 <h2>Double/Debiased Machine Learning (DML)</h2>
@@ -482,6 +535,22 @@ m_0(X)&amp;:=\mathbb{E}[D|X]
 </ul>
 <div class="fragment">
 <p><span class="math inline">\(\Rightarrow\)</span> simple approach to control for confounders, <em>if they can be used for ML models!</em></p>
+<aside class="notes">
+<p>Neyman Orthogonality is a crucial concept in DML. It ensures that the moment condition identifying the parameter ( _0 ) is insensitive to small perturbations in the nuisance function ( ) around its true value ( _0 ). This robustness is achieved through the orthogonalization of the score function.</p>
+<p>For the nuisance elements, certain assumptions must hold, as detailed in the literature (e.g., <span class="citation" data-cites="dml2018">Chernozhukov et al. (<a href="#/references-1" role="doc-biblioref" onclick="">2018</a>)</span>). Specifically, the product of the norms of the deviations of the estimated nuisance functions from their true counterparts must be bounded by a term proportional to ( N^{-1/2} ).</p>
+<p>Under regularity conditions, the estimator ( ) will concentrate within a ( 1/ )-neighborhood of the true parameter ( _0 ). Moreover, the normalized difference ( ( - _0) ) converges in distribution to a normal distribution ( (0, ^2) ).</p>
+<p>This orthogonalization approach provides a straightforward method to control for confounders, provided they can be included in machine learning models.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </div>
 </section></section>
 <section>
@@ -503,7 +572,7 @@ m_0(X)&amp;:=\mathbb{E}[D|X]
 </div>
 </center>
 <aside class="notes">
-
+<p>The DoubleMLDeep extension of DML enables the utilization of multimodal data, encompassing text, images, and traditional tabular data. The directed acyclic graphs (DAGs) illustrate the potential for confounding through image, text, and tabular data (Figure A), as well as the ability to accurately model treatment decisions driven by text and images by conditioning on these data types (Figure B), effectively blocking confounding paths.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -518,24 +587,44 @@ m_0(X)&amp;:=\mathbb{E}[D|X]
 </section>
 <section id="doublemldeep---module-structure" class="slide level2" data-transition="zoom-out">
 <h2>DoubleMLDeep - Module Structure</h2>
+<center>
 <div class="quarto-figure quarto-figure-center">
 <figure>
 <p><a href="dml_deep_arch.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5" title="High-Level PLR Model Architecture. Both nuisance components are trained simultaneously with a combined loss."><img data-src="dml_deep_arch.png" data-id="id1" width="900" alt="High-Level PLR Model Architecture. Both nuisance components are trained simultaneously with a combined loss."></a></p>
 <figcaption>High-Level PLR Model Architecture. Both nuisance components are trained simultaneously with a combined loss.</figcaption>
 </figure>
 </div>
+</center>
 <div class="fragment" data-id="box1" style="background: #265a93; opacity:0.3; padding: 5px; border: 2px solid black; width: 300px; height: 300px; margin: 10px; position: absolute; top: 40px; right: 30px">
 <p><span style="color:white;"><strong>Nuisance Estimation</strong></span></p>
 </div>
+<aside class="notes">
+<p>We begin with three types of inputs: (X_{txt}) for text data, (X_{img}) for image data, and (X_{tab}) for tabular data. Each input type is processed through specialized modules to generate feature representations.</p>
+<p>Larger pretrained models are used for the unstructured data, while simple and smaller models are used for the tabular data.</p>
+<p>The encoded features from these different modalities are then combined through a sophisticated fusion block. Within this block, each modality representation ((H_{txt}), (H_{img}), (H_{tab})) undergoes layer normalization to standardize the feature distributions. Cross Attention Blocks (CABs) are employed to enable interaction and information exchange between the different modalities. This process generates two outputs: (H_U) (the unstructured representation) and (H_C) (the confounding representation).</p>
+<p>The unstructured and confounding representations are used for making final predictions. These representations are passed through fully connected (FC) layers, producing the predictions ((X)) and ((X)). The network’s performance is optimized using a combined loss function (L), which aggregates the prediction errors to refine the learning process of the entire network.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section>
 <section id="doublemldeep---module-structure-1" class="slide level2" data-transition="zoom-in">
 <h2>DoubleMLDeep - Module Structure</h2>
+<center>
 <div class="quarto-figure quarto-figure-center">
 <figure>
 <p><a href="figures/dml_deep_arch_loss_1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6" title="Nuisance Estimation with Combined Loss in case of multiple treatments with nuisance loss monitoring."><img data-src="figures/dml_deep_arch_loss_1.png" data-id="id1" width="700" alt="Nuisance Estimation with Combined Loss in case of multiple treatments with nuisance loss monitoring."></a></p>
 <figcaption>Nuisance Estimation with Combined Loss in case of multiple treatments with nuisance loss monitoring.</figcaption>
 </figure>
 </div>
+</center>
 <div class="fragment" style="font-size: 75%;">
 <ul>
 <li>It is possible to use binary treatment variables <span class="math inline">\(D \in \{0,1\}\)</span> by adjusting the loss function: <span class="math display">\[L = L_{log}(D, \hat{m}(X))\lVert Y - \hat{l}(X)  \rVert_{P_n,2}\]</span></li>
@@ -623,6 +712,19 @@ Tabular Data
         }
     });
 </script>
+<aside class="notes">
+<p>One of the applications of DoubleMLDeep is in estimating price elasticity. An understanding of how changes in price affect demand is of vital importance for economic analysis and business strategy. In online marketplaces, where a substantial amount of unstructured data is available, the combination of this data with traditional tabular features can significantly enhance our understanding of market dynamics and inform more effective pricing strategies.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section>
 <section id="amazon-toys-dataset" class="slide level2">
 <h2>Amazon Toys Dataset</h2>
@@ -656,6 +758,19 @@ Tabular Data
 </tr>
 </tbody>
 </table>
+<aside class="notes">
+<p>In order to illustrate our methodology, we used the Amazon Toys Dataset. This public dataset comprises sales data from the toys and games category, specifically vehicles, cars, and trucks. We employed the sales rank as a surrogate for quantities sold, in accordance with the methodology proposed by Bajari et al.&nbsp;The dataset encompasses a range of variables, including sales rank, price, textual descriptions, and product images, offering a comprehensive source of multimodal data for our analysis.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section>
 <section id="amazon-toys-dataset-1" class="slide level2">
 <h2>Amazon Toys Dataset</h2>
@@ -696,7 +811,20 @@ Tabular Data
 <img data-src="figures/DAG_application_002.png" width="300">
 </center>
 <div class="fragment">
-<p><span class="math inline">\(\Rightarrow\)</span> The causal parameter <span class="math inline">\(\theta_0\)</span> can be interpreted as price elasticity of demand!</p>
+<p><span class="math inline">\(\Rightarrow\)</span> In our illustration, the causal parameter <span class="math inline">\(\theta_0\)</span> can be interpreted as price elasticity of demand!</p>
+<aside class="notes">
+<p>Our model involves running a simple log-log regression. By incorporating images and text, we block potential backdoor paths from price to demand or sales rank. The regression equation, ( (Q) = _0 (P) + g_0(X) + ), allows us to interpret the causal parameter ( _0 ) as the price elasticity of demand. This approach leverages the strengths of multimodal data to provide more accurate and interpretable estimates.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </div>
 </section>
 <section id="baseline-ols-model" class="slide level2">
@@ -738,6 +866,19 @@ Tabular Data
 </figure>
 </div>
 </div></div>
+<aside class="notes">
+<p>In our baseline model, we employ ordinary least squares (OLS) regression with tabular covariates, denoted as X_(tab). The model is specified as ln(Q) = θ₀ ln(P) + β^T X_(tab) + ε, yielding an R² value of 0.330. This baseline serves as a reference point for evaluating the performance of models incorporating multimodal data.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section>
 <section id="baseline-dml-model" class="slide level2">
 <h2>Baseline DML Model</h2>
@@ -780,6 +921,19 @@ Tabular Data
 </figure>
 </div>
 </div></div>
+<aside class="notes">
+<p>In the baseline DML model, the DoubleMLPLR model with RandomForest regressors is employed to estimate the nuisance parameters with tabular data covariates, denoted as X_(tab). The expected log-quantity and log-price are represented by the functions l₀(X_(tab)) and m₀(X_(tab)), respectively, with R² values of 0.5986 and 0.1884. The estimated price elasticity ranges from -0.132 to -0.080, with a central estimate of -0.1098.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section>
 <section id="deep-learning-models" class="slide level2">
 <h2>Deep Learning Models</h2>
@@ -822,6 +976,19 @@ Tabular Data
 </table>
 <div class="fragment">
 <p><span class="math inline">\(\Rightarrow\)</span> The aim is to emphasize the benefits of utilizing unstructured data.</p>
+<aside class="notes">
+<p>In the present study, a variety of DoubleMLPLRDeep models were trained using distinct combinations of input data. The objective of this study is to demonstrate the advantages of incorporating unstructured data into causal inference models.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </div>
 <aside><ol class="aside-footnotes"><li id="fn1"><p>Subsequently, the top 5 performing instances for each combination were evaluated based on the minimum RMSE score of the validation data.</p></li></ol></aside></section>
 <section id="deep-learning-models-rmse-scores" class="slide level2">
@@ -870,6 +1037,19 @@ Tabular Data
 </figure>
 </div>
 </div></div>
+<aside class="notes">
+<p>Our initial results demonstrate the estimates obtained using different combinations of tabular, image, and text data. These continuous estimates are derived from the DoubleMLPLR model on the validation set during the training process. By comparing these estimates, we can assess the impact of each data combination on the accuracy and reliability of our causal effect estimates.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section>
 <section id="first-results-1" class="slide level2">
 <h2>(First) Results</h2>
@@ -919,6 +1099,19 @@ Tabular Data
 <li>The <span class="math inline">\(R^2\)</span>-scores of the nuisance functions improve with the inclusion of unstructured data</li>
 <li>Semi-synthetic data can illustrate the potential of unstructured data (see Appendix)</li>
 </ul>
+<aside class="notes">
+<p>This table summarizes the performance of our models with different covariates. For the OLS model using tabular data, the (R^2) score is 0.3300 with a (_0) estimate of -0.0455. The DoubleMLPLR model with tabular data shows improved (R^2) scores of 0.5986 and 0.1884 for the nuisance functions, with a (_0) of -0.1098. The DoubleMLPLRDeep model incorporating tabular, text, and image data further improves the (R^2) scores to 0.5990 and 0.6765, with a (_0) estimate of -0.2794. These results indicate that incorporating unstructured data improves both the accuracy of the nuisance function estimates and the overall model performance.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 <aside><ol class="aside-footnotes"><li id="fn2"><p>Mean values of the <span class="math inline">\(\texttt{DoubleMLDeep}\)</span> Model with tabular, text and image data as covariates.</p></li></ol></aside></section></section>
 <section>
 <section id="thank-you-for-your-attention" class="title-slide slide level1 center" data-transition="concave-in">
@@ -965,6 +1158,19 @@ DoubleML
 </p>
 </div>
 </div>
+<aside class="notes">
+<p>Our research is a collaborative effort between the University of Hamburg, the Massachusetts Institute of Technology, and Economic AI. For more information, you can visit our respective websites listed here. Additionally, you can find detailed documentation on DoubleML at the provided link.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section></section>
 <section>
 <section id="references" class="title-slide slide level1 center" data-transition="concave-in">
@@ -1477,6 +1683,7 @@ D &amp;= \tilde{m}_0(\tilde{X}) + \vartheta,
   <script src="presentation_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
   <script src="presentation_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
   <script src="presentation_files/libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
+  <script src="presentation_files/libs/revealjs/plugin/reveal-pointer/pointer.js"></script>
   <script src="presentation_files/libs/revealjs/plugin/quarto-support/support.js"></script>
   
 
@@ -1499,6 +1706,7 @@ D &amp;= \tilde{m}_0(\tilde{X}) + \vartheta,
 'autoAnimateUnmatched': true,
 'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
 'chalkboard': {"buttons":true,"boardmarkerWidth":5,"theme":"chalkboard"},
+'pointer': {"key":"q","color":"red","pointerSize":16,"alwaysVisible":false},
 'smaller': false,
  
         // Display controls in the bottom right corner
@@ -1669,7 +1877,7 @@ D &amp;= \tilde{m}_0(\tilde{X}) + \vartheta,
         },
 
         // reveal.js plugins
-        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, RevealChalkboard, QuartoSupport,
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, RevealChalkboard, RevealPointer, QuartoSupport,
 
           RevealMath,
           RevealNotes,
@@ -1865,7 +2073,7 @@ D &amp;= \tilde{m}_0(\tilde{X}) + \vartheta,
       }
     });
     </script>
-    <script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","openEffect":"zoom","selector":".lightbox","loop":false,"descPosition":"bottom"});
+    <script>var lightboxQuarto = GLightbox({"openEffect":"zoom","closeEffect":"zoom","loop":false,"selector":".lightbox","descPosition":"bottom"});
     (function() {
       let previousOnload = window.onload;
       window.onload = () => {

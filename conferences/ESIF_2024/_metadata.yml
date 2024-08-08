@@ -21,6 +21,9 @@ format:
     filters: [slidenumber_filter.lua] # include lua script for filtering the appendix slides
     lightbox: true
 
+revealjs-plugins:
+  - pointer
+
 from: markdown+emoji # enables emojis see https://gist.github.com/rxaviers/7360908
 nocite: |
   @bach2022doubleml, @lightgbm
