@@ -509,7 +509,7 @@ Suhas Vijaykumar <br> <small>Massachusetts Institute<br>of Technology</small>
 <li>Combination: <em>DoubleML</em> + Deep Learning = <strong>DoubleMLDeep</strong></li>
 </ul>
 </div></div>
-<aside><ol class="aside-footnotes"><li id="fn1"><p>Double / debiased machine learning framework of <span class="citation" data-cites="chern2018">Chernozhukov et al. (<a href="#/references-1" role="doc-biblioref" onclick="">2018b</a>)</span>. The Python (<span class="citation" data-cites="bach2022doubleml">Bach et al. (<a href="#/references-1" role="doc-biblioref" onclick="">2022</a>)</span>) and R (<span class="citation" data-cites="dml_R">Bach et al. (<a href="#/references-1" role="doc-biblioref" onclick="">2024</a>)</span>) package provide an implementation.</p></li></ol></aside></section>
+<aside><ol class="aside-footnotes"><li id="fn1"><p>Double / debiased machine learning framework of <span class="citation" data-cites="dml2018">Chernozhukov et al. (<a href="#/references-1" role="doc-biblioref" onclick="">2018</a>)</span>. The Python (<span class="citation" data-cites="bach2022doubleml">Bach et al. (<a href="#/references-1" role="doc-biblioref" onclick="">2022</a>)</span>) and R (<span class="citation" data-cites="dml_R">Bach et al. (<a href="#/references-1" role="doc-biblioref" onclick="">2024</a>)</span>) package provide an implementation.</p></li></ol></aside></section>
 <section id="motivating-example---plr" class="slide level2">
 <h2>Motivating Example - PLR</h2>
 <h3 id="partially-linear-regression-model-plr">Partially linear regression model (PLR)</h3>
@@ -1023,10 +1023,7 @@ Bach, Philipp, Malte S. Kurz, Victor Chernozhukov, Martin Spindler, and Sven Kla
 Bajari, Patrick, Zhihao Cen, Victor Chernozhukov, Manoj Manukonda, Suhas Vijaykumar, Jin Wang, Ramon Huerta, et al. 2023. <span>“Hedonic Prices and Quality Adjusted Price Indices Powered by AI.”</span> <a href="https://arxiv.org/abs/2305.00044">https://arxiv.org/abs/2305.00044</a>.
 </div>
 <div id="ref-dml2018" class="csl-entry" role="listitem">
-Chernozhukov, Victor, Denis Chetverikov, Mert Demirer, Esther Duflo, Christian Hansen, Whitney Newey, and James Robins. 2018a. <span>“Double/Debiased Machine Learning for Treatment and Structural Parameters.”</span> <em>The Econometrics Journal</em> 21 (1): C1–68. <a href="https://onlinelibrary.wiley.com/doi/abs/10.1111/ectj.12097">https://onlinelibrary.wiley.com/doi/abs/10.1111/ectj.12097</a>.
-</div>
-<div id="ref-chern2018" class="csl-entry" role="listitem">
-———. 2018b. <span>“<span class="nocase">Double/debiased machine learning for treatment and structural parameters</span>.”</span> <em>The Econometrics Journal</em> 21 (1): C1–68. <a href="https://doi.org/10.1111/ectj.12097">https://doi.org/10.1111/ectj.12097</a>.
+Chernozhukov, Victor, Denis Chetverikov, Mert Demirer, Esther Duflo, Christian Hansen, Whitney Newey, and James Robins. 2018. <span>“Double/Debiased Machine Learning for Treatment and Structural Parameters.”</span> <em>The Econometrics Journal</em> 21 (1): C1–68. <a href="https://onlinelibrary.wiley.com/doi/abs/10.1111/ectj.12097">https://onlinelibrary.wiley.com/doi/abs/10.1111/ectj.12097</a>.
 </div>
 <div id="ref-lightgbm" class="csl-entry" role="listitem">
 Ke, Guolin, Qi Meng, Thomas Finley, Taifeng Wang, Wei Chen, Weidong Ma, Qiwei Ye, and Tie-Yan Liu. 2017. <span>“Lightgbm: A Highly Efficient Gradient Boosting Decision Tree.”</span> <em>Advances in Neural Information Processing Systems</em> 30: 3146–54.
@@ -1110,7 +1107,7 @@ D &amp;= m_0(X) + \vartheta, &amp; \mathbb{E}[\vartheta | X] = 0
 <li><p><strong>Neyman Orthogonality</strong> <span class="math display">\[
 \left.\partial_\eta \mathbb{E}[\psi(W; \theta_0, \eta)] \right|_{\eta=\eta_0} = 0
 \]</span> ensures that the moment condition identifying <span class="math inline">\(\theta_0\)</span> is <strong>insensitive to small pertubations</strong> of the nuisance function <span class="math inline">\(\eta\)</span> around <span class="math inline">\(\eta_0\)</span></p></li>
-<li><p>Assumptions for the nuisance elements (see <span class="citation" data-cites="dml2018">Chernozhukov et al. (<a href="#/references-1" role="doc-biblioref" onclick="">2018a</a>)</span>) <span class="math display">\[
+<li><p>Assumptions for the nuisance elements (see <span class="citation" data-cites="dml2018">Chernozhukov et al. (<a href="#/references-1" role="doc-biblioref" onclick="">2018</a>)</span>) <span class="math display">\[
 \lVert \hat{m} - m_0 \rVert_{P,2} \times \big( \lVert \hat{m} - m_0 \rVert_{P,2} +  \lVert \hat{\ell} - \ell_0\rVert _{P,2}\big) \le \delta_N N^{-1/2}
 \]</span></p></li>
 <li><p>Under some regularity conditions the estimator <span class="math inline">\(\hat{\theta}\)</span> concentrates in <span class="math inline">\(1/\sqrt{N}\)</span>-neighborhood of <span class="math inline">\(\theta_0\)</span> and <span class="math display">\[
@@ -1121,7 +1118,7 @@ D &amp;= m_0(X) + \vartheta, &amp; \mathbb{E}[\vartheta | X] = 0
 <p><span class="math inline">\(\Rightarrow\)</span> simple approach to control for confounders, <em>if they can be used for ML models!</em></p>
 <aside class="notes">
 <p>Neyman Orthogonality is a crucial concept in DML. It ensures that the moment condition identifying the parameter ( _0 ) is insensitive to small perturbations in the nuisance function ( ) around its true value ( _0 ). This robustness is achieved through the orthogonalization of the score function.</p>
-<p>For the nuisance elements, certain assumptions must hold, as detailed in the literature (e.g., <span class="citation" data-cites="dml2018">Chernozhukov et al. (<a href="#/references-1" role="doc-biblioref" onclick="">2018a</a>)</span>). Specifically, the product of the norms of the deviations of the estimated nuisance functions from their true counterparts must be bounded by a term proportional to ( N^{-1/2} ).</p>
+<p>For the nuisance elements, certain assumptions must hold, as detailed in the literature (e.g., <span class="citation" data-cites="dml2018">Chernozhukov et al. (<a href="#/references-1" role="doc-biblioref" onclick="">2018</a>)</span>). Specifically, the product of the norms of the deviations of the estimated nuisance functions from their true counterparts must be bounded by a term proportional to ( N^{-1/2} ).</p>
 <p>Under regularity conditions, the estimator ( ) will concentrate within a ( 1/ )-neighborhood of the true parameter ( _0 ). Moreover, the normalized difference ( ( - _0) ) converges in distribution to a normal distribution ( (0, ^2) ).</p>
 <p>This orthogonalization approach provides a straightforward method to control for confounders, provided they can be included in machine learning models.</p>
 <style type="text/css">
@@ -1210,8 +1207,8 @@ min_{\theta} \mathbb{E}\big[\big(Y - \mathbb{E}[Y|X] - (D-\mathbb{E}[D|X])\theta
 <h4 id="high-quality-machine-learning-estimators">2. High-Quality Machine Learning Estimators</h4>
 <ul>
 <li><p>The nuisance parameters are estimated with high-quality (fast-enough converging) machine learning methods.</p></li>
-<li><p>Different structural assumptions on <span class="math inline">\(\eta_0\)</span> lead to the use of different machine-learning tools for estimating <span class="math inline">\(\eta_0\)</span> <span class="citation" data-cites="dml2018">Chernozhukov et al. (<a href="#/references-1" role="doc-biblioref" onclick="">2018a</a>)</span> (Section 3)</p></li>
-<li><p>Rate requirements depend on the causal model and orthogonal score, e.g.&nbsp;(see <span class="citation" data-cites="dml2018">Chernozhukov et al. (<a href="#/references-1" role="doc-biblioref" onclick="">2018a</a>)</span>),</p>
+<li><p>Different structural assumptions on <span class="math inline">\(\eta_0\)</span> lead to the use of different machine-learning tools for estimating <span class="math inline">\(\eta_0\)</span> <span class="citation" data-cites="dml2018">Chernozhukov et al. (<a href="#/references-1" role="doc-biblioref" onclick="">2018</a>)</span> (Section 3)</p></li>
+<li><p>Rate requirements depend on the causal model and orthogonal score, e.g.&nbsp;(see <span class="citation" data-cites="dml2018">Chernozhukov et al. (<a href="#/references-1" role="doc-biblioref" onclick="">2018</a>)</span>),</p>
 <ul>
 <li>PLR, partialling out: <span class="math inline">\(\lVert \hat{m}_0 - m_0 \rVert_{P,2} \times \big( \lVert \hat{m}_0 - m_0 \rVert_{P,2} +  \lVert \hat{\ell}_0 - \ell_0\rVert _{P,2}\big) \le \delta_N N^{-1/2}\)</span></li>
 <li>IRM/DR score, ATE: <span class="math inline">\(\lVert \hat{m}_0 - m_0 \rVert_{P,2} \times \lVert \hat{\ell}_0 - \ell_0\rVert _{P,2} \le \delta_N N^{-1/2}\)</span></li>
@@ -1232,12 +1229,12 @@ min_{\theta} \mathbb{E}\big[\big(Y - \mathbb{E}[Y|X] - (D-\mathbb{E}[D|X])\theta
 </center></center></section>
 <section id="dml-key-ingredients-4" class="slide level2" data-visibility="uncounted">
 <h2>DML Key Ingredients</h2>
-<h4 id="main-result-in-dml2018">Main result in <span class="citation" data-cites="dml2018">Chernozhukov et al. (<a href="#/references-1" role="doc-biblioref" onclick="">2018a</a>)</span></h4>
+<h4 id="main-result-in-dml2018">Main result in <span class="citation" data-cites="dml2018">Chernozhukov et al. (<a href="#/references-1" role="doc-biblioref" onclick="">2018</a>)</span></h4>
 <blockquote>
 <p>There exist regularity conditions, such that the DML estimator <span class="math inline">\(\tilde{\theta}_0\)</span> concentrates in a <span class="math inline">\(1/\sqrt{N}\)</span>-neighborhood of <span class="math inline">\(\theta_0\)</span> and the sampling error is approximately <span class="math display">\[\sqrt{N}(\tilde{\theta}_0 - \theta_0) \sim N(0, \sigma^2),\]</span> with <span class="math display">\[\begin{align}\begin{aligned}\sigma^2 := J_0^{-2} \mathbb{E}(\psi^2(W; \theta_0, \eta_0)),\\J_0 = \mathbb{E}(\psi_a(W; \eta_0)).\end{aligned}\end{align}\]</span></p>
 </blockquote>
 <ul>
-<li>See <a href="https://doubleml.shinyapps.io/BasicsDMLApp/">this example</a> based on <span class="citation" data-cites="dml2018">Chernozhukov et al. (<a href="#/references-1" role="doc-biblioref" onclick="">2018a</a>)</span></li>
+<li>See <a href="https://doubleml.shinyapps.io/BasicsDMLApp/">this example</a> based on <span class="citation" data-cites="dml2018">Chernozhukov et al. (<a href="#/references-1" role="doc-biblioref" onclick="">2018</a>)</span></li>
 </ul>
 </section>
 <section id="doublemldeep---more-details" class="slide level2" data-visibility="uncounted">
@@ -1332,6 +1329,7 @@ min_{\theta} \mathbb{E}\big[\big(Y - \mathbb{E}[Y|X] - (D-\mathbb{E}[D|X])\theta
 <li>Buy Box: Is FBA</li>
 </ul>
 </div></div>
+<p>Scatterplots with OLS Regression of Tabular Variables and <span class="math inline">\(\ln(Q)\)</span> <img data-src="figures/tab_pairplot.png"></p>
 </section>
 <section id="deep-learning-models-1" class="slide level2" data-visibility="uncounted">
 <h2>Deep Learning Models</h2>
@@ -1418,7 +1416,6 @@ min_{\theta} \mathbb{E}\big[\big(Y - \mathbb{E}[Y|X] - (D-\mathbb{E}[D|X])\theta
 </ul>
 <p><a href="figures/R2_ml_m_mod.png" class="lightbox" data-gallery="quarto-lightbox-gallery-17"><img data-src="figures/R2_ml_m_mod.png"></a></p>
 </div></div>
-<p>Scatterplots with OLS Regression of Tabular Variables and <span class="math inline">\(\ln(Q)\)</span> <img data-src="figures/tab_pairplot.png"></p>
 </section>
 <section id="first-results-1" class="slide level2" data-visibility="uncounted">
 <h2>(First) Results</h2>
@@ -2123,7 +2120,7 @@ D &amp;= \tilde{m}_0(\tilde{X}) + \vartheta,
       }
     });
     </script>
-    <script>var lightboxQuarto = GLightbox({"descPosition":"bottom","closeEffect":"zoom","selector":".lightbox","loop":false,"openEffect":"zoom"});
+    <script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","loop":false,"descPosition":"bottom","selector":".lightbox","openEffect":"zoom"});
     (function() {
       let previousOnload = window.onload;
       window.onload = () => {

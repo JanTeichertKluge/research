@@ -109,7 +109,7 @@ $\Rightarrow$ Adjust for confounding encoded in unstructured data
 
 ::::
 
-[^dml]: Double / debiased machine learning framework of @chern2018. The Python (@bach2022doubleml) and R (@dml_R) package provide an implementation.
+[^dml]: Double / debiased machine learning framework of @dml2018. The Python (@bach2022doubleml) and R (@dml_R) package provide an implementation.
 
 ## Motivating Example - PLR
 
@@ -779,6 +779,10 @@ The network can now be trained with the pytorch Lightning Trainer. The correspon
 
 ::::
 
+Scatterplots with OLS Regression of Tabular Variables and $\ln(Q)$
+![](figures/tab_pairplot.png)
+
+
 ## Deep Learning Models
 
 * In this study, a variety of input data combinations were used to train $\texttt{DoubleMLPLRDeep}$ models [^top1]:
@@ -851,11 +855,6 @@ In the present study, a variety of DoubleMLPLRDeep models were trained using dis
 :::
 
 ::::
-
-
-Scatterplots with OLS Regression of Tabular Variables and $\ln(Q)$
-![](figures/tab_pairplot.png)
-
 
 ## (First) Results
 
