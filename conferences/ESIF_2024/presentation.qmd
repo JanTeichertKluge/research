@@ -396,15 +396,15 @@ $\Rightarrow$ The aim is to emphasize the benefits of utilizing unstructured dat
 
 ## (First) Results
 
-:::{style="font-size: 75%;"}
+:::{style="font-size: 100%;"}
 
 | Model[^1] | Covariates | $R^2_{l_0}$ |$R^2_{m_0}$ | $\hat{\theta}_0$
 | --- | --- | --- | --- | --- |
 | $\texttt{OLS}$ | $X=X_{tab}$ | $0.3300$ | - | $-0.0455$ |
-| $\texttt{DoubleMLPLR}$ | $X=X_{tab}$ | $0.5986$ | $0.1884$ | $-0.1098$ |
-| $\texttt{DoubleMLPLRDeep}$ | $X=(X_{txt}, X_{tab})$ | $0.5574 \pm 0.025$	 | $0.6188 \pm 0.015$ | $-0.2137 \pm 0.053$|
-| $\texttt{DoubleMLPLRDeep}$ | $X=(X_{img}, X_{tab})$ | $0.4518 \pm 0.029$	 | $0.5085 \pm 0.028$ | $-0.2721 \pm 0.038$|
-| $\texttt{DoubleMLPLRDeep}$ | $X=(X_{txt}, X_{img}, X_{tab})$ | $0.5829 \pm 0.015$	 | $0.6532 \pm 0.018$ | $-0.2794 \pm 0.044$|
+| $\texttt{PLR}$ | $X=X_{tab}$ | $0.5986$ | $0.1884$ | $-0.1098$ |
+| $\texttt{PLRDeep}$ | $X=(X_{txt}, X_{tab})$ | $0.5574 \scriptstyle \pm0.025$	 | $0.6188 \scriptstyle \pm0.015$ | $-0.2137 \scriptstyle \pm0.053$|
+| $\texttt{PLRDeep}$ | $X=(X_{img}, X_{tab})$ | $0.4518 \scriptstyle \pm0.029$	 | $0.5085 \scriptstyle \pm0.028$ | $-0.2721 \scriptstyle \pm0.038$|
+| $\texttt{PLRDeep}$ | $X=(X_{txt}, X_{img}, X_{tab})$ | $0.5829 \scriptstyle \pm0.015$	 | $0.6532 \scriptstyle \pm0.018$ | $-0.2794 \scriptstyle \pm0.044$|
 :::
 
 ::: {.fragment style="font-size: 85%;"}
