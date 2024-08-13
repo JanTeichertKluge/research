@@ -111,6 +111,20 @@ $\Rightarrow$ Adjust for confounding encoded in unstructured data
 
 [^dml]: Double / debiased machine learning framework of @dml2018. The Python (@bach2022doubleml) and R (@dml_R) package provide an implementation.
 
+
+## Literature Review
+
+- Unstructured data like images and text are key for estimating causal parameters in various contexts, such as price elasticities and medical treatments [@chang2018; @masukawa2022], and climate effects [@wu2023].
+
+- Text as an outcome/treatment has been conceptually explored by @egami2018how and @Blei2022.
+
+- @Veitch20a discuss consistency in this setting; we extend it by integrating text/images into double machine learning for valid inference.
+
+- Transformer models for treatment effects are applied by @causaltrans, though without inference results.
+
+- There are also approaches to use images in causal inference [@Jerzak2023; @Jerzak2023imagebased; @Jerzak2023integrating], but our approach enable valid inference with both, text and images, in a multimodal framework.
+
+
 ## Motivating Example - PLR
 
 ### Partially linear regression model (PLR) 

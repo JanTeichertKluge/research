@@ -510,6 +510,16 @@ Suhas Vijaykumar <br> <small>Massachusetts Institute<br>of Technology</small>
 </ul>
 </div></div>
 <aside><ol class="aside-footnotes"><li id="fn1"><p>Double / debiased machine learning framework of <span class="citation" data-cites="dml2018">Chernozhukov et al. (<a href="#/references-1" role="doc-biblioref" onclick="">2018</a>)</span>. The Python (<span class="citation" data-cites="bach2022doubleml">Bach et al. (<a href="#/references-1" role="doc-biblioref" onclick="">2022</a>)</span>) and R (<span class="citation" data-cites="dml_R">Bach et al. (<a href="#/references-1" role="doc-biblioref" onclick="">2024</a>)</span>) package provide an implementation.</p></li></ol></aside></section>
+<section id="literature-review" class="slide level2">
+<h2>Literature Review</h2>
+<ul>
+<li><p>Unstructured data like images and text are key for estimating causal parameters in various contexts, such as price elasticities and medical treatments <span class="citation" data-cites="chang2018 masukawa2022">(<a href="#/references-1" role="doc-biblioref" onclick="">Chan et al. 2018</a>; <a href="#/references-1" role="doc-biblioref" onclick="">Masukawa et al. 2022</a>)</span>, and climate effects <span class="citation" data-cites="wu2023">(<a href="#/references-1" role="doc-biblioref" onclick="">Wu, Duan, and Zhang 2023</a>)</span>.</p></li>
+<li><p>Text as an outcome/treatment has been conceptually explored by <span class="citation" data-cites="egami2018how">Egami et al. (<a href="#/references-1" role="doc-biblioref" onclick="">2018</a>)</span> and <span class="citation" data-cites="Blei2022">Sridhar and Blei (<a href="#/references-1" role="doc-biblioref" onclick="">2022</a>)</span>.</p></li>
+<li><p><span class="citation" data-cites="Veitch20a">Veitch, Sridhar, and Blei (<a href="#/references-1" role="doc-biblioref" onclick="">2020</a>)</span> discuss consistency in this setting; we extend it by integrating text/images into double machine learning for valid inference.</p></li>
+<li><p>Transformer models for treatment effects are applied by <span class="citation" data-cites="causaltrans">Melnychuk, Frauen, and Feuerriegel (<a href="#/references-1" role="doc-biblioref" onclick="">2022</a>)</span>, though without inference results.</p></li>
+<li><p>There are also approaches to use images in causal inference <span class="citation" data-cites="Jerzak2023 Jerzak2023imagebased Jerzak2023integrating">(<a href="#/references-1" role="doc-biblioref" onclick="">Jerzak, Johansson, and Daoud 2023a</a>, <a href="#/references-1" role="doc-biblioref" onclick="">2023b</a>, <a href="#/references-1" role="doc-biblioref" onclick="">2023c</a>)</span>, but our approach enable valid inference with both, text and images, in a multimodal framework.</p></li>
+</ul>
+</section>
 <section id="motivating-example---plr" class="slide level2">
 <h2>Motivating Example - PLR</h2>
 <h3 id="partially-linear-regression-model-plr">Partially linear regression model (PLR)</h3>
@@ -1022,8 +1032,23 @@ Bach, Philipp, Malte S. Kurz, Victor Chernozhukov, Martin Spindler, and Sven Kla
 <div id="ref-bajari2023hedonic" class="csl-entry" role="listitem">
 Bajari, Patrick, Zhihao Cen, Victor Chernozhukov, Manoj Manukonda, Suhas Vijaykumar, Jin Wang, Ramon Huerta, et al. 2023. <span>“Hedonic Prices and Quality Adjusted Price Indices Powered by AI.”</span> <a href="https://arxiv.org/abs/2305.00044">https://arxiv.org/abs/2305.00044</a>.
 </div>
+<div id="ref-chang2018" class="csl-entry" role="listitem">
+Chan, Alex J., Isabel Chien, Edward T. Moseley, Saad Salman, Sarah Kaminer Bourland, Daniela Lamas, Anne M. Walling, and James A. Tulsky. 2018. <span>“Deep Learning Algorithms to Identify Documentation of Serious Illness Conversations During Intensive Care Unit Admissions.”</span> <em>Palliative Medicine</em>. <a href="https://doi.org/10.1177/0269216318810421">https://doi.org/10.1177/0269216318810421</a>.
+</div>
 <div id="ref-dml2018" class="csl-entry" role="listitem">
 Chernozhukov, Victor, Denis Chetverikov, Mert Demirer, Esther Duflo, Christian Hansen, Whitney Newey, and James Robins. 2018. <span>“Double/Debiased Machine Learning for Treatment and Structural Parameters.”</span> <em>The Econometrics Journal</em> 21 (1): C1–68. <a href="https://onlinelibrary.wiley.com/doi/abs/10.1111/ectj.12097">https://onlinelibrary.wiley.com/doi/abs/10.1111/ectj.12097</a>.
+</div>
+<div id="ref-egami2018how" class="csl-entry" role="listitem">
+Egami, Naoki, Christian J. Fong, Justin Grimmer, Margaret E. Roberts, and Brandon M. Stewart. 2018. <span>“How to Make Causal Inferences Using Texts.”</span> <a href="https://arxiv.org/abs/1802.02163">https://arxiv.org/abs/1802.02163</a>.
+</div>
+<div id="ref-Jerzak2023" class="csl-entry" role="listitem">
+Jerzak, Connor T., Fredrik Johansson, and Adel Daoud. 2023a. <span>“Estimating Causal Effects Under Image Confounding Bias with an Application to Poverty in Africa.”</span> <a href="https://arxiv.org/abs/2206.06410">https://arxiv.org/abs/2206.06410</a>.
+</div>
+<div id="ref-Jerzak2023imagebased" class="csl-entry" role="listitem">
+———. 2023b. <span>“Image-Based Treatment Effect Heterogeneity.”</span> <a href="https://arxiv.org/abs/2206.06417">https://arxiv.org/abs/2206.06417</a>.
+</div>
+<div id="ref-Jerzak2023integrating" class="csl-entry" role="listitem">
+———. 2023c. <span>“Integrating Earth Observation Data into Causal Inference: Challenges and Opportunities.”</span> <a href="https://arxiv.org/abs/2301.12985">https://arxiv.org/abs/2301.12985</a>.
 </div>
 <div id="ref-lightgbm" class="csl-entry" role="listitem">
 Ke, Guolin, Qi Meng, Thomas Finley, Taifeng Wang, Wei Chen, Weidong Ma, Qiwei Ye, and Tie-Yan Liu. 2017. <span>“Lightgbm: A Highly Efficient Gradient Boosting Decision Tree.”</span> <em>Advances in Neural Information Processing Systems</em> 30: 3146–54.
@@ -1037,8 +1062,23 @@ Krizhevsky, Alex. 2009. <span>“Learning Multiple Layers of Features from Tiny 
 <div id="ref-maas-EtAl:2011:ACL-HLT2011" class="csl-entry" role="listitem">
 Maas, Andrew L., Raymond E. Daly, Peter T. Pham, Dan Huang, Andrew Y. Ng, and Christopher Potts. 2011. <span>“Learning Word Vectors for Sentiment Analysis.”</span> In <em>Proceedings of the 49th Annual Meeting of the Association for Computational Linguistics: Human Language Technologies</em>, 142–50. Portland, Oregon, USA: Association for Computational Linguistics. <a href="http://www.aclweb.org/anthology/P11-1015">http://www.aclweb.org/anthology/P11-1015</a>.
 </div>
+<div id="ref-masukawa2022" class="csl-entry" role="listitem">
+Masukawa, Kento, Maho Aoyama, Shinichiroh Yokota, Junya Nakamura, Ryoka Ishida, and Masaharu Nakayama. 2022. <span>“Machine Learning Models to Detect Social Distress, Spiritual Pain, and Severe Physical Psychological Symptoms in Terminally Ill Patients with Cancer from Unstructured Text Data in Electronic Medical Records.”</span> <em>Palliative Medicine</em>. <a href="https://doi.org/10.1177/02692163221105595">https://doi.org/10.1177/02692163221105595</a>.
+</div>
+<div id="ref-causaltrans" class="csl-entry" role="listitem">
+Melnychuk, Valentyn, Dennis Frauen, and Stefan Feuerriegel. 2022. <span>“Causal Transformer for Estimating Counterfactual Outcomes.”</span> <a href="https://arxiv.org/abs/2204.07258">https://arxiv.org/abs/2204.07258</a>.
+</div>
+<div id="ref-Blei2022" class="csl-entry" role="listitem">
+Sridhar, Dhanya, and David M. Blei. 2022. <span>“Causal Inference from Text: A Commentary.”</span> <em>Science Advances</em> 8 (42): eade6585. <a href="https://doi.org/10.1126/sciadv.ade6585">https://doi.org/10.1126/sciadv.ade6585</a>.
+</div>
+<div id="ref-Veitch20a" class="csl-entry" role="listitem">
+Veitch, Victor, Dhanya Sridhar, and David Blei. 2020. <span>“Adapting Text Embeddings for Causal Inference.”</span> In <em>Proceedings of the 36th Conference on Uncertainty in Artificial Intelligence (UAI)</em>, edited by Jonas Peters and David Sontag, 124:919–28. Proceedings of Machine Learning Research. PMLR. <a href="https://proceedings.mlr.press/v124/veitch20a.html">https://proceedings.mlr.press/v124/veitch20a.html</a>.
+</div>
 <div id="ref-ggplot2_book" class="csl-entry" role="listitem">
 Wickham, Hadley. 2016. <em>Ggplot2: Elegant Graphics for Data Analysis</em>. Springer-Verlag New York. <a href="https://ggplot2.tidyverse.org">https://ggplot2.tidyverse.org</a>.
+</div>
+<div id="ref-wu2023" class="csl-entry" role="listitem">
+Wu, Zhenhuan, Xingde Duan, and Wenzhuan Zhang. 2023. <span>“Bayesian Analysis of Tweedie Compound Poisson Partial Linear Mixed Models with Nonignorable Missing Response and Covariates.”</span> <em>Entropy</em>. <a href="https://doi.org/10.3390/e25030506">https://doi.org/10.3390/e25030506</a>.
 </div>
 </div>
 </section></section>
@@ -2120,7 +2160,7 @@ D &amp;= \tilde{m}_0(\tilde{X}) + \vartheta,
       }
     });
     </script>
-    <script>var lightboxQuarto = GLightbox({"loop":false,"selector":".lightbox","closeEffect":"zoom","descPosition":"bottom","openEffect":"zoom"});
+    <script>var lightboxQuarto = GLightbox({"openEffect":"zoom","loop":false,"descPosition":"bottom","selector":".lightbox","closeEffect":"zoom"});
     (function() {
       let previousOnload = window.onload;
       window.onload = () => {
