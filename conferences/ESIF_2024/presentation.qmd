@@ -423,7 +423,7 @@ $\Rightarrow$ The aim is to emphasize the benefits of utilizing unstructured dat
 
 ::: {.fragment style="font-size: 85%;"}
 * Estimates $\hat{\theta}$ become more negative with the inclusion of unstructured data
-* The $R^2$-scores of the nuisance functions improve with the inclusion of unstructured data
+* The $R^2$-score of $m_0$ improve with the inclusion of unstructured data
 * Semi-synthetic data can illustrate the potential of unstructured data (see Appendix)
 :::
 
