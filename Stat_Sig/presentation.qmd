@@ -45,8 +45,92 @@ $\Rightarrow$ *"Everything is endogenous, except for God."*
   * e.g. estimating price elasticity of demand
 - **Advertising** may also be endogenous due to unobserved factors influencing both sales and ad expenditures [@Rossi2014].
 
+---
+
+## Overview
+
+:::: {.columns}
+
+::: {.column width="33%" .fragment}
+**Awareness ($\approx$ 1990-2000)**
+
+:::{style="font-size: 75%;"}
+
+
+- **IV Methods:**
+  - *Moore et al. (1991)* – Early IV methods.
+  - *Boulding et al. (1994)*
+  - *Villas-Boas & Winer (1999)*
+
+:::
+
+:::
+
+::: {.column width="33%" .fragment}
+**Takeoff ($\approx$ 2000-2010)**
+
+:::{style="font-size: 75%;"}
+
+- **IV Applications:**
+  - *Chintagunta (2001), Sudhir (2001)*
+  - *Rust et al. (2002)*
+  - *Verhoef (2003)*
+- **Methods**:
+  - *Petrin & Train (2010)* - Control Function
+- **IV Skepticism:**
+  - *Bound et al. (1995)* – Weak Instruments
+
+:::
+
+:::
+::: {.column width="33%" .fragment}
+
+**Diversification ($\approx$ 2010-?)**
+
+:::{style="font-size: 75%;"}
+
+- **Instrument-Free Methods:**
+  - *Ebbes et al. (2005)* – Latent IVs
+  - *Park & Gupta (2012)* – Gaussian Copulas
+- **Quasi-experimental Methods:**
+  - *Goldfarb & Tucker (2011)* - Diff-in-Diff
+  - *Tirunillai & Tellis (2017)*- Synthetic Controls
+  - *Hartmann et al. (2011)* - Regression Discontinuity
+
+:::
+
+:::
+
+::::
+
+^[Own illustration based on @Papies2022]
 
 ---
+
+## Overview
+
+:::{style="font-size: 75%;" .incremental}
+
+- **Instrumental Variables**: Identify causal effects by using exclusion restrictions, meaning they rely on certain variables that influence the independent variable but not the outcome directly. Examples include methods like two-stage least squares regression and the control function approach, both of which depend on these exclusion restrictions.
+
+- **Gaussian Copula**: This method is used to model the joint relationship between an endogenous variable (one influenced by other factors within the model) and the error term. It provides a way to estimate causal effects when traditional methods may not apply.
+
+- **Latent IVs**: This approach is used when typical instrumental variables are not available. It helps separate the endogenous and exogenous components of a variable by using latent (unobserved) factors.
+
+- **DiD**: This method compares the changes in outcomes between a group that receives a treatment and a control group that does not, using panel data collected before and after the treatment to estimate the causal effect.
+
+- **Synthetic Control**: This approach constructs a synthetic control group as a weighted combination of untreated units, enabling comparisons between treated and untreated groups when an exact match for a control group is unavailable.
+
+- **Regression Discontinuity**: This method compares units that are just above or below a certain threshold used to assign a treatment. It leverages the cutoff point for treatment assignment to estimate the causal effect, often using natural divisions like geographic boundaries or other criteria.
+
+:::
+
+. . .
+
+$\Rightarrow$ Good News: We focus on IV-Methods for today :grinning:
+
+---
+
 
 # Theory {transition="concave-in"}
 
@@ -67,6 +151,7 @@ Where:
 ---
 
 ## Omitted Variable Bias
+
 Assume you forgot the other relevant variable $W$ that is correlated both with $Y$ and $X$ and $W$ now is **omitted** from the model. The new (*short* model) specification would be:
 
 $$
@@ -477,6 +562,70 @@ $$
 \sigma^2_{\hat{\gamma}^{TSLS}} = \frac{1}{n}  \frac{\mathrm{Var}\left((Z - E[Z]) \xi \right)}{\left[\widehat{\mathrm{Cov}}(Z, W)\right]^2} .
 $$
 
+---
+
+### Practical Guidelines for Using TSLS^[according to @Ebbes2021]
+
+#### Reporting Results
+- When using **2SLS**, researchers should present both the Ordinary Least Squares (OLS) and 2SLS results.
+- This includes showing the coefficients and standard errors for each approach.
+- Check if the direction of bias in OLS matches the theoretical expectations.
+  - Example: In cases where upward bias is expected, such as price effects, 2SLS should show a more negative estimate than OLS [@Ebbes2021].
+
+---
+
+### Practical Guidelines for Using TSLS
+
+**First-Stage Regression**
+
+- Always report the complete results of the first-stage regression.
+  - This includes all instrumental variables (IVs) and exogenous regressors used in the equation.
+- Key details to check:
+  - Coefficients should have the expected sign and magnitude.
+  - Report the standard errors for these estimates to ensure statistical significance [@Ebbes2011].
+  
+---
+
+### Practical Guidelines for Using TSLS
+
+**Evaluating Instrument Strength**
+
+- **Report the R²** of the first-stage regression, both with and without the IVs included.
+  - A large difference in R² indicates strong instruments.
+- Report the **F-statistic** for the excluded IVs.
+  - A common benchmark is F > 10 for strong instruments, but this should be interpreted as a minimum requirement [@stock2002diagnostic; @rossi2014instrument].
+  
+---
+
+### Practical Guidelines for Using TSLS
+
+**Stability and Sensitivity Analysis**
+
+- If multiple IVs are used for a single endogenous regressor, compare results:
+  - Use the theoretically strongest IV alone and compare it to using all IVs.
+  - This helps check the stability of the results. If large differences are found, the validity of the IVs should be re-examined [@angrist2008mostly; @Ebbes2011].
+  
+---
+
+### Practical Guidelines for Using TSLS
+
+**Endogeneity Testing**
+
+- Perform a formal test for the presence of endogeneity, such as the **Hausman test**.
+  - This test compares OLS estimates to 2SLS and checks if the OLS estimator is consistent.
+  - If the null hypothesis is rejected, then 2SLS should be used [@wooldridge2010econometric; @verbeek2012econometrics].
+  
+---
+
+### Practical Guidelines for Using TSLS
+
+**Over-Identification Test**
+
+- When there are more IVs than endogenous regressors, a **Sargan test** (or Hansen J-test) should be performed.
+  - This test checks if the IVs are valid (exogenous) by testing their relationship to the residuals from the second-stage regression.
+  - Large p-values suggest that the IVs are valid, but this test should not replace theoretical reasoning [@wooldridge2010econometric; @bascle2008overidentification].
+  
+---
 
 ## Control Function Approach
 
@@ -565,8 +714,6 @@ Where we see $\zeta$ as an (exogenous) explanatory variable and $\lambda \zeta$ 
 $\Rightarrow$ Decomposition and rewriting would lead to the same form of IV approach (**only for OLS because of linearity**)
 
 ---
-
-
 
 ## Control Function Approach
 

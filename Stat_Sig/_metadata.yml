@@ -13,7 +13,7 @@ format:
     code-copy: true
     code-fold: true
     code-link: true
-    footer: "DoubleMLDeep"
+    footer: "Statistical Significance, Impact, and Relevance: Endogeneity"
     theme: [default, ../shared_files/doubleml_theme.scss]
     chalkboard: # enables chalkboard see https://rajgoel.github.io/reveal.js-demos/chalkboard-demo.html#/
       boardmarker-width: 5
