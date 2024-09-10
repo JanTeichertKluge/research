@@ -1,0 +1,593 @@
+<div style="text-align: center;">
+<div class="logo-container">
+<img src='figures/uhh_logo.png' alt="UHH" height='150px'>
+</div>
+<h1 style="text-align: left; margin-top: 1.0cm;">Endogeneity</h1>
+<h2 style="text-align: left; margin-top: 0.5cm;">Statistical Significance, Impact, and Relevance</h2>
+<p style="text-align: left; margin-top: 0.5cm;">PhD Course; Prof. Dr. Dr. h.c. Sönke Albers<br> September 17 - 19, 2024 Hamburg</p>
+
+<div class="author-container">
+<p class="author"><b>Jan Teichert-Kluge <br> <small>University of Hamburg</small></b></p>
+</div>
+</div>
+
+# Introduction to Endogeneity
+
+## What is Endogeneity?
+- **Violation of the Exogeneity Assumption**
+$$
+E[u|X_{1}, \dots, X_{p}] \neq 0
+$$
+- **Endogeneity** refers to situations where an explanatory variable is correlated with the error term in a regression model.
+- It is a critical issue because it leads to **biased estimates**, impacting the validity of causal inferences [@Ebbes2021].
+- Sources of endogeneity [@Hill2021]:
+  - **Omitted variable bias**
+  - **Measurement error**
+  - **Simultaneity**.
+
+---
+
+## Why does Endogeneity Matter?
+
+- **Statistical Significance**: Endogeneity can influence the significance of key variables.
+- **Causal Inference**: Without addressing endogeneity, any causal claims are questionable.
+- **Marketing Research**: Marketing models often involve simultaneous decisions by consumers and firms, introducing endogeneity [@Papies2022].
+
+. . .
+
+$\Rightarrow$ *"Everything is endogenous, except for God."*
+
+---
+
+## Examples of Endogeneity in Marketing
+
+- In marketing, **price** is often endogenous because it is determined simultaneously with demand.
+  * e.g. estimating price elasticity of demand
+- **Advertising** may also be endogenous due to unobserved factors influencing both sales and ad expenditures [@Rossi2014].
+
+
+---
+
+# Theory {transition="concave-in"}
+
+## Omitted Variable Bias
+Our goal is to do valid inference for a target parameter of interest $\beta$. Consider the following simple linear regression model (the *long* model) including all covariates:
+$$
+Y = \alpha^{\text{l}} + \beta^{\text{l}} X + \gamma W + \xi, \quad \mathbb{E}[\xi | X] = 0
+$$
+
+:::{style="font-size: 100%;"}
+Where:
+
+- $Y$ is the dependent variable (e.g., sales),
+- $X$ and $W$ are independent variables (e.g., advertising expenditure, product quality),
+- $\xi$ is the error term, capturing all other factors affecting $Y$.
+:::
+
+---
+
+## Omitted Variable Bias
+Assume you forgot the other relevant variable $W$ that is correlated both with $Y$ and $X$ and $W$ now is **omitted** from the model. The new (*short* model) specification would be:
+
+$$
+Y = \alpha^{\text{s}} + \beta^{\text{s}} X + \zeta, \quad \mathbb{E}[\zeta | X] \neq 0
+$$
+
+However, when $W$ is omitted from the regression, the error term $\zeta$ from the *short* model will include the effect of $W$:
+$$
+\zeta = \xi + \gamma W
+$$
+This causes $\zeta$ to be **correlated** with $X$, leading to **omitted variable bias**. In this case, the estimate of $\beta$ will be biased because part of the effect of $W$ on $Y$ will incorrectly be attributed to $X$.
+
+---
+
+## Omitted Variable Bias
+The problem now is the biased estimate of $\beta$. In the *short model*, $\beta^{\text{s}}$ is
+$$
+\beta^{\text{s}} = \frac{\text{Cov}(X, Y)}{\text{Var}(X)}
+$$
+Substituting $Y$ from the true / *long* form brings us to:
+$$
+\beta^{\text{s}} = \frac{\text{Cov}(X, \alpha^{\text{l}} + \beta^{\text{l}} X + \gamma W + \xi)}{\text{Var}(X)}
+$$
+---
+
+## Omitted Variable Bias
+Application of the properties of (co-)variances leads to simplified decomposition: 
+$$
+\beta^{\text{s}} = \frac{\overbrace{\text{Cov}(X, \alpha^{\text{l}})}^{=0} + \beta^{\text{l}} \overbrace{\text{Cov}(X, X)}^{=\text{Var}(X)} + \gamma \text{Cov}(X, W) + \overbrace{\text{Cov}(X, \xi)}^{=0}}{\text{Var}(X)}
+$$
+where $\text{Cov}(X, \xi) = 0$ because of $\mathbb{E}[\xi | X] = 0$.
+We get the simplified form:
+$$
+\beta^{\text{s}} = \beta^{\text{l}} + \gamma \frac{\text{Cov}(X, W)}{\text{Var}(X)}
+$$
+
+---
+
+## Omitted Variable Bias
+
+We want an unbiased estimate, i.e., for $\beta^{\text{s}} = \beta^{\text{l}}$. Thus, the second term on the right-hand side must vanish:
+
+$$
+0 = \gamma \frac{\text{Cov}(X, W)}{\text{Var}(X)}.
+$$
+
+Since $\text{Var}(X) \neq 0$ and $\gamma \neq 0$ by model specification, the product can only be zero if $X$ and $W$ are uncorrelated. Therefore, we require:
+
+$$
+\text{Cov}(X, W) = 0.
+$$
+
+Or, in other words, $X$ and $W$ must be orthogonal: $X \perp W$.
+---
+
+## Simultaneity
+
+What happens if the variables are linked in a more complex way, so that we need at least two or more equations to describe them?
+
+**Example: Price Elasticity of Demand**
+
+The price elasticity of demand measures the responsiveness of quantity demanded to changes in price, represented as:
+
+$$
+\xi = \frac{\% \Delta Q}{\% \Delta P} = \frac{\Delta Q}{Q} \frac{\Delta P}{P}
+$$
+
+- Intersections of demand and supply functions, **simultaneous causality**.
+
+. . .
+
+Assume unobserved demand and supply shocks:
+$\Rightarrow$ Endogeneity of $\ln(P)$
+
+---
+
+## Simultaneity
+
+We can estimate the price elasticity using the least squares approach based on observed prices and quantities. The logarithmic model is:
+
+$$
+\ln(Q_i) = \alpha + \beta \ln(P_i) + u_i
+$$
+
+Where:
+
+- $Q_i$ is the quantity,
+- $P_i$ is the price,
+- $u_i$ is the error term,
+- $\beta$ gives us the elasticity of demand.
+
+---
+
+## Simultaneity
+
+:::: {.columns}
+
+::: {.column width="60%"}
+
+- Observed equilibrium quantities and prices: Intersections of demand and supply functions
+- A simultaneous shift in both the demand and supply functions can lead to **endogeneity** in the observed price $\ln(P_i)$, causing biased estimates if not properly addressed.
+
+
+$\Rightarrow$ ⚡ Positive slope of the estimated demand curve
+
+:::
+
+::: {.column width="40%"}
+
+```{python}
+# import libraries
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+import numpy as np
+import pandas as pd
+import statsmodels.api as sm
+
+# Set seed for reproducibility
+np.random.seed(31416)
+
+# define demand function
+def demand(p, u):
+    return 120 - p + u
+
+
+# define supply function
+def supply(p,e):
+    return p + e
+
+# define equilibrium function
+def equilibrium(u,e):
+    p = (120 + u - e) / 2
+    q = demand(p,u)
+    return p, q
+
+# Create an array of 1000 equally spaced points between 0 and 100
+p = np.linspace(5, 100, 1000)
+
+# save p_eq and q_eq in a pd.DataFrame
+df = pd.DataFrame(columns=['u', 'e', 'p_eq', 'q_eq'])
+
+# Set 3 different values for e and u to iterate over
+u_values = np.array([10, 20, 30, 40])# * np.random.normal(1, 4, 3)
+e_values = np.array([20, 30, 40, 50])# * np.random.normal(1, 4, 3)
+
+# Calculate equilibrium price and quantity for each combination of u and e
+for i in range(len(u_values)):
+    for j in range(len(e_values)):
+        u = u_values[i]
+        e = e_values[j]
+
+        # Create demand and supply arrays
+        q_demand = demand(p, u)
+        q_supply = supply(p, e)
+
+        # Find the equilibrium price and quantity
+        p_eq, q_eq = equilibrium(u, e)
+        this_df = pd.DataFrame({'u': [u], 'e': [e], 'p_eq': [p_eq], 'q_eq': [q_eq], 'i_demand': [i], 'i_supply': [j]})
+        df = pd.concat([df, this_df], ignore_index=True)
+
+# Randomly sample 8 equilibrium points
+df_smpl = df.sample(8)
+
+# range for x and y axis
+range_x = [df['p_eq'].min()-8, df['p_eq'].max()+8]
+range_y = [df['q_eq'].min()-12, df['q_eq'].max()+12]
+
+# Scatterplot of equilibrium price and elasticity estimation
+X = sm.add_constant(df_smpl['p_eq'])
+model = sm.OLS(df_smpl['q_eq'], X)
+results = model.fit()
+intercept, slope = results.params
+x = np.linspace(range_x[0], range_x[1], 100)
+y = intercept + slope * x
+
+# Color palette (colorblind friendly)
+color_palette = ['#377eb8', '#ff7f00', '#4daf4a', '#f781bf', '#a65628', '#984ea3',
+                '#999999', '#e41a1c', '#dede00']
+col_1, col_2, col_3, col_4, col_5 = color_palette[:5]
+
+# plotly scatter plot for equilibrium points
+trace_1 = go.Scatter(x=df_smpl['p_eq'], y=df_smpl['q_eq'], mode='markers',
+                    name='(P*, Q*)', marker=dict(size=10, color = col_1),
+                    textposition='top right')
+
+# plotly line plot for OLS estimation
+trace_2 = go.Scatter(x=x, y=y, mode='lines', name=f'OLS, Slope: {slope:.2f}',
+                    line=dict(color=col_2, width=3), visible='legendonly')
+
+# Create the figure
+fig = go.Figure()
+fig.add_trace(trace_1)
+fig.add_trace(trace_2)
+
+fig.update_xaxes(range=range_x, showticklabels=False)
+fig.update_yaxes(range=range_y, showticklabels=False)
+
+# legend position: below figure
+fig.update_layout(
+    xaxis_title='Price (P)',
+    yaxis_title='Quantity (Q)',
+    template='plotly_white',
+    width=450,  # Set the width of the figure
+    height=400,  # Set the height of the figure
+    legend=dict(x=0.5, y=-0.25, xanchor='center', yanchor='top', orientation='h'),
+    margin=dict(l=40, r=40, t=20, b=40)
+)
+
+fig.show()
+
+```
+
+:::
+
+::::
+
+---
+
+## Simultaneity
+
+:::: {.columns}
+
+::: {.column width="60%"}
+
+- Observed equilibrium quantities and prices: Intersections of demand and supply functions
+- A simultaneous shift in both the demand and supply functions can lead to **endogeneity** in the observed price $\ln(P_i)$, causing biased estimates if not properly addressed.
+
+
+$\Rightarrow$ ✅ Negative slope of the demand function
+
+:::
+
+::: {.column width="40%"}
+
+```{python}
+# Plot the true demand and supply functions together with equlibrium points
+fig = go.Figure()
+
+# Plot only randomly 5 equilibrium points for simplicity
+for i in range(len(u_values)):
+  q_demand = demand(p, u_values[i])
+  q_supply = supply(p, e_values[i])
+
+  fig.add_trace(go.Scatter(x=p, y=q_demand, mode='lines', name=f'D {i+1}', text=f'D {i+1}', 
+  hoverinfo='text', line=dict(color=col_3, width=1.2), showlegend=False))
+  fig.add_trace(go.Scatter(x=p, y=q_supply, mode='lines', name=f'S {i+1}', text=f'S {i+1}',
+  hoverinfo='text', line=dict(color=col_5, width=1.2), showlegend=False))
+# Add obs. equilibrium points
+fig.add_trace(go.Scatter(x=df_smpl['p_eq'], y=df_smpl['q_eq'], mode='markers',
+              name='(P*, Q*)', marker=dict(size=10, color = col_1),
+              textposition='top right'))
+
+fig.update_xaxes(range=range_x, showticklabels=False)
+fig.update_yaxes(range=range_y, showticklabels=False)
+
+# legend position: below figure
+fig.update_layout(
+    xaxis_title='Price (P)',
+    yaxis_title='Quantity (Q)',
+    template='plotly_white',
+    width=450,  # Set the width of the figure
+    height=400,  # Set the height of the figure
+    legend=dict(x=0.5, y=-0.25, xanchor='center', yanchor='top', orientation='h'),
+    margin=dict(l=40, r=40, t=20, b=40)
+)
+
+fig.show()
+
+```
+
+:::
+
+::::
+
+---
+
+## Measurement Error
+
+The relationship between education and wages can be modeled (e.g. simplified *Mincer Equation*) as:
+
+$$
+\ln(W) = \alpha + \beta E + u
+$$
+
+Where:
+
+- $W$ is the wage,
+- $E$ is the years of education,
+- $u$ is the error term,
+- $\beta$ is the return to education (i.e., the effect of an additional year of education on wages).
+
+---
+
+## Measurement Error
+
+If education $E$ is measured with error, say we observe $E^*$ instead of the true value $E$, then:
+
+$$
+E^* = E + v
+$$
+
+Where:
+
+- $E^*$ is the observed (but erroneous) measure of education,
+- $v$ is the measurement error.
+
+This leads to the observed equation:
+
+$$
+\ln(W) = \alpha + \beta (E^* - v) + u
+$$
+
+---
+
+## Measurement Error
+
+Rearranging the previous equation gives:
+
+$$
+\ln(W) = \alpha + \beta E^* + (\beta v + u)
+$$
+
+Here, the new error term $(\beta v + u)$ consists of both the original error $u$ and the measurement error $v$. This causes **endogeneity** because the measurement error $v$ is likely correlated with the observed $E_i^*$, violating the assumption that the error term is uncorrelated with the independent variable, leading to biased and inconsistent estimates of $\beta$.
+
+---
+
+# Dealing with Endogeneity
+
+## Instrumental Variables (IVs)
+
+- Instrumental Variable Estimation: General approach for consistent estimation even in the presence of Endogeneity
+- Assume an OLS Example:
+$$
+Y = \alpha + \beta X + \gamma W + \xi
+$$
+
+Where
+
+- $X$ is exogenous (holding orthogonality condition $\mathbb{E}[X' \xi]=0$).
+- $W$ is an endogenous variable.
+- and $\xi$ as the errorterm.
+
+---
+
+## Instrumental Variables (IVs)
+
+💡 **Idea: IV Estimation**
+
+- Search for instrumental variables, $Z$, i.e., exogenous variables that are correlated with the endogenous regressor $W$
+  - Conditions for a Valid Instrumental Variable:
+    1. **IV1. Relevance**: $\text{Cor}(Z, X) \neq 0$
+    2. **IV2. Exogeneity**: $\text{Cor}(Z, \xi) = 0$
+- Isolate the part of the variation in $W$ that is not correlated with $\xi$
+- Use the exogenous variation in $W$ to estimate the regression coefficients
+
+. . .
+
+$\Rightarrow$ For linear models, we can follow the simple **Two-Stage Least Squares (TSLS)** approach!
+
+---
+
+## Instrumental Variables (IVs)
+
+### Two-Stage Least Squares (TSLS)
+
+1️⃣ **First Stage**
+
+Decomposition of $W$ into two components:
+
+$$
+W = \underbrace{\pi_0 + \pi_1 Z}_{\text{Part of } W \text{ that is } \\ \text{not correlated with } \xi} + \underbrace{\zeta}_{\text{Part of } W \text{ that is } \\ \text{correlated with } \xi}
+$$
+
+Estimate this equation using OLS: Use the predicted values $\hat{W} = \hat{\pi}_0 + \hat{\pi}_1 Z$ instead of $W$ in the second stage.
+
+> - **Relevance**: $\pi_1 \neq 0$
+> - **Exogeneity**: $\text{Cor}(\pi_0 + \pi_1 Z, \xi) = 0$
+
+---
+
+### Two-Stage Least Squares (TSLS)
+
+ 2️⃣ **Second Stage**
+
+Estimate a regression model for $Y$ based on the predicted values for $\hat{W}$:
+
+$$
+Y = \alpha + \beta X + \gamma \hat{W} + \tilde{\xi}
+$$
+
+- Under the IV assumptions **IV1.** and **IV2.**, the TSLS estimator $\hat{\gamma}^{TSLS}$ is a consistent, unbiased, and asymptotically normally distributed estimator for $\gamma$.
+- Adjustment of standard errors for $\hat{\gamma}^{TSLS}$ is necessary for valid test statistics and confidence intervals.
+
+---
+
+### TSLS Estimator in One Step
+
+- The TSLS estimator can also be calculated in a single step:
+$$
+\hat{\gamma}^{TSLS} = \frac{\widehat{\mathrm{Cov}}(Z, Y)}{\widehat{\mathrm{Cov}}(Z, W)}
+$$
+- It can be shown that the TSLS estimator is asymptotically normally distributed:
+$$
+\hat{\gamma}^{TSLS} \leadsto^d N\left(\gamma, \sigma^2_{\hat{\gamma}^{TSLS}}\right).
+$$
+- With variance estimator:
+$$
+\sigma^2_{\hat{\gamma}^{TSLS}} = \frac{1}{n}  \frac{\mathrm{Var}\left((Z - E[Z]) \xi \right)}{\left[\widehat{\mathrm{Cov}}(Z, W)\right]^2} .
+$$
+
+
+## Control Function Approach
+
+- **Purpose**: A method to correct for endogeneity by incorporating an additional "control function" in the model to account for endogenous explanatory variables ([@Papies2017], [@Ebbes2011] and [@Petrin2010]).
+  - For the linear model (OLS), the CF approach is **exactly equivalent to TSLS**!
+  
+💡 **Idea: Control Function Approach (CF)**
+
+  - A control function is constructed using the residuals from the endogenous variable's first-stage regression [@Petrin2010].
+  - This function is then included in the second-stage regression to purge the correlation between the endogenous regressor and the error term [@Hill2021].
+
+---
+
+
+## Control Function Approach
+**Key Concepts**:
+
+
+1️⃣ **First Stage**:
+
+   - Regress the endogenous variable on all exogenous variables (including instruments).
+   - Obtain the residuals (control function) [@Petrin2010].
+
+2️⃣ **Second Stage**:
+
+   - Include the control function from the first stage in the original model [@Wooldridge2015].
+   - Estimate the regression with the control function to account for endogeneity [@Angrist2001].
+
+
+---
+
+## Control Function Approach
+
+Lets look at a simple OLS Example with one endogenous variable:
+$$
+Y = \alpha + \beta X + \gamma W + \xi
+$$
+
+Where
+
+- $X$ is exogenous (holding orthogonality condition $\mathbb{E}[X' \xi]=0$) and can be used as valid instrument.
+- $W$ is an endogenous variable.
+- and $\xi$ as the errorterm.
+
+Now, we will follow the **Stages** for the Control Function approach.
+
+## Control Function Approach
+
+1️⃣ **First Stage**
+
+Regress $W$ on all exogenous variables $X$ and instruments $Z$:
+$$
+W = \underbrace{\pi_0 + \pi_1 Z}_{\text{Part of } W \text{ that is } \\ \text{not correlated with } \xi} + \underbrace{\zeta}_{\text{Part of } W \text{ that is } \\ \text{correlated with } \xi}
+$$
+
+:::{style="font-size: 75%;"}
+Where:
+
+- $\mathbb{E}[Z' \zeta] = 0$.
+- $W$ is the endogenous variable.
+- $Z$ is the instruments
+- $\zeta$ are the residuals (**CF**).
+
+:::
+
+We can write the linear projection of $\xi$ on $\zeta$ in error form as
+$$
+\xi = \lambda \zeta + \varepsilon
+$$
+
+---
+
+## Control Function Approach
+
+2️⃣ **Second Stage**:
+
+Plugging the linear projection into the model:
+$$
+Y = \alpha + \beta X + \lambda \zeta + \varepsilon
+$$
+
+Where we see $\zeta$ as an (exogenous) explanatory variable and $\lambda \zeta$ is the control function term to account for endogeneity [@Papies2017].
+
+. . .
+
+$\Rightarrow$ Decomposition and rewriting would lead to the same form of IV approach (**only for OLS because of linearity**)
+
+---
+
+
+
+## Control Function Approach
+
+**Advantages**:
+
+- **Simplicity**: Easy to implement and interpret [@Wooldridge2015].
+- **Flexibility**: Can handle various forms of endogeneity, such as simultaneity or omitted variables [@Ebbes2021].
+- **Robustness**: Works well even with a small number of instruments or noisy instruments [@Hill2021].
+
+---
+
+# Thank you for your attention!
+
+
+# References {transition="concave-in"}
+
+## References
+
+::: {#refs}
+:::
+
+
+# Appendix {.appendix transition="concave-in"}
+
