@@ -59,6 +59,7 @@
   <link href="presentation_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
   <link href="presentation_files/libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
   <link href="presentation_files/libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
+  <link href="presentation_files/libs/revealjs/plugin/reveal-pointer/pointer.css" rel="stylesheet">
   <link href="presentation_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
   <style type="text/css">
 
@@ -354,13 +355,18 @@
 <section class="slide level2">
 
 <div style="text-align: center;">
+<!--
 <div class="logo-container">
-<p><img src="../shared_files/uhh_logo.png" alt="UHH" height="125px"> <img src="../shared_files/mit_logo.png" alt="MIT" height="100px"> <img src="../shared_files/logo_eai_full.png" alt="EAI" height="70px"> <img src="../shared_files/logo.png" alt="DML" height="90px"></p>
+<img src='../shared_files/uhh_logo.png' alt="UHH" height='125px'>
+<img src='../shared_files/mit_logo.png' alt="MIT" height='100px'>
+<img src='../shared_files/logo_eai_full.png' alt="EAI" height='70px'>
+<img src='../shared_files/logo.png' alt="DML" height='90px'>
 </div>
-<h2 style="text-align: left; margin-top: 0.5cm;">
+-->
+<h1 style="text-align: left; margin-top: 1.5cm;">
 DoubleMLDeep: Estimation of Causal Effects with Multimodal Data
-</h2>
-<p style="text-align: left;">
+</h1>
+<p style="text-align: left; margin-top: 0.5cm;">
 2024 ESIF Economics and AI+ML Meeting <br> August 13 - 14, 2024; Ithaca, United States
 </p>
 <div class="author-container">
@@ -384,6 +390,19 @@ Suhas Vijaykumar <br> <small>Massachusetts Institute<br>of Technology</small>
 </p>
 </div>
 </div>
+<aside class="notes">
+<p>Good morning, everyone. Thank you for joining us today. My name is Jan Teichert-Kluge from the University of Hamburg. Today I will present our work on ‘DoubleMLDeep: Estimation of Causal Effects with Multimodal Data’ which is a project together with my colleagues, Sven Klaassen, Philipp Bach, Martin Spindler, and from the Massachusetts Institute of Technology, Victor Chernozhukov and Suhas Vijaykumar.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section>
 <section>
 <section id="motivation" class="title-slide slide level1 center" data-transition="concave-in">
@@ -401,13 +420,13 @@ Suhas Vijaykumar <br> <small>Massachusetts Institute<br>of Technology</small>
 <p><a href="figures/Excel.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img data-src="figures/Excel.png" class="quarto-figure quarto-figure-left"></a></p>
 </figure>
 </div>
-</div><div class="column" style="width:45%;">
+</div><div class="column fragment" style="width:45%;">
 <ul>
 <li>In a lot of applications additional unstructured data is available</li>
 </ul>
 <div class="quarto-figure quarto-figure-right">
 <figure>
-<p><a href="figures/booking_com.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img data-src="figures/booking_com.png" class="quarto-figure quarto-figure-right"></a></p>
+<p><a href="figures/amazon_ss.PNG" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img data-src="figures/amazon_ss.PNG" class="quarto-figure quarto-figure-right"></a></p>
 </figure>
 </div>
 </div><div class="fragment">
@@ -415,11 +434,91 @@ Suhas Vijaykumar <br> <small>Massachusetts Institute<br>of Technology</small>
 <li>We consider multimodal data as <strong>confounders</strong></li>
 <li>Applications in Marketing, Medicine / Health, Finance, ….
 <ul>
-<li>Price elasticity of demand</li>
+<li>Demand estimation</li>
 <li>Estimation of treatment effects conditioning on X-ray images</li>
 </ul></li>
 </ul>
+<aside class="notes">
+<p>Causal inference has traditionally relied on tabular data as the primary source of information. However, many applications generate or contain a significant amount of unstructured data that can be valuable in this context. For instance, in marketing, medicine, and finance, the combination of tabular data with text, images, and other types of unstructured data can improve the accuracy of causal estimates. Our research explores the effective integration of multimodal data as confounders.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </div>
+</section>
+<section id="motivation-2" class="slide level2">
+<h2>Motivation</h2>
+<ul>
+<li>Use multimodal data (text and images) <em>additionally</em> to conventional tabular features</li>
+</ul>
+<center>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="figures/DAG_ProblemSet.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="Examples of directed acyclic graphs (DAGs) with image and text confounding. (a) Direct confounding via image, text and tabular data. (b) Treatment decision is driven by text and images. All backdoor paths are blocked by conditioning on both image and text data."><img data-src="figures/DAG_ProblemSet.png" width="700" alt="Examples of directed acyclic graphs (DAGs) with image and text confounding. (a) Direct confounding via image, text and tabular data. (b) Treatment decision is driven by text and images. All backdoor paths are blocked by conditioning on both image and text data."></a></p>
+<figcaption>Examples of directed acyclic graphs (DAGs) with image and text confounding. (a) Direct confounding via image, text and tabular data. (b) Treatment decision is driven by text and images. All backdoor paths are blocked by conditioning on both image and text data.</figcaption>
+</figure>
+</div>
+</center>
+<div class="fragment">
+<p><span class="math inline">\(\Rightarrow\)</span> Adjust for confounding encoded in unstructured data</p>
+<aside class="notes">
+<p>“Why use multimodal data”? …“to adjust for confounding encoded in text and image data”</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</div>
+</section>
+<section id="motivation-3" class="slide level2">
+<h2>Motivation</h2>
+<div class="columns">
+<div class="column" style="width:33%;">
+<p><strong>Opportunities</strong></p>
+<ul>
+<li>Exploit state-of-the art architectures for causal estimation (for example LLMs)</li>
+<li>Example: Demand estimation, account for description, images, reviews</li>
+<li>Huge potential for future research</li>
+</ul>
+</div><div class="column fragment" style="width:33%;">
+<p><strong>Challenges</strong></p>
+<ul>
+<li>Recent innovations in deep learning for prediction</li>
+<li>Limitations of ML-based estimation due to regularization in causal estimation</li>
+<li>Need for effective Deep Learning architecture</li>
+<li>Challenges in identifying causal effects even in idealized simulations</li>
+</ul>
+</div><div class="column fragment" style="width:33%;">
+<p><strong>Our approach</strong></p>
+<ul>
+<li>Integrate state-of-the art Deep Learning tools for estimation of Causal Parameters</li>
+<li><em>DoubleML<sup>1</sup></em>: Use DML to account for ML regularization bias</li>
+<li>Combination: <em>DoubleML</em> + Deep Learning = <strong>DoubleMLDeep</strong></li>
+</ul>
+</div></div>
+<aside><ol class="aside-footnotes"><li id="fn1"><p>Double / debiased machine learning framework of <span class="citation" data-cites="dml2018">Chernozhukov et al. (<a href="#/references-1" role="doc-biblioref" onclick="">2018</a>)</span>. The Python (<span class="citation" data-cites="bach2022doubleml">Bach et al. (<a href="#/references-1" role="doc-biblioref" onclick="">2022</a>)</span>) and R (<span class="citation" data-cites="dml_R">Bach et al. (<a href="#/references-1" role="doc-biblioref" onclick="">2024</a>)</span>) package provide an implementation.</p></li></ol></aside></section>
+<section id="literature-review" class="slide level2">
+<h2>Literature Review</h2>
+<ul>
+<li><p>Unstructured data like images and text are key for estimating causal parameters in various contexts, such as price elasticities and medical treatments <span class="citation" data-cites="chang2018 masukawa2022">(<a href="#/references-1" role="doc-biblioref" onclick="">Chan et al. 2018</a>; <a href="#/references-1" role="doc-biblioref" onclick="">Masukawa et al. 2022</a>)</span>, and climate effects <span class="citation" data-cites="wu2023">(<a href="#/references-1" role="doc-biblioref" onclick="">Wu, Duan, and Zhang 2023</a>)</span>.</p></li>
+<li><p>Text as an outcome/treatment has been conceptually explored by <span class="citation" data-cites="egami2018how">Egami et al. (<a href="#/references-1" role="doc-biblioref" onclick="">2018</a>)</span> and <span class="citation" data-cites="Blei2022">Sridhar and Blei (<a href="#/references-1" role="doc-biblioref" onclick="">2022</a>)</span>.</p></li>
+<li><p><span class="citation" data-cites="Veitch20a">Veitch, Sridhar, and Blei (<a href="#/references-1" role="doc-biblioref" onclick="">2020</a>)</span> discuss consistency in this setting; we extend it by integrating text/images into double machine learning for valid inference.</p></li>
+<li><p>Transformer models for treatment effects are applied by <span class="citation" data-cites="causaltrans">Melnychuk, Frauen, and Feuerriegel (<a href="#/references-1" role="doc-biblioref" onclick="">2022</a>)</span>, though without inference results.</p></li>
+<li><p>There are also approaches to use images in causal inference <span class="citation" data-cites="Jerzak2023 Jerzak2023imagebased Jerzak2023integrating">(<a href="#/references-1" role="doc-biblioref" onclick="">Jerzak, Johansson, and Daoud 2023a</a>, <a href="#/references-1" role="doc-biblioref" onclick="">2023b</a>, <a href="#/references-1" role="doc-biblioref" onclick="">2023c</a>)</span>, but our approach enable valid inference with both, text and images, in a multimodal framework.</p></li>
+</ul>
 </section>
 <section id="motivating-example---plr" class="slide level2">
 <h2>Motivating Example - PLR</h2>
@@ -436,19 +535,32 @@ D &amp;= m_0(X) + \vartheta, &amp; \mathbb{E}[\vartheta | X] = 0 \label{eq:plr2}
 <ul>
 <li><span class="math inline">\(Y\)</span> - outcome variable</li>
 <li><span class="math inline">\(D\)</span> - policy/treatment variable</li>
-<li><span class="math inline">\(X = (X_1, \dots)^T\)</span> - vector of additional controls</li>
+<li><span class="math inline">\(X = (X_1, \dots X_p)^T\)</span> - vector of additional controls</li>
 <li><span class="math inline">\(\varepsilon\)</span>, <span class="math inline">\(\vartheta\)</span> - stochastic errors</li>
 </ul>
 </div><div class="column" style="width:50%;">
 <center>
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><a href="figures/DAG_plr_001.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="DAG for PLR Model"><img data-src="figures/DAG_plr_001.png" width="300" alt="DAG for PLR Model"></a></p>
+<p><a href="figures/DAG_plr_001.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" title="DAG for PLR Model"><img data-src="figures/DAG_plr_001.png" width="300" alt="DAG for PLR Model"></a></p>
 <figcaption>DAG for PLR Model</figcaption>
 </figure>
 </div>
 </center>
 </div></div>
+<aside class="notes">
+<p>To illustrate, let us consider a partially linear regression model, or PLR. In this model, the outcome variable, denoted by Y, is influenced by a treatment variable, D, and a set of controls, X. The model assumes that the errors, denoted by epsilon and lower theta, are uncorrelated with X and D.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section>
 <section id="doubledebiased-machine-learning-dml" class="slide level2">
 <h2>Double/Debiased Machine Learning (DML)</h2>
@@ -466,44 +578,44 @@ m_0(X)&amp;:=\mathbb{E}[D|X]
 0 = \frac{1}{n}\sum_{i=1}^n \psi(W,\hat{\theta},\hat{\eta})
 \]</span></li>
 </ul>
-</section>
-<section id="doubledebiased-machine-learning-dml-1" class="slide level2">
-<h2>Double/Debiased Machine Learning (DML)</h2>
-<ul>
-<li><p><strong>Neyman Orthogonality</strong> <span class="math display">\[
-\left.\partial_\eta \mathbb{E}[\psi(W; \theta_0, \eta)] \right|_{\eta=\eta_0} = 0
-\]</span> ensures that the moment condition identifying <span class="math inline">\(\theta_0\)</span> is <strong>insensitive to small pertubations</strong> of the nuisance function <span class="math inline">\(\eta\)</span> around <span class="math inline">\(\eta_0\)</span></p></li>
-<li><p>Assumptions for the nuisance elements (see <span class="citation" data-cites="dml2018">Chernozhukov et al. (<a href="#/references-1" role="doc-biblioref" onclick="">2018</a>)</span>) <span class="math display">\[
-\lVert \hat{m} - m_0 \rVert_{P,2} \times \big( \lVert \hat{m} - m_0 \rVert_{P,2} +  \lVert \hat{\ell} - \ell_0\rVert _{P,2}\big) \le \delta_N N^{-1/2}
-\]</span></p></li>
-<li><p>Under some regularity conditions the estimator <span class="math inline">\(\hat{\theta}\)</span> concentrates in <span class="math inline">\(1/\sqrt{N}\)</span>-neighborhood of <span class="math inline">\(\theta_0\)</span> and <span class="math display">\[
-\sqrt{N}(\hat{\theta} - \theta_0) \to \mathcal{N}(0,\sigma^2)
-\]</span></p></li>
-</ul>
-<div class="fragment">
-<p><span class="math inline">\(\Rightarrow\)</span> simple approach to control for confounders, <em>if they can be used for ML models!</em></p>
-</div>
+<aside class="notes">
+<p>The technique of double/debiasing machine learning (DML) employs machine learning to estimate nuisance parameters, specifically, the expected values of Y and D given X, represented by l0(X) and m0(X), respectively. These estimates are then used to construct an orthogonalized score. This approach allows for the isolation of the causal effect, θ, through the solving of a moment equation. This method ensures robustness and improves the accuracy of causal estimates.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section></section>
 <section>
 <section id="doublemldeep" class="title-slide slide level1 center" data-transition="concave-in">
 <h1>DoubleMLDeep</h1>
 
 </section>
-<section id="doublemldeep---motivation" class="slide level2">
-<h2>DoubleMLDeep - Motivation</h2>
-<ul>
-<li>Use multimodal data (text and images) <em>additionally</em> to conventional tabular features</li>
-</ul>
+
+<section id="doublemldeep---module-structure" class="slide level2" data-transition="zoom-out">
+<h2>DoubleMLDeep - Module Structure</h2>
 <center>
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><a href="figures/DAG_ProblemSet.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" title="Examples of directed acyclic graphs (DAGs) with image and text confounding. (a) Direct confounding via image, text and tabular data. (b) Treatment decision is driven by text and images. All backdoor paths are blocked by conditioning on both image and text data."><img data-src="figures/DAG_ProblemSet.png" width="750" alt="Examples of directed acyclic graphs (DAGs) with image and text confounding. (a) Direct confounding via image, text and tabular data. (b) Treatment decision is driven by text and images. All backdoor paths are blocked by conditioning on both image and text data."></a></p>
-<figcaption>Examples of directed acyclic graphs (DAGs) with image and text confounding. (a) Direct confounding via image, text and tabular data. (b) Treatment decision is driven by text and images. All backdoor paths are blocked by conditioning on both image and text data.</figcaption>
+<p><a href="dml_deep_arch.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6" title="High-Level PLR Model Architecture. Both nuisance components are trained simultaneously with a combined loss."><img data-src="dml_deep_arch.png" data-id="id1" width="900" alt="High-Level PLR Model Architecture. Both nuisance components are trained simultaneously with a combined loss."></a></p>
+<figcaption>High-Level PLR Model Architecture. Both nuisance components are trained simultaneously with a combined loss.</figcaption>
 </figure>
 </div>
 </center>
+<div class="fragment" data-id="box1" style="background: #265a93; opacity:0.3; padding: 5px; border: 2px solid black; width: 300px; height: 300px; margin: 10px; position: absolute; top: 40px; right: 30px">
+<p><span style="color:white;"><strong>Nuisance Estimation</strong></span></p>
+</div>
 <aside class="notes">
-
+<p>We begin with three types of inputs: (X_{txt}) for text data, (X_{img}) for image data, and (X_{tab}) for tabular data. Each input type is processed through specialized modules to generate feature representations.</p>
+<p>Larger pretrained models are used for the unstructured data, while simple and smaller models are used for the tabular data.</p>
+<p>The encoded features from these different modalities are then combined through a sophisticated fusion block. Within this block, each modality representation ((H_{txt}), (H_{img}), (H_{tab})) undergoes layer normalization to standardize the feature distributions. Cross Attention Blocks (CABs) are employed to enable interaction and information exchange between the different modalities. This process generates two outputs: (H_U) (the unstructured representation) and (H_C) (the confounding representation).</p>
+<p>The unstructured and confounding representations are used for making final predictions. These representations are passed through fully connected (FC) layers, producing the predictions ((X)) and ((X)). The network’s performance is optimized using a combined loss function (L), which aggregates the prediction errors to refine the learning process of the entire network.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -516,114 +628,28 @@ m_0(X)&amp;:=\mathbb{E}[D|X]
           display:block!important;
       }</style></aside>
 </section>
-<section id="doublemldeep---module-structure" class="slide level2" data-transition="zoom-out">
-<h2>DoubleMLDeep - Module Structure</h2>
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><a href="dml_deep_arch.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5" title="High-Level PLR Model Architecture. Both nuisance components are trained simultaneously with a combined loss."><img data-src="dml_deep_arch.png" data-id="id1" width="900" alt="High-Level PLR Model Architecture. Both nuisance components are trained simultaneously with a combined loss."></a></p>
-<figcaption>High-Level PLR Model Architecture. Both nuisance components are trained simultaneously with a combined loss.</figcaption>
-</figure>
-</div>
-<div class="fragment" data-id="box1" style="background: #265a93; opacity:0.3; padding: 5px; border: 2px solid black; width: 300px; height: 300px; margin: 10px; position: absolute; top: 40px; right: 30px">
-<p><span style="color:white;"><strong>Nuisance Estimation</strong></span></p>
-</div>
-</section>
 <section id="doublemldeep---module-structure-1" class="slide level2" data-transition="zoom-in">
 <h2>DoubleMLDeep - Module Structure</h2>
+<center>
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><a href="figures/dml_deep_arch_loss_1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6" title="Nuisance Estimation with Combined Loss in case of multiple treatments with nuisance loss monitoring."><img data-src="figures/dml_deep_arch_loss_1.png" data-id="id1" width="700" alt="Nuisance Estimation with Combined Loss in case of multiple treatments with nuisance loss monitoring."></a></p>
+<p><a href="figures/dml_deep_arch_loss_1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-7" title="Nuisance Estimation with Combined Loss in case of multiple treatments with nuisance loss monitoring."><img data-src="figures/dml_deep_arch_loss_1.png" data-id="id1" width="700" alt="Nuisance Estimation with Combined Loss in case of multiple treatments with nuisance loss monitoring."></a></p>
 <figcaption>Nuisance Estimation with Combined Loss in case of multiple treatments with nuisance loss monitoring.</figcaption>
 </figure>
 </div>
+</center>
 <div class="fragment" style="font-size: 75%;">
 <ul>
 <li>It is possible to use binary treatment variables <span class="math inline">\(D \in \{0,1\}\)</span> by adjusting the loss function: <span class="math display">\[L = L_{log}(D, \hat{m}(X))\lVert Y - \hat{l}(X)  \rVert_{P_n,2}\]</span></li>
 </ul>
 </div>
-</section>
-<section id="doublemldeep---workflow" class="slide level2">
-<h2>DoubleMLDeep - Workflow</h2>
-<center>
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><a href="figures/DMLDeep_Workflow2.png" class="lightbox" data-gallery="quarto-lightbox-gallery-7" title="High-Level Workflow of DoubleMLDeep"><img data-src="figures/DMLDeep_Workflow2.png" alt="High-Level Workflow of DoubleMLDeep"></a></p>
-<figcaption>High-Level Workflow of <em>DoubleMLDeep</em></figcaption>
-</figure>
-</div>
-</center>
-<aside class="notes">
-<p>Now I would like to briefly explain the workflow of DoubleMLDeep in Python.</p>
-<p>First of all, some necessary input parameters must be defined. Then the actual DoubleMLDeep network can be created, which uses Hugging Face Transformer models and the Pytorch framework, among other things.</p>
-<p>A DoubleMLDeep Data Module must be created and handles the various input data such as texts and images. This uses the Pytorch Lightning Framework.</p>
-<p>The DoubleMLDeep Lightning Module also uses Pytorch Lightning and contains additional training parameters.</p>
-<p>The network can now be trained with the pytorch Lightning Trainer. The corresponding predictions in the DoubleML package can then be used to obtain the estimate of the causal parameter.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
 </section></section>
 <section>
 <section id="application" class="title-slide slide level1 center" data-transition="concave-in">
 <h1>Application</h1>
 
 </section>
-<section id="application-estimation-of-price-elasticity" class="slide level2">
-<h2>Application: Estimation of Price Elasticity</h2>
-<ul>
-<li>Understanding price elasticity is crucial for economic analysis and business decisions
-<ul>
-<li>It influences strategies, pricing, and market dynamics</li>
-</ul></li>
-<li>Specifically in online marketplaces, unstructured data is available</li>
-</ul>
-<div class="image-container">
-<img src="figures/amazon_ss.PNG" alt="Amazon Webshop">
-<div class="annotation1" style="font-size: 16px; color: white; font-weight: bold;">
-Image Data
-</div>
-<div class="annotation2" style="font-size: 16px; color: white; font-weight: bold;">
-Text Data
-</div>
-<div class="annotation3" style="font-size: 16px; color: white; font-weight: bold;">
-Tabular Data
-</div>
-</div>
-<script>
-    const annotation1 = document.querySelector(".annotation1");
-    const annotation2 = document.querySelector(".annotation2");
-    const annotation3 = document.querySelector(".annotation3");
-    const imageContainer = document.querySelector(".image-container");
 
-    let clickCount = 0;
-
-    imageContainer.addEventListener("click", () => {
-        clickCount++;
-        annotation1.classList.remove("active");
-        annotation2.classList.remove("active");
-        annotation3.classList.remove("active");
-        if (clickCount === 1) {
-            annotation1.classList.toggle("active");
-        } else if (clickCount === 2) {
-            annotation2.classList.toggle("active");
-        } else if (clickCount === 3) {
-            annotation3.classList.toggle("active");
-        } else if (clickCount === 4) {
-            annotation1.classList.toggle("active");
-            annotation2.classList.toggle("active");
-            annotation3.classList.toggle("active");
-            clickCount = 0;
-        }
-    });
-</script>
-</section>
 <section id="amazon-toys-dataset" class="slide level2">
 <h2>Amazon Toys Dataset</h2>
 <ul>
@@ -647,41 +673,32 @@ Tabular Data
 <td>Price as weighted mean for the last 30 days</td>
 </tr>
 <tr class="odd">
+<td>Tabular</td>
+<td>Tabular features as reviews, ratings, etc.</td>
+</tr>
+<tr class="even">
 <td>Text</td>
 <td>Combination of Title, Category, Description, etc.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>Image</td>
 <td>Image of the product</td>
 </tr>
 </tbody>
 </table>
-</section>
-<section id="amazon-toys-dataset-1" class="slide level2">
-<h2>Amazon Toys Dataset</h2>
-<div class="columns my-table">
-<div class="column" style="width:50%;">
-<p><strong>Continous Variables</strong></p>
-<ul>
-<li>Reviews: Rating<br>
-</li>
-<li>Reviews: Review Count<br>
-</li>
-<li>New Offer Count: Current<br>
-</li>
-<li>Count of retrieved live offers: New, FBA<br>
-</li>
-<li>Count of retrieved live offers: New, FBM</li>
-</ul>
-</div><div class="column" style="width:50%;">
-<p><strong>Categorical Variables</strong></p>
-<ul>
-<li>Lightning Deals: Upcoming Deal<br>
-</li>
-<li>Buy Box: Is FBA</li>
-</ul>
-</div></div>
-<p>Scatterplots with OLS Regression of Tabular Variables and <span class="math inline">\(\ln(Q)\)</span> <img data-src="figures/tab_pairplot.png"></p>
+<aside class="notes">
+<p>In order to illustrate our methodology, we used the Amazon Toys Dataset. This dataset comprises sales data from the toys and games category, specifically vehicles, cars, and trucks. We employed the sales rank as a surrogate for quantities sold, in accordance with the methodology proposed by Bajari et al.&nbsp;The dataset encompasses a range of variables, including sales rank, price, textual descriptions, and product images, offering a comprehensive source of multimodal data for our analysis.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section>
 <section id="model" class="slide level2">
 <h2>Model</h2>
@@ -695,9 +712,19 @@ Tabular Data
 <center>
 <img data-src="figures/DAG_application_002.png" width="300">
 </center>
-<div class="fragment">
-<p><span class="math inline">\(\Rightarrow\)</span> The causal parameter <span class="math inline">\(\theta_0\)</span> can be interpreted as price elasticity of demand!</p>
-</div>
+<aside class="notes">
+<p>Our model involves running a simple log-log regression. By incorporating images and text, we block potential backdoor paths from price to demand or sales rank. The regression equation, ( (Q) = _0 (P) + g_0(X) + ), allows us to interpret the causal parameter ( _0 ) as the price elasticity of demand. This approach leverages the strengths of multimodal data to provide more accurate and interpretable estimates.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section>
 <section id="baseline-ols-model" class="slide level2">
 <h2>Baseline OLS Model</h2>
@@ -738,6 +765,19 @@ Tabular Data
 </figure>
 </div>
 </div></div>
+<aside class="notes">
+<p>In our baseline model, we employ ordinary least squares (OLS) regression with tabular covariates, denoted as X_(tab). The model is specified as ln(Q) = θ₀ ln(P) + β^T X_(tab) + ε, yielding an R² value of 0.330. This baseline serves as a reference point for evaluating the performance of models incorporating multimodal data.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section>
 <section id="baseline-dml-model" class="slide level2">
 <h2>Baseline DML Model</h2>
@@ -780,99 +820,57 @@ Tabular Data
 </figure>
 </div>
 </div></div>
+<aside class="notes">
+<p>In the baseline DML model, the DoubleMLPLR model with RandomForest regressors is employed to estimate the nuisance parameters with tabular data covariates, denoted as X_(tab). The expected log-quantity and log-price are represented by the functions l₀(X_(tab)) and m₀(X_(tab)), respectively, with R² values of 0.5986 and 0.1884. The estimated causal effect ranges from -0.132 to -0.080, with a central estimate of -0.1098.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section>
 <section id="deep-learning-models" class="slide level2">
 <h2>Deep Learning Models</h2>
 <ul>
-<li>In this study, a variety of input data combinations were used to train <span class="math inline">\(\texttt{DoubleMLPLRDeep}\)</span> models <sup>1</sup>:</li>
+<li>The <span class="math inline">\(\texttt{DoubleMLPLRDeep}\)</span> was trained using sets of covariates augmented with text, image, or both modalities:</li>
 </ul>
 <table class="caption-top">
 <thead>
 <tr class="header">
-<th>Key</th>
 <th>Used Confounders</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td><span class="math inline">\(\texttt{img}\)</span></td>
-<td><span class="math inline">\(X = (X_{img})\)</span></td>
-</tr>
-<tr class="even">
-<td><span class="math inline">\(\texttt{imgtab}\)</span></td>
-<td><span class="math inline">\(X = (X_{img}, X_{tab})\)</span></td>
-</tr>
-<tr class="odd">
-<td><span class="math inline">\(\texttt{txtimg}\)</span></td>
-<td><span class="math inline">\(X = (X_{txt}, X_{img})\)</span></td>
-</tr>
-<tr class="even">
-<td><span class="math inline">\(\texttt{txt}\)</span></td>
-<td><span class="math inline">\(X = (X_{txt})\)</span></td>
-</tr>
-<tr class="odd">
-<td><span class="math inline">\(\texttt{txttab}\)</span></td>
 <td><span class="math inline">\(X = (X_{txt}, X_{tab})\)</span></td>
 </tr>
 <tr class="even">
-<td><span class="math inline">\(\texttt{txtimgtab}\)</span></td>
+<td><span class="math inline">\(X = (X_{img}, X_{tab})\)</span></td>
+</tr>
+<tr class="odd">
 <td><span class="math inline">\(X = (X_{txt}, X_{img}, X_{tab})\)</span></td>
 </tr>
 </tbody>
 </table>
+<div style="font-size: 75%;">
+<ul>
+<li>With each set of covariates <span class="math inline">\(X\)</span>, 5 runs are evaluated.</li>
+<li>The models were trained over 10 epochs with early stopping callback.</li>
+<li>The data was split into 80% training and 20% validation data.</li>
+</ul>
+</div>
 <div class="fragment">
 <p><span class="math inline">\(\Rightarrow\)</span> The aim is to emphasize the benefits of utilizing unstructured data.</p>
 </div>
-<aside><ol class="aside-footnotes"><li id="fn1"><p>Subsequently, the top 5 performing instances for each combination were evaluated based on the minimum RMSE score of the validation data.</p></li></ol></aside></section>
-<section id="deep-learning-models-rmse-scores" class="slide level2">
-<h2>Deep Learning Models: RMSE-Scores</h2>
-<div class="columns">
-<div class="column" style="width:50%;">
-<ul>
-<li>Combined RMSE Score (Training)</li>
-</ul>
-<p><a href="figures/train_comb_loss_mod.png" class="lightbox" data-gallery="quarto-lightbox-gallery-10"><img data-src="figures/train_comb_loss_mod.png"></a></p>
-</div><div class="column" style="width:50%;">
-<ul>
-<li>Combined RMSE Score (Validation)</li>
-</ul>
-<p><a href="figures/val_comb_loss_mod.png" class="lightbox" data-gallery="quarto-lightbox-gallery-11"><img data-src="figures/val_comb_loss_mod.png"></a></p>
-</div></div>
-</section>
-<section id="deep-learning-models-r2-scores" class="slide level2">
-<h2>Deep Learning Models: <span class="math inline">\(R^2\)</span>-Scores</h2>
-<div class="columns">
-<div class="column" style="width:50%;">
-<ul>
-<li><span class="math inline">\(R^2\)</span> of log(Quantity) on Validation Set</li>
-</ul>
-<p><a href="figures/R2_ml_l_mod.png" class="lightbox" data-gallery="quarto-lightbox-gallery-12"><img data-src="figures/R2_ml_l_mod.png"></a></p>
-</div><div class="column" style="width:50%;">
-<ul>
-<li><span class="math inline">\(R^2\)</span> of log(Price) on Validation Set</li>
-</ul>
-<p><a href="figures/R2_ml_m_mod.png" class="lightbox" data-gallery="quarto-lightbox-gallery-13"><img data-src="figures/R2_ml_m_mod.png"></a></p>
-</div></div>
 </section>
 <section id="first-results" class="slide level2">
 <h2>(First) Results</h2>
-<div class="columns">
-<div class="column" style="width:50%;">
-<ul>
-<li>Using different combinations of tabular, image and text data we obtain the following estimates</li>
-</ul>
-<p><a href="figures/theta_ln_p.png" class="lightbox" data-gallery="quarto-lightbox-gallery-14"><img data-src="figures/theta_ln_p.png"></a></p>
-</div><div class="column" style="width:50%;">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><a href="figures/cont_dml_sub.png" class="lightbox" data-gallery="quarto-lightbox-gallery-15" title="Continous Estimates from \texttt{DoubleMLPLR} on Validation Set during the Training Process"><img data-src="figures/cont_dml_sub.png" alt="Continous Estimates from \texttt{DoubleMLPLR} on Validation Set during the Training Process"></a></p>
-<figcaption>Continous Estimates from <span class="math inline">\(\texttt{DoubleMLPLR}\)</span> on Validation Set during the Training Process</figcaption>
-</figure>
-</div>
-</div></div>
-</section>
-<section id="first-results-1" class="slide level2">
-<h2>(First) Results</h2>
+<div style="font-size: 100%;">
 <table class="caption-top">
 <colgroup>
 <col style="width: 20%">
@@ -883,7 +881,7 @@ Tabular Data
 </colgroup>
 <thead>
 <tr class="header">
-<th>Model</th>
+<th>Model<sup>1</sup></th>
 <th>Covariates</th>
 <th><span class="math inline">\(R^2_{l_0}\)</span></th>
 <th><span class="math inline">\(R^2_{m_0}\)</span></th>
@@ -899,34 +897,71 @@ Tabular Data
 <td><span class="math inline">\(-0.0455\)</span></td>
 </tr>
 <tr class="even">
-<td><span class="math inline">\(\texttt{DoubleMLPLR}\)</span></td>
+<td><span class="math inline">\(\texttt{PLR}\)</span></td>
 <td><span class="math inline">\(X=X_{tab}\)</span></td>
 <td><span class="math inline">\(0.5986\)</span></td>
 <td><span class="math inline">\(0.1884\)</span></td>
 <td><span class="math inline">\(-0.1098\)</span></td>
 </tr>
 <tr class="odd">
-<td><span class="math inline">\(\texttt{DoubleMLPLRDeep}\)</span><sup>1</sup></td>
-<td><span class="math inline">\(X=(X_{tab}, X_{txt}, X_{img})\)</span></td>
-<td><span class="math inline">\(0.5990\)</span></td>
-<td><span class="math inline">\(0.6765\)</span></td>
-<td><span class="math inline">\(-0.2794\)</span></td>
+<td><span class="math inline">\(\texttt{PLRDeep}\)</span></td>
+<td><span class="math inline">\(X=(X_{txt}, X_{tab})\)</span></td>
+<td><span class="math inline">\(0.5574 \scriptstyle \pm0.025\)</span></td>
+<td><span class="math inline">\(0.6188 \scriptstyle \pm0.015\)</span></td>
+<td><span class="math inline">\(-0.2137 \scriptstyle \pm0.053\)</span></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\texttt{PLRDeep}\)</span></td>
+<td><span class="math inline">\(X=(X_{img}, X_{tab})\)</span></td>
+<td><span class="math inline">\(0.4518 \scriptstyle \pm0.029\)</span></td>
+<td><span class="math inline">\(0.5085 \scriptstyle \pm0.028\)</span></td>
+<td><span class="math inline">\(-0.2721 \scriptstyle \pm0.038\)</span></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\texttt{PLRDeep}\)</span></td>
+<td><span class="math inline">\(X=(X_{txt}, X_{img}, X_{tab})\)</span></td>
+<td><span class="math inline">\(0.5829 \scriptstyle \pm0.015\)</span></td>
+<td><span class="math inline">\(0.6532 \scriptstyle \pm0.018\)</span></td>
+<td><span class="math inline">\(-0.2794 \scriptstyle \pm0.044\)</span></td>
 </tr>
 </tbody>
 </table>
+</div>
+<div class="fragment" style="font-size: 85%;">
 <ul>
 <li>Estimates <span class="math inline">\(\hat{\theta}\)</span> become more negative with the inclusion of unstructured data</li>
-<li>The <span class="math inline">\(R^2\)</span>-scores of the nuisance functions improve with the inclusion of unstructured data</li>
+<li>The <span class="math inline">\(R^2\)</span>-score of <span class="math inline">\(m_0\)</span> improve with the inclusion of unstructured data</li>
 <li>Semi-synthetic data can illustrate the potential of unstructured data (see Appendix)</li>
 </ul>
-<aside><ol class="aside-footnotes"><li id="fn2"><p>Mean values of the <span class="math inline">\(\texttt{DoubleMLDeep}\)</span> Model with tabular, text and image data as covariates.</p></li></ol></aside></section></section>
-<section>
-<section id="thank-you-for-your-attention" class="title-slide slide level1 center" data-transition="concave-in">
+</div>
+<aside class="notes">
+<p>This table summarizes the performance of our models with different covariates. For the OLS model using tabular data, the (R^2) score is 0.3300 with a (_0) estimate of -0.0455. The DoubleMLPLR model with tabular data shows improved (R^2) scores of 0.5986 and 0.1884 for the nuisance functions, with a (_0) of -0.1098. The DoubleMLPLRDeep model incorporating tabular, text, and image data further improves the (R^2) scores to 0.5990 and 0.6765, with a (_0) estimate of -0.2794. These results indicate that incorporating unstructured data improves both the accuracy of the nuisance function estimates and the overall model performance.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<aside><ol class="aside-footnotes"><li id="fn2"><p>Mean values <span class="math inline">\(\pm\)</span> standard error of the <span class="math inline">\(\texttt{DoubleMLDeep}\)</span> Model with tabular, text and image data as covariates.</p></li></ol></aside></section>
+<section id="future-directions" class="slide level2">
+<h2>Future Directions</h2>
+<ul>
+<li>Explore settings with multiple treatment variables.</li>
+<li>Investigate heterogeneous treatment effects.</li>
+<li>Apply the DoubleMLDeep framework in Difference-in-Differences (DiD) and Instrumental Variables (IV) settings.</li>
+<li>Conduct extensive simulation studies to test the robustness and accuracy of the DoubleMLDeep framework under various conditions.</li>
+</ul>
+<div class="fragment">
+<p><span class="math inline">\(\Rightarrow\)</span> <strong>You can find more information in our paper: <span class="citation" data-cites="klaassen2024doublemldeepestimationcausaleffects">Klaassen et al. (<a href="#/references-1" role="doc-biblioref" onclick="">2024</a>)</span></strong></p>
+</div>
+</section></section>
+<section id="thank-you-for-your-attention" class="title-slide slide level1 center">
 <h1>Thank you for your attention!</h1>
-
-</section>
-<section id="affiliations" class="slide level2">
-<h2>Affiliations</h2>
 <div class="affiliation-grid">
 <div class="affiliation">
 <a href="https://www.bwl.uni-hamburg.de/en/statistik/allgemein.html"><img src="../shared_files/uhh_logo.png" alt="UHH" height="150px"></a>
@@ -965,7 +1000,21 @@ DoubleML
 </p>
 </div>
 </div>
-</section></section>
+<aside class="notes">
+<p>Our research is a collaborative effort between the University of Hamburg, the Massachusetts Institute of Technology, and Economic AI. For more information, you can visit our respective websites listed here. Additionally, you can find detailed documentation on DoubleML at the provided link.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+
 <section>
 <section id="references" class="title-slide slide level1 center" data-transition="concave-in">
 <h1>References</h1>
@@ -977,14 +1026,35 @@ DoubleML
 <div id="ref-bach2022doubleml" class="csl-entry" role="listitem">
 Bach, Philipp, Victor Chernozhukov, Malte S Kurz, and Martin Spindler. 2022. <span>“DoubleML-an Object-Oriented Implementation of Double Machine Learning in Python.”</span> <em>Journal of Machine Learning Research</em> 23: 53–51.
 </div>
+<div id="ref-dml_R" class="csl-entry" role="listitem">
+Bach, Philipp, Malte S. Kurz, Victor Chernozhukov, Martin Spindler, and Sven Klaassen. 2024. <span>“DoubleML: An Object-Oriented Implementation of Double Machine Learning in r.”</span> <em>Journal of Statistical Software</em> 108 (3): 1–56. <a href="https://doi.org/10.18637/jss.v108.i03">https://doi.org/10.18637/jss.v108.i03</a>.
+</div>
 <div id="ref-bajari2023hedonic" class="csl-entry" role="listitem">
 Bajari, Patrick, Zhihao Cen, Victor Chernozhukov, Manoj Manukonda, Suhas Vijaykumar, Jin Wang, Ramon Huerta, et al. 2023. <span>“Hedonic Prices and Quality Adjusted Price Indices Powered by AI.”</span> <a href="https://arxiv.org/abs/2305.00044">https://arxiv.org/abs/2305.00044</a>.
+</div>
+<div id="ref-chang2018" class="csl-entry" role="listitem">
+Chan, Alex J., Isabel Chien, Edward T. Moseley, Saad Salman, Sarah Kaminer Bourland, Daniela Lamas, Anne M. Walling, and James A. Tulsky. 2018. <span>“Deep Learning Algorithms to Identify Documentation of Serious Illness Conversations During Intensive Care Unit Admissions.”</span> <em>Palliative Medicine</em>. <a href="https://doi.org/10.1177/0269216318810421">https://doi.org/10.1177/0269216318810421</a>.
 </div>
 <div id="ref-dml2018" class="csl-entry" role="listitem">
 Chernozhukov, Victor, Denis Chetverikov, Mert Demirer, Esther Duflo, Christian Hansen, Whitney Newey, and James Robins. 2018. <span>“Double/Debiased Machine Learning for Treatment and Structural Parameters.”</span> <em>The Econometrics Journal</em> 21 (1): C1–68. <a href="https://onlinelibrary.wiley.com/doi/abs/10.1111/ectj.12097">https://onlinelibrary.wiley.com/doi/abs/10.1111/ectj.12097</a>.
 </div>
+<div id="ref-egami2018how" class="csl-entry" role="listitem">
+Egami, Naoki, Christian J. Fong, Justin Grimmer, Margaret E. Roberts, and Brandon M. Stewart. 2018. <span>“How to Make Causal Inferences Using Texts.”</span> <a href="https://arxiv.org/abs/1802.02163">https://arxiv.org/abs/1802.02163</a>.
+</div>
+<div id="ref-Jerzak2023" class="csl-entry" role="listitem">
+Jerzak, Connor T., Fredrik Johansson, and Adel Daoud. 2023a. <span>“Estimating Causal Effects Under Image Confounding Bias with an Application to Poverty in Africa.”</span> <a href="https://arxiv.org/abs/2206.06410">https://arxiv.org/abs/2206.06410</a>.
+</div>
+<div id="ref-Jerzak2023imagebased" class="csl-entry" role="listitem">
+———. 2023b. <span>“Image-Based Treatment Effect Heterogeneity.”</span> <a href="https://arxiv.org/abs/2206.06417">https://arxiv.org/abs/2206.06417</a>.
+</div>
+<div id="ref-Jerzak2023integrating" class="csl-entry" role="listitem">
+———. 2023c. <span>“Integrating Earth Observation Data into Causal Inference: Challenges and Opportunities.”</span> <a href="https://arxiv.org/abs/2301.12985">https://arxiv.org/abs/2301.12985</a>.
+</div>
 <div id="ref-lightgbm" class="csl-entry" role="listitem">
 Ke, Guolin, Qi Meng, Thomas Finley, Taifeng Wang, Wei Chen, Weidong Ma, Qiwei Ye, and Tie-Yan Liu. 2017. <span>“Lightgbm: A Highly Efficient Gradient Boosting Decision Tree.”</span> <em>Advances in Neural Information Processing Systems</em> 30: 3146–54.
+</div>
+<div id="ref-klaassen2024doublemldeepestimationcausaleffects" class="csl-entry" role="listitem">
+Klaassen, Sven, Jan Teichert-Kluge, Philipp Bach, Victor Chernozhukov, Martin Spindler, and Suhas Vijaykumar. 2024. <span>“DoubleMLDeep: Estimation of Causal Effects with Multimodal Data.”</span> <a href="https://arxiv.org/abs/2402.01785">https://arxiv.org/abs/2402.01785</a>.
 </div>
 <div id="ref-Krizhevsky09learningmultiple" class="csl-entry" role="listitem">
 Krizhevsky, Alex. 2009. <span>“Learning Multiple Layers of Features from Tiny Images.”</span>
@@ -992,8 +1062,23 @@ Krizhevsky, Alex. 2009. <span>“Learning Multiple Layers of Features from Tiny 
 <div id="ref-maas-EtAl:2011:ACL-HLT2011" class="csl-entry" role="listitem">
 Maas, Andrew L., Raymond E. Daly, Peter T. Pham, Dan Huang, Andrew Y. Ng, and Christopher Potts. 2011. <span>“Learning Word Vectors for Sentiment Analysis.”</span> In <em>Proceedings of the 49th Annual Meeting of the Association for Computational Linguistics: Human Language Technologies</em>, 142–50. Portland, Oregon, USA: Association for Computational Linguistics. <a href="http://www.aclweb.org/anthology/P11-1015">http://www.aclweb.org/anthology/P11-1015</a>.
 </div>
+<div id="ref-masukawa2022" class="csl-entry" role="listitem">
+Masukawa, Kento, Maho Aoyama, Shinichiroh Yokota, Junya Nakamura, Ryoka Ishida, and Masaharu Nakayama. 2022. <span>“Machine Learning Models to Detect Social Distress, Spiritual Pain, and Severe Physical Psychological Symptoms in Terminally Ill Patients with Cancer from Unstructured Text Data in Electronic Medical Records.”</span> <em>Palliative Medicine</em>. <a href="https://doi.org/10.1177/02692163221105595">https://doi.org/10.1177/02692163221105595</a>.
+</div>
+<div id="ref-causaltrans" class="csl-entry" role="listitem">
+Melnychuk, Valentyn, Dennis Frauen, and Stefan Feuerriegel. 2022. <span>“Causal Transformer for Estimating Counterfactual Outcomes.”</span> <a href="https://arxiv.org/abs/2204.07258">https://arxiv.org/abs/2204.07258</a>.
+</div>
+<div id="ref-Blei2022" class="csl-entry" role="listitem">
+Sridhar, Dhanya, and David M. Blei. 2022. <span>“Causal Inference from Text: A Commentary.”</span> <em>Science Advances</em> 8 (42): eade6585. <a href="https://doi.org/10.1126/sciadv.ade6585">https://doi.org/10.1126/sciadv.ade6585</a>.
+</div>
+<div id="ref-Veitch20a" class="csl-entry" role="listitem">
+Veitch, Victor, Dhanya Sridhar, and David Blei. 2020. <span>“Adapting Text Embeddings for Causal Inference.”</span> In <em>Proceedings of the 36th Conference on Uncertainty in Artificial Intelligence (UAI)</em>, edited by Jonas Peters and David Sontag, 124:919–28. Proceedings of Machine Learning Research. PMLR. <a href="https://proceedings.mlr.press/v124/veitch20a.html">https://proceedings.mlr.press/v124/veitch20a.html</a>.
+</div>
 <div id="ref-ggplot2_book" class="csl-entry" role="listitem">
 Wickham, Hadley. 2016. <em>Ggplot2: Elegant Graphics for Data Analysis</em>. Springer-Verlag New York. <a href="https://ggplot2.tidyverse.org">https://ggplot2.tidyverse.org</a>.
+</div>
+<div id="ref-wu2023" class="csl-entry" role="listitem">
+Wu, Zhenhuan, Xingde Duan, and Wenzhuan Zhang. 2023. <span>“Bayesian Analysis of Tweedie Compound Poisson Partial Linear Mixed Models with Nonignorable Missing Response and Covariates.”</span> <em>Entropy</em>. <a href="https://doi.org/10.3390/e25030506">https://doi.org/10.3390/e25030506</a>.
 </div>
 </div>
 </section></section>
@@ -1019,14 +1104,14 @@ D &amp;= m_0(X) + \vartheta, &amp; \mathbb{E}[\vartheta | X] = 0
 <ul>
 <li><span class="math inline">\(Y\)</span> - outcome variable</li>
 <li><span class="math inline">\(D\)</span> - policy/treatment variable</li>
-<li><span class="math inline">\(X = (X_1, \dots)^T\)</span> - vector of additional controls</li>
+<li><span class="math inline">\(X = (X_1, \dots X_p)^T\)</span> - vector of additional controls</li>
 <li><span class="math inline">\(\varepsilon\)</span>, <span class="math inline">\(\vartheta\)</span> - stochastic errors</li>
 </ul>
 </div><div class="column" style="width:50%;">
 <center>
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><a href="figures/DAG_plr_001.png" class="lightbox" data-gallery="quarto-lightbox-gallery-16" title="DAG for PLR Model"><img data-src="figures/DAG_plr_001.png" width="300" alt="DAG for PLR Model"></a></p>
+<p><a href="figures/DAG_plr_001.png" class="lightbox" data-gallery="quarto-lightbox-gallery-10" title="DAG for PLR Model"><img data-src="figures/DAG_plr_001.png" width="300" alt="DAG for PLR Model"></a></p>
 <figcaption>DAG for PLR Model</figcaption>
 </figure>
 </div>
@@ -1039,7 +1124,7 @@ D &amp;= m_0(X) + \vartheta, &amp; \mathbb{E}[\vartheta | X] = 0
 <li>What if we simply plug-in ML predictions <span class="math inline">\(\hat{g}(X)\)</span> for <span class="math inline">\(g_0(X)\)</span> into <span class="math inline">\(Y = \theta_0D + g_0(X) + \varepsilon\)</span>?</li>
 </ul>
 <center>
-<p><a href="figures/naive_approach.png" class="lightbox" data-gallery="quarto-lightbox-gallery-17"><img data-src="figures/naive_approach.png" style="width:50.0%"></a></p>
+<p><a href="figures/naive_approach.png" class="lightbox" data-gallery="quarto-lightbox-gallery-11"><img data-src="figures/naive_approach.png" style="width:50.0%"></a></p>
 <center>
 </center></center></section>
 <section id="motivating-example---orthogonalization" class="slide level2" data-visibility="uncounted">
@@ -1053,9 +1138,42 @@ D &amp;= m_0(X) + \vartheta, &amp; \mathbb{E}[\vartheta | X] = 0
 </ol></li>
 </ul>
 <center>
-<p><a href="figures/dml_approach.png" class="lightbox" data-gallery="quarto-lightbox-gallery-18"><img data-src="figures/dml_approach.png" style="width:40.0%"></a></p>
+<p><a href="figures/dml_approach.png" class="lightbox" data-gallery="quarto-lightbox-gallery-12"><img data-src="figures/dml_approach.png" style="width:40.0%"></a></p>
 <center>
 </center></center></section>
+<section id="doubledebiased-machine-learning-dml-1" class="slide level2" data-visibility="uncounted">
+<h2>Double/Debiased Machine Learning (DML)</h2>
+<ul>
+<li><p><strong>Neyman Orthogonality</strong> <span class="math display">\[
+\left.\partial_\eta \mathbb{E}[\psi(W; \theta_0, \eta)] \right|_{\eta=\eta_0} = 0
+\]</span> ensures that the moment condition identifying <span class="math inline">\(\theta_0\)</span> is <strong>insensitive to small pertubations</strong> of the nuisance function <span class="math inline">\(\eta\)</span> around <span class="math inline">\(\eta_0\)</span></p></li>
+<li><p>Assumptions for the nuisance elements (see <span class="citation" data-cites="dml2018">Chernozhukov et al. (<a href="#/references-1" role="doc-biblioref" onclick="">2018</a>)</span>) <span class="math display">\[
+\lVert \hat{m} - m_0 \rVert_{P,2} \times \big( \lVert \hat{m} - m_0 \rVert_{P,2} +  \lVert \hat{\ell} - \ell_0\rVert _{P,2}\big) \le \delta_N N^{-1/2}
+\]</span></p></li>
+<li><p>Under some regularity conditions the estimator <span class="math inline">\(\hat{\theta}\)</span> concentrates in <span class="math inline">\(1/\sqrt{N}\)</span>-neighborhood of <span class="math inline">\(\theta_0\)</span> and <span class="math display">\[
+\sqrt{N}(\hat{\theta} - \theta_0) \to \mathcal{N}(0,\sigma^2)
+\]</span></p></li>
+</ul>
+<div class="fragment">
+<p><span class="math inline">\(\Rightarrow\)</span> simple approach to control for confounders, <em>if they can be used for ML models!</em></p>
+<aside class="notes">
+<p>Neyman Orthogonality is a crucial concept in DML. It ensures that the moment condition identifying the parameter ( _0 ) is insensitive to small perturbations in the nuisance function ( ) around its true value ( _0 ). This robustness is achieved through the orthogonalization of the score function.</p>
+<p>For the nuisance elements, certain assumptions must hold, as detailed in the literature (e.g., <span class="citation" data-cites="dml2018">Chernozhukov et al. (<a href="#/references-1" role="doc-biblioref" onclick="">2018</a>)</span>). Specifically, the product of the norms of the deviations of the estimated nuisance functions from their true counterparts must be bounded by a term proportional to ( N^{-1/2} ).</p>
+<p>Under regularity conditions, the estimator ( ) will concentrate within a ( 1/ )-neighborhood of the true parameter ( _0 ). Moreover, the normalized difference ( ( - _0) ) converges in distribution to a normal distribution ( (0, ^2) ).</p>
+<p>This orthogonalization approach provides a straightforward method to control for confounders, provided they can be included in machine learning models.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</div>
+</section>
 <section id="neyman-orthogonality" class="slide level2" data-visibility="uncounted">
 <h2>Neyman Orthogonality</h2>
 <p>The naive approach minimizes the following MSE</p>
@@ -1182,6 +1300,181 @@ min_{\theta} \mathbb{E}\big[\big(Y - \mathbb{E}[Y|X] - (D-\mathbb{E}[D|X])\theta
 </ul>
 <p>These conditions help maintain the validity of our estimates by ensuring that the discrepancies between our estimated nuisance functions and their true counterparts, along with stochastic errors, remain within acceptable bounds.</p></li>
 </ul>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="doublemldeep---workflow" class="slide level2" data-visibility="uncounted">
+<h2>DoubleMLDeep - Workflow</h2>
+<center>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="figures/DMLDeep_Workflow2.png" class="lightbox" data-gallery="quarto-lightbox-gallery-13" title="High-Level Workflow of DoubleMLDeep"><img data-src="figures/DMLDeep_Workflow2.png" alt="High-Level Workflow of DoubleMLDeep"></a></p>
+<figcaption>High-Level Workflow of <em>DoubleMLDeep</em></figcaption>
+</figure>
+</div>
+</center>
+<aside class="notes">
+<p>Now I would like to briefly explain the workflow of DoubleMLDeep in Python.</p>
+<p>First of all, some necessary input parameters must be defined. Then the actual DoubleMLDeep network can be created, which uses Hugging Face Transformer models and the Pytorch framework, among other things.</p>
+<p>A DoubleMLDeep Data Module must be created and handles the various input data such as texts and images. This uses the Pytorch Lightning Framework.</p>
+<p>The DoubleMLDeep Lightning Module also uses Pytorch Lightning and contains additional training parameters.</p>
+<p>The network can now be trained with the pytorch Lightning Trainer. The corresponding predictions in the DoubleML package can then be used to obtain the estimate of the causal parameter.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="appendix-application-amazon-toys-data" class="title-slide slide level1 appendix center" data-visibility="uncounted">
+<h1>Appendix: Application (Amazon Toys Data)</h1>
+
+</section>
+<section id="amazon-toys-dataset-1" class="slide level2" data-visibility="uncounted">
+<h2>Amazon Toys Dataset</h2>
+<div class="columns my-table">
+<div class="column" style="width:50%;">
+<p><strong>Continous Variables</strong></p>
+<ul>
+<li>Reviews: Rating<br>
+</li>
+<li>Reviews: Review Count<br>
+</li>
+<li>New Offer Count: Current<br>
+</li>
+<li>Count of retrieved live offers: New, FBA<br>
+</li>
+<li>Count of retrieved live offers: New, FBM</li>
+</ul>
+</div><div class="column" style="width:50%;">
+<p><strong>Categorical Variables</strong></p>
+<ul>
+<li>Lightning Deals: Upcoming Deal<br>
+</li>
+<li>Buy Box: Is FBA</li>
+</ul>
+</div></div>
+<p>Scatterplots with OLS Regression of Tabular Variables and <span class="math inline">\(\ln(Q)\)</span> <img data-src="figures/tab_pairplot.png"></p>
+</section>
+<section id="deep-learning-models-1" class="slide level2" data-visibility="uncounted">
+<h2>Deep Learning Models</h2>
+<ul>
+<li>In this study, a variety of input data combinations were used to train <span class="math inline">\(\texttt{DoubleMLPLRDeep}\)</span> models <sup>1</sup>:</li>
+</ul>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Key</th>
+<th>Used Confounders</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(\texttt{img}\)</span></td>
+<td><span class="math inline">\(X = (X_{img})\)</span></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\texttt{imgtab}\)</span></td>
+<td><span class="math inline">\(X = (X_{img}, X_{tab})\)</span></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\texttt{txtimg}\)</span></td>
+<td><span class="math inline">\(X = (X_{txt}, X_{img})\)</span></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\texttt{txt}\)</span></td>
+<td><span class="math inline">\(X = (X_{txt})\)</span></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\texttt{txttab}\)</span></td>
+<td><span class="math inline">\(X = (X_{txt}, X_{tab})\)</span></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\texttt{txtimgtab}\)</span></td>
+<td><span class="math inline">\(X = (X_{txt}, X_{img}, X_{tab})\)</span></td>
+</tr>
+</tbody>
+</table>
+<div class="fragment">
+<p><span class="math inline">\(\Rightarrow\)</span> The aim is to emphasize the benefits of utilizing unstructured data.</p>
+<aside class="notes">
+<p>In the present study, a variety of DoubleMLPLRDeep models were trained using distinct combinations of input data. The objective of this study is to demonstrate the advantages of incorporating unstructured data into causal inference models.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</div>
+<aside><ol class="aside-footnotes"><li id="fn3"><p>Subsequently, the top 5 performing instances for each combination were evaluated based on the minimum RMSE score of the validation data.</p></li></ol></aside></section>
+<section id="deep-learning-models-rmse-scores" class="slide level2" data-visibility="uncounted">
+<h2>Deep Learning Models: RMSE-Scores</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<ul>
+<li>Combined RMSE Score (Training)</li>
+</ul>
+<p><a href="figures/train_comb_loss_mod.png" class="lightbox" data-gallery="quarto-lightbox-gallery-14"><img data-src="figures/train_comb_loss_mod.png"></a></p>
+</div><div class="column" style="width:50%;">
+<ul>
+<li>Combined RMSE Score (Validation)</li>
+</ul>
+<p><a href="figures/val_comb_loss_mod.png" class="lightbox" data-gallery="quarto-lightbox-gallery-15"><img data-src="figures/val_comb_loss_mod.png"></a></p>
+</div></div>
+</section>
+<section id="deep-learning-models-r2-scores" class="slide level2" data-visibility="uncounted">
+<h2>Deep Learning Models: <span class="math inline">\(R^2\)</span>-Scores</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<ul>
+<li><span class="math inline">\(R^2\)</span> of log(Quantity) on Validation Set</li>
+</ul>
+<p><a href="figures/R2_ml_l_mod.png" class="lightbox" data-gallery="quarto-lightbox-gallery-16"><img data-src="figures/R2_ml_l_mod.png"></a></p>
+</div><div class="column" style="width:50%;">
+<ul>
+<li><span class="math inline">\(R^2\)</span> of log(Price) on Validation Set</li>
+</ul>
+<p><a href="figures/R2_ml_m_mod.png" class="lightbox" data-gallery="quarto-lightbox-gallery-17"><img data-src="figures/R2_ml_m_mod.png"></a></p>
+</div></div>
+</section>
+<section id="first-results-1" class="slide level2" data-visibility="uncounted">
+<h2>(First) Results</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<ul>
+<li>Using different combinations of tabular, image and text data we obtain the following estimates</li>
+</ul>
+<p><a href="figures/theta_ln_p.png" class="lightbox" data-gallery="quarto-lightbox-gallery-18"><img data-src="figures/theta_ln_p.png"></a></p>
+</div><div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="figures/cont_dml_sub.png" class="lightbox" data-gallery="quarto-lightbox-gallery-19" title="Continous Estimates from \texttt{DoubleMLPLR} on Validation Set during the Training Process"><img data-src="figures/cont_dml_sub.png" alt="Continous Estimates from \texttt{DoubleMLPLR} on Validation Set during the Training Process"></a></p>
+<figcaption>Continous Estimates from <span class="math inline">\(\texttt{DoubleMLPLR}\)</span> on Validation Set during the Training Process</figcaption>
+</figure>
+</div>
+</div></div>
+<aside class="notes">
+<p>Our initial results demonstrate the estimates obtained using different combinations of tabular, image, and text data. These continuous estimates are derived from the DoubleMLPLR model on the validation set during the training process. By comparing these estimates, we can assess the impact of each data combination on the accuracy and reliability of our causal effect estimates.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -1336,7 +1629,7 @@ D &amp;= \tilde{m}_0(\tilde{X}) + \vartheta,
 </ul>
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><a href="figures\DAG_SemiSynth.png" class="lightbox" data-gallery="quarto-lightbox-gallery-19" title="DAG for the semi-synthetic dataset. The confounding via the features X=(X_{\text{tab}}, X_{\text{txt}}, X_{\text{img}}) can be adjusted for, whereas the unexplained/noise parts U=(U_{\text{tab}}, U_{\text{txt}}, U_{\text{img}}) are unobserved."><img data-src="figures\DAG_SemiSynth.png" width="300" alt="DAG for the semi-synthetic dataset. The confounding via the features X=(X_{\text{tab}}, X_{\text{txt}}, X_{\text{img}}) can be adjusted for, whereas the unexplained/noise parts U=(U_{\text{tab}}, U_{\text{txt}}, U_{\text{img}}) are unobserved."></a></p>
+<p><a href="figures\DAG_SemiSynth.png" class="lightbox" data-gallery="quarto-lightbox-gallery-20" title="DAG for the semi-synthetic dataset. The confounding via the features X=(X_{\text{tab}}, X_{\text{txt}}, X_{\text{img}}) can be adjusted for, whereas the unexplained/noise parts U=(U_{\text{tab}}, U_{\text{txt}}, U_{\text{img}}) are unobserved."><img data-src="figures\DAG_SemiSynth.png" width="300" alt="DAG for the semi-synthetic dataset. The confounding via the features X=(X_{\text{tab}}, X_{\text{txt}}, X_{\text{img}}) can be adjusted for, whereas the unexplained/noise parts U=(U_{\text{tab}}, U_{\text{txt}}, U_{\text{img}}) are unobserved."></a></p>
 <figcaption>DAG for the semi-synthetic dataset. The confounding via the features <span class="math inline">\(X=(X_{\text{tab}}, X_{\text{txt}}, X_{\text{img}})\)</span> can be adjusted for, whereas the unexplained/noise parts <span class="math inline">\(U=(U_{\text{tab}}, U_{\text{txt}}, U_{\text{img}})\)</span> are unobserved.</figcaption>
 </figure>
 </div>
@@ -1455,7 +1748,7 @@ D &amp;= \tilde{m}_0(\tilde{X}) + \vartheta,
 <h2>Simulation Results - Performance of <span class="math inline">\(\hat{\theta}\)</span></h2>
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><a href="figures/theta_comp.png" class="lightbox" data-gallery="quarto-lightbox-gallery-20" title="Boxplots of \hat{\theta}. The Embedding Model and Deep Model have similar estimates. This indicates a stable and information-rich embedding H_E, which provides a high explanatory contribution independent of the subsequent ML method for predicting Y and D. \theta_0 represents the upper bound."><img data-src="figures/theta_comp.png" alt="Boxplots of \hat{\theta}. The Embedding Model and Deep Model have similar estimates. This indicates a stable and information-rich embedding H_E, which provides a high explanatory contribution independent of the subsequent ML method for predicting Y and D. \theta_0 represents the upper bound."></a></p>
+<p><a href="figures/theta_comp.png" class="lightbox" data-gallery="quarto-lightbox-gallery-21" title="Boxplots of \hat{\theta}. The Embedding Model and Deep Model have similar estimates. This indicates a stable and information-rich embedding H_E, which provides a high explanatory contribution independent of the subsequent ML method for predicting Y and D. \theta_0 represents the upper bound."><img data-src="figures/theta_comp.png" alt="Boxplots of \hat{\theta}. The Embedding Model and Deep Model have similar estimates. This indicates a stable and information-rich embedding H_E, which provides a high explanatory contribution independent of the subsequent ML method for predicting Y and D. \theta_0 represents the upper bound."></a></p>
 <figcaption>Boxplots of <span class="math inline">\(\hat{\theta}\)</span>. The Embedding Model and Deep Model have similar estimates. This indicates a stable and information-rich embedding <span class="math inline">\(H_E\)</span>, which provides a high explanatory contribution independent of the subsequent ML method for predicting <span class="math inline">\(Y\)</span> and <span class="math inline">\(D\)</span>. <span class="math inline">\(\theta_0\)</span> represents the upper bound.</figcaption>
 </figure>
 </div>
@@ -1477,6 +1770,7 @@ D &amp;= \tilde{m}_0(\tilde{X}) + \vartheta,
   <script src="presentation_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
   <script src="presentation_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
   <script src="presentation_files/libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
+  <script src="presentation_files/libs/revealjs/plugin/reveal-pointer/pointer.js"></script>
   <script src="presentation_files/libs/revealjs/plugin/quarto-support/support.js"></script>
   
 
@@ -1499,6 +1793,7 @@ D &amp;= \tilde{m}_0(\tilde{X}) + \vartheta,
 'autoAnimateUnmatched': true,
 'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
 'chalkboard': {"buttons":true,"boardmarkerWidth":5,"theme":"chalkboard"},
+'pointer': {"key":"q","color":"red","pointerSize":16,"alwaysVisible":false},
 'smaller': false,
  
         // Display controls in the bottom right corner
@@ -1669,7 +1964,7 @@ D &amp;= \tilde{m}_0(\tilde{X}) + \vartheta,
         },
 
         // reveal.js plugins
-        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, RevealChalkboard, QuartoSupport,
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, RevealChalkboard, RevealPointer, QuartoSupport,
 
           RevealMath,
           RevealNotes,
@@ -1865,7 +2160,7 @@ D &amp;= \tilde{m}_0(\tilde{X}) + \vartheta,
       }
     });
     </script>
-    <script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","openEffect":"zoom","selector":".lightbox","loop":false,"descPosition":"bottom"});
+    <script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","loop":false,"openEffect":"zoom","selector":".lightbox","descPosition":"bottom"});
     (function() {
       let previousOnload = window.onload;
       window.onload = () => {
