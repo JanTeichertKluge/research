@@ -7,7 +7,7 @@ execute:
   
 format:
   revealjs:
-    pagetitle: "DoubleMLDeep: Estimation of Causal Effects with Multimodal Data"
+    pagetitle: "Statistical Significance, Impact, and Relevance: Endogeneity"
     highlight-style: breezedark
     slide-number: true
     code-copy: true
