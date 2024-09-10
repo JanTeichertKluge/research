@@ -4,7 +4,7 @@
 </div>
 <h1 style="text-align: left; margin-top: 1.0cm;">Endogeneity</h1>
 <h2 style="text-align: left; margin-top: 0.5cm;">Statistical Significance, Impact, and Relevance</h2>
-<p style="text-align: left; margin-top: 0.5cm;">PhD Course; Prof. Dr. Dr. h.c. Sönke Albers<br> September 17 - 19, 2024 Hamburg</p>
+<p style="text-align: left; margin-top: 0.5cm;">PhD Course, Prof. Dr. Dr. h.c. Sönke Albers<br> September 17 - 19, 2024 Hamburg</p>
 
 <div class="author-container">
 <p class="author"><b>Jan Teichert-Kluge <br> <small>University of Hamburg</small></b></p>
@@ -13,19 +13,34 @@
 
 # Introduction to Endogeneity
 
-## What is Endogeneity?
-- **Violation of the Exogeneity Assumption**
+## What is Endogeneity ?
+- Yout want to do valid inference on a target parameter of interest in a $p$-dimensional general model like:
 $$
-E[u|X_{1}, \dots, X_{p}] \neq 0
+Y = g(X) + \xi
 $$
-- **Endogeneity** refers to situations where an explanatory variable is correlated with the error term in a regression model.
-- It is a critical issue because it leads to **biased estimates**, impacting the validity of causal inferences [@Ebbes2021].
-- Sources of endogeneity [@Hill2021]:
-  - **Omitted variable bias**
-  - **Measurement error**
-  - **Simultaneity**.
+
+- **Endogeneity is Violation of the Exogeneity Assumption 💡**:
+$$
+\mathbb{E}[\xi|X] \neq 0 
+$$
+
+- **Without Exogeneity, we are missing**:
+  - $\mathbb{E}[\xi] = 0$ (Law of total expectation)
+  - ($\mathbb{E}[X'\xi] = 0$, the regressors are uncorrelated with the errors)
 
 ---
+
+## What is Endogeneity ?
+
+- **Endogeneity** refers to situations where an explanatory variable is correlated with the error term in a regression model.
+- It is a critical issue because it leads to **biased estimates**, impacting the validity of causal inferences [@Ebbes2021].
+
+. . .
+
+- Sources of <s>evil</s> **endogeneity** [@Hill2021]:
+  - **1. Omitted variable bias**
+  - **2. Measurement error**
+  - **3. Simultaneity**.
 
 ## Why does Endogeneity Matter?
 
@@ -216,15 +231,10 @@ What happens if the variables are linked in a more complex way, so that we need 
 The price elasticity of demand measures the responsiveness of quantity demanded to changes in price, represented as:
 
 $$
-\xi = \frac{\% \Delta Q}{\% \Delta P} = \frac{\Delta Q}{Q} \frac{\Delta P}{P}
+\epsilon = \frac{\% \Delta Q}{\% \Delta P} = \frac{\Delta Q}{Q} \frac{P}{\Delta P}
 $$
 
 - Intersections of demand and supply functions, **simultaneous causality**.
-
-. . .
-
-Assume unobserved demand and supply shocks:
-$\Rightarrow$ Endogeneity of $\ln(P)$
 
 ---
 
@@ -236,12 +246,21 @@ $$
 \ln(Q_i) = \alpha + \beta \ln(P_i) + u_i
 $$
 
+:::{style="font-size: 75%;"}
 Where:
 
 - $Q_i$ is the quantity,
 - $P_i$ is the price,
 - $u_i$ is the error term,
 - $\beta$ gives us the elasticity of demand.
+
+:::
+
+. . .
+
+Assume unobserved demand and supply shocks:
+
+$\Rightarrow$ Endogeneity of $\ln(P)$
 
 ---
 
