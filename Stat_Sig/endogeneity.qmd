@@ -14,7 +14,7 @@
 # Introduction to Endogeneity
 
 ## What is Endogeneity ?
-- Yout want to do valid inference on a target parameter of interest in a $p$-dimensional general model like:
+- Yout want to do valid inference on a target parameter of interest in a general model like:
 $$
 Y = g(X) + \xi
 $$
@@ -735,6 +735,8 @@ Where
 
 Now, we will follow the **Stages** for the Control Function approach.
 
+---
+
 ### Control Function Approach
 
 1️⃣ **First Stage**
@@ -1404,11 +1406,11 @@ results_summary.tables[1]
 :::: {.columns}
 
 ::: {.column width="50%"}
-- The Partially Linear IV (PLIV) model takes the following form:
+- The **Partially Linear IV (PLIV) model** takes the following form:
 $$
 \begin{align}
-Y &=  D \theta_0 + g_0(X) + \xi, \quad E[\xi \mid Z, X] = 0 \\
-Z &= m_0(X) + V, \quad \quad E[V \mid X] = 0
+Y &=  D \theta_0 + g_0(X) + \xi, \quad &E[\xi \mid Z, X] = 0 \\
+Z &= m_0(X) + V, \quad &E[V \mid X] = 0
 \end{align}
 $$
 
@@ -1424,7 +1426,7 @@ Where:
 :::
 
 ::::
-- And the the second stage solves the **Neyman Orthogonal Score**:
+- The the second stage solves the **Neyman Orthogonal Score**:
 $$
 \begin{align}\begin{aligned}\psi(W; \theta, \eta) &:= [Y - \ell(X) - \theta (D - r(X))] [Z - m(X)]\\&= - (D - r(X)) (Z - m(X)) \theta + (Y - \ell(X)) (Z - m(X))\\&= \psi_a(W; \eta) \theta + \psi_b(W; \eta)\end{aligned}\end{align}
 $$
