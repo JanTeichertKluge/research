@@ -144,8 +144,6 @@ $\Rightarrow$ *"Everything is endogenous, except for God."*
 
 $\Rightarrow$ Good News: We focus on IV-Methods for today :grinning:
 
----
-
 
 # Theory {transition="concave-in"}
 
@@ -495,23 +493,28 @@ $$
 
 Here, the new error term $(\beta v + u)$ consists of both the original error $u$ and the measurement error $v$. This causes **endogeneity** because the measurement error $v$ is likely correlated with the observed $E_i^*$, violating the assumption that the error term is uncorrelated with the independent variable, leading to biased and inconsistent estimates of $\beta$.
 
----
 
 # Dealing with Endogeneity
 
 ## Instrumental Variables (IVs)
 
-- Instrumental Variable Estimation: General approach for consistent estimation even in the presence of Endogeneity
-- Assume an OLS Example:
+- Instrumental Variable Estimation: General approach for consistent estimation even in the presence of Endogeneity.
+  - Even the form of the structural equations is unknown :partying_face:!
+- But beware! We estimate here the **Local** Average Treatment Effects (LATE): @Imbens1994 show demonstrate that the IV estimator under weak conditions is a weighted average of LATE.
+- Assume a simple linear Example:
 $$
 Y = \alpha + \beta X + \gamma W + \xi
 $$
+
+:::{style="font-size: 75%;"}
 
 Where
 
 - $X$ is exogenous (holding orthogonality condition $\mathbb{E}[X' \xi]=0$).
 - $W$ is an endogenous variable.
 - and $\xi$ as the errorterm.
+
+:::
 
 ---
 
@@ -730,7 +733,7 @@ Where we see $\zeta$ as an (exogenous) explanatory variable and $\lambda \zeta$ 
 
 . . .
 
-$\Rightarrow$ Decomposition and rewriting would lead to the same form of IV approach (**only for OLS because of linearity**)
+$\Rightarrow$ @Kim2022 show that projection and rewriting would lead to the same (numerical!) form of IV approach (**only for linear models with additive errors**).
 
 ---
 
@@ -742,10 +745,689 @@ $\Rightarrow$ Decomposition and rewriting would lead to the same form of IV appr
 - **Flexibility**: Can handle various forms of endogeneity, such as simultaneity or omitted variables [@Ebbes2021].
 - **Robustness**: Works well even with a small number of instruments or noisy instruments [@Hill2021].
 
+
+
+# A short simulation :test_tube:
+
+## Simulation Data
+
+We define the following DGP:
+
+$$
+\begin{aligned}
+X &\sim \mathcal{N}(0, 1) \\
+Z &\sim \mathcal{N}(0, 1) \\
+\xi &\sim \mathcal{N}(0, 1)
+\end{aligned}
+$$
+
+$$
+W = \text{snrW} \times \left( \beta_Z Z + \beta_\xi \xi \right) + (1 - \beta_Z - \beta_\xi) \epsilon, \quad \epsilon \sim \mathcal{N}(0, 1)
+$$
+
+$$
+Y = \alpha + \beta X + \gamma W + \xi
+$$
+
+with $\alpha = 2$, $\beta = 3$, $\gamma = 1.5$, $\beta_Z = 0.1$, $\beta_\xi = 0.3$, and $\text{snrW} = 3$.
+
+```{python}
+# Import necessary libraries
+import numpy as np
+import pandas as pd
+import statsmodels.api as sm
+import statsmodels.formula.api as smf
+import matplotlib.pyplot as plt
+import seaborn as sns
+from statsmodels.sandbox.regression.gmm import IV2SLS
+from statsmodels.stats.diagnostic import het_breuschpagan, breaks_hansen, linear_harvey_collier
+
+# Set random seed for reproducibility
+np.random.seed(42)
+
+# Data Generating Process (DGP)
+n = 1000
+alpha = 2
+beta = 3
+gamma = 1.5
+
+betaZ = 0.1 # Strength of Z on W
+betaXi = 0.3 # Strength of errorterm on W
+snrW = 3 # Signal to noise ratio for W
+
+
+def dgp(n, alpha, beta, gamma, betaZ, betaXi, snrW):
+
+  # Exogenous variables
+  X = np.random.normal(0, 1, n)  # Exogenous regressor
+  Z = np.random.normal(0, 1, n)  # Instrument for W
+  error_xi = np.random.normal(0, 1, n)  # Error term
+  # Create W with some endogenous relationship to error
+  W = snrW * (betaZ * Z + betaXi * error_xi) + (1 - betaZ - betaXi) * np.random.normal(0, 1, n)
+  # W is correlated with error_xi, hence endogenous
+  # Outcome variable Y
+  Y = alpha + beta * X + gamma * W + error_xi
+
+  return pd.DataFrame({'Y': Y, 'X': X, 'W': W, 'Z': Z, '$\\xi$': error_xi})
+
+df = dgp(n, alpha, beta, gamma, betaZ, betaXi, snrW)
+```
+
+--- 
+
+## Simulation Data
+
+```{python}
+import plotly.express as px
+import pandas as pd
+import plotly.graph_objects as go
+from ipywidgets import interact
+
+# Assuming df is your dataframe generated from the function
+df = dgp(n, alpha, beta, gamma, betaZ, betaXi, snrW)
+# Function to create scatter plot with dropdowns
+def create_scatter_plot(df):
+    fig = go.Figure()
+
+    # Add scatter plot traces
+    fig.add_trace(go.Scatter(x=df['X'], y=df['Y'], mode='markers', name='Y ~ X'))
+    fig.add_trace(go.Scatter(x=df['W'], y=df['Y'], mode='markers', name='Y ~ W'))
+    fig.add_trace(go.Scatter(x=df['Z'], y=df['Y'], mode='markers', name='Y ~ Z'))
+    fig.add_trace(go.Scatter(x=df['W'], y=df['$\\xi$'], mode='markers', name='$\\xi$ ~ W'))
+    fig.add_trace(go.Scatter(x=df['Z'], y=df['$\\xi$'], mode='markers', name='$\\xi$ ~ Z'))
+
+    # Update layout with dropdown menu
+    fig.update_layout(
+        updatemenus=[
+            dict(
+                buttons=[
+                    dict(label="Y ~ X",
+                         method="update",
+                         args=[{"visible": [True, False, False, False, False]}]),
+                    dict(label="Y ~ W",
+                         method="update",
+                         args=[{"visible": [False, True, False, False, False]}]),
+                    dict(label="Y ~ Z",
+                         method="update",
+                         args=[{"visible": [False, False, True, False, False]}]),
+                    dict(label="$\\xi$ ~ W",
+                         method="update",
+                         args=[{"visible": [False, False, False, True, False]}]),
+                    dict(label="$\\xi$ ~ Z",
+                         method="update",
+                         args=[{"visible": [False, False, False, False, True]}]),
+                ],
+                direction="down",
+            )
+        ]
+    )
+
+    return fig
+
+# Create the scatter plot
+fig = create_scatter_plot(df)
+
+# Show the plot
+fig.show()
+```
+
 ---
 
-# Thank you for your attention!
+## Simulation Data
+**We can plot a correlation matrix as a heatmap**:
+```{python}
+pd.set_option('display.width', 70)
+corr_matrix = df.corr()
+sns.heatmap(corr_matrix, cmap='coolwarm', annot=True)
 
+```
+
+---
+
+## OLS Approach
+
+:::{style="font-size: 75%;"}
+
+:::: {.columns}
+
+::: {.column width="50%"}
+```{python}
+ols_model = smf.ols('Y ~ X + W', data=df).fit()
+results_summary = ols_model.summary()
+results_summary.tables[0]
+```
+:::
+::: {.column width="50%"}
+```{python}
+results_summary.tables[1]
+```
+
+:::
+::::
+:::
+
+---
+
+## IV Approach
+
+:::{style="font-size: 75%;"}
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+```{python}
+stage1 = smf.ols('W ~ X + Z', data=df).fit()
+df['W_hat'] = stage1.fittedvalues
+
+# Stage 2: Use the fitted values of W to estimate the second stage
+stage2 = smf.ols('Y ~ X + W_hat', data=df).fit()
+
+results_summary = stage2.summary()
+results_summary.tables[0]
+```
+:::
+
+::: {.column width="50%"}
+
+```{python}
+results_summary.tables[1]
+```
+
+**Reporting first stage results**:
+```{python}
+# Check instrument strength by evaluating R² with and without the instrument
+r2_with_iv = stage1.rsquared
+stage1_no_iv = smf.ols('W ~ X', data=df).fit()
+r2_without_iv = stage1_no_iv.rsquared
+f_statistic = stage1.f_test('Z = 0').fvalue
+
+print(f"\nR² with IV: {r2_with_iv}")
+print(f"R² without IV: {r2_without_iv}")
+print(f"F-statistic for the excluded instrument (Z): {f_statistic}")
+```
+:::
+
+::::
+
+:::
+
+---
+
+## IV Approach - Using pythons `linearmodels` API
+:::{style="font-size: 75%;"}
+
+:::: {.columns}
+
+::: {.column width="50%"}
+```{python}
+import statsmodels.api as sm
+import statsmodels.formula.api as smf
+import linearmodels.iv.model as lm
+
+mlr1 = smf.ols(formula="Y ~ X + W", data=df).fit()
+
+mdatac = sm.add_constant(data=df, prepend=False)
+mlr2 = lm.IV2SLS(dependent=mdatac["Y"],
+                 exog=mdatac[["const", "X"]],
+                 endog=mdatac["W"],
+                 instruments=mdatac[["Z"]])
+
+mlr2 = mlr2.fit(cov_type="homoskedastic", debiased=True)
+
+mlr2.summary.tables[0]
+```
+:::
+
+::: {.column width="50%"}
+```{python}
+mlr2.summary.tables[1]
+```
+
+:::
+
+::::
+
+:::
+
+---
+
+## IV Approach - Using pythons `linearmodels` API: Testing
+:::{style="font-size: 100%;"}
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**Wu-Hausman-Test**
+```{python}
+mlr2.wu_hausman()
+```
+:::
+
+::: {.column width="50%"}
+**Wooldridge-Test**
+
+```{python}
+mlr2.wooldridge_regression
+```
+
+:::
+
+$\Rightarrow$ **Sargan-Test** not possible in our 1-Instrument setting!
+
+::::
+
+:::
+
+---
+
+## IV - Control Function Approach
+
+:::{style="font-size: 75%;"}
+
+:::: {.columns}
+
+::: {.column width="50%"}
+```{python}
+residuals_W = stage1.resid
+df['residuals_W'] = residuals_W
+
+# Then, include the residuals in the original regression model
+control_func_model = smf.ols('Y ~ X + W + residuals_W', data=df).fit()
+
+results_summary = control_func_model.summary()
+results_summary.tables[0]
+```
+:::
+::: {.column width="50%"}
+```{python}
+results_summary.tables[1]
+```
+
+:::
+::::
+:::
+
+
+# But what about non-linear models :mage:?
+
+## IV in non-linear Models :mage:
+
+- Assumptions on linearity may not hold for all parts of a SEM!
+  - One can assumpe for example partially-linear relationships.
+- OLS and linear models (parametric models in general) have a number of comparatively strict assumptions.
+  - If these are not fulfilled, you should use semi-parametric or non-parametric models.
+
+. . .
+
+$\Rightarrow$ **Lets create data with non-linear respones and run the simulation again!**
+
+---
+
+
+## Non-linear Simulation Data
+
+We define the following non-linear DGP:
+$$
+\begin{aligned}
+X &\sim \mathcal{N}(0, 1) \\
+Z &= 0.8 \cdot X^2 + 0.2 \cdot \mathcal{N}(0, 1) \\
+W &= \beta_Z \cdot Z + \beta_X \cdot \cos(X^2) + \beta_\xi \cdot \xi + 0.5 \cdot \mathcal{N}(0, 1) \\
+\xi &\sim \mathcal{N}(0, 1)
+\end{aligned}
+$$
+Here, $W$ is correlated with the error term $\xi$, hence endogenous.
+The outcome variable $Y$ is defined as:
+$$
+Y = \alpha + \beta \cdot \cos(X^2) + \gamma \cdot W + \xi
+$$
+with $\alpha = 0.5$, $\beta = 0.5$, $\gamma = 1.5$, $\beta_Z = 1$, $\beta_\xi = 1$.
+
+```{python}
+np.random.seed(42)
+
+# Data Generating Process (DGP)
+n = 1000
+alpha = 0.5
+beta = 0.5
+gamma = 1.5
+
+betaZ = 1 # Strength of Z on W
+betaX = 0.5
+betaXi = 1 # Strength of errorterm on W
+
+
+def dgp(n, alpha, beta, gamma, betaZ, betaXi):
+
+  # Exogenous variables
+  X = np.random.normal(0, 1, n)  # Exogenous regressor
+  Z = 0.8 * (X**2) + 0.2 * np.random.normal(0, 1, n)  # Instrument for W
+  error_xi = np.random.normal(0, 1, n)  # Error term
+  # Create W with some endogenous relationship to error
+  W = betaZ * Z + betaX * np.cos((X**2)) + betaXi * error_xi + 0.5 * np.random.normal(0, 1, n)
+  # W is correlated with error_xi, hence endogenous
+  # Outcome variable Y
+  Y = alpha + beta * np.cos((X**2)) + gamma * W + error_xi
+
+  return pd.DataFrame({'Y': Y, 'X': X, 'W': W, 'Z': Z, '$\\xi$': error_xi})
+
+```
+
+--- 
+
+## Non-linear Simulation Data
+
+```{python}
+# Assuming df is your dataframe generated from the function
+df = dgp(n, alpha, beta, gamma, betaZ, betaXi)
+# Function to create scatter plot with dropdowns
+def create_scatter_plot(df):
+    fig = go.Figure()
+
+    # Add scatter plot traces
+    fig.add_trace(go.Scatter(x=df['X'], y=df['Y'], mode='markers', name='Y ~ X'))
+    fig.add_trace(go.Scatter(x=df['W'], y=df['Y'], mode='markers', name='Y ~ W'))
+    fig.add_trace(go.Scatter(x=df['Z'], y=df['Y'], mode='markers', name='Y ~ Z'))
+    fig.add_trace(go.Scatter(x=df['W'], y=df['$\\xi$'], mode='markers', name='$\\xi$ ~ W'))
+    fig.add_trace(go.Scatter(x=df['Z'], y=df['$\\xi$'], mode='markers', name='$\\xi$ ~ Z'))
+
+    # Update layout with dropdown menu
+    fig.update_layout(
+        updatemenus=[
+            dict(
+                buttons=[
+                    dict(label="Y ~ X",
+                         method="update",
+                         args=[{"visible": [True, False, False, False, False]}]),
+                    dict(label="Y ~ W",
+                         method="update",
+                         args=[{"visible": [False, True, False, False, False]}]),
+                    dict(label="Y ~ Z",
+                         method="update",
+                         args=[{"visible": [False, False, True, False, False]}]),
+                    dict(label="$\\xi$ ~ W",
+                         method="update",
+                         args=[{"visible": [False, False, False, True, False]}]),
+                    dict(label="$\\xi$ ~ Z",
+                         method="update",
+                         args=[{"visible": [False, False, False, False, True]}]),
+                ],
+                direction="down",
+            )
+        ]
+    )
+
+    return fig
+
+# Create the scatter plot
+fig = create_scatter_plot(df)
+
+# Show the plot
+fig.show()
+```
+
+---
+
+## Non-linear Simulation Data
+**We can plot a correlation matrix as a heatmap**:
+```{python}
+pd.set_option('display.width', 70)
+corr_matrix = df.corr()
+sns.heatmap(corr_matrix, cmap='coolwarm', annot=True)
+
+```
+
+---
+
+### OLS Approach for non-linearity
+
+:::{style="font-size: 75%;"}
+
+:::: {.columns}
+
+::: {.column width="50%"}
+```{python}
+ols_model = smf.ols('Y ~ X + W', data=df).fit()
+results_summary = ols_model.summary()
+results_summary.tables[0]
+```
+:::
+::: {.column width="50%"}
+```{python}
+results_summary.tables[1]
+```
+
+:::
+::::
+:::
+
+---
+
+### IV Approach for non-linearity
+
+:::{style="font-size: 75%;"}
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+```{python}
+stage1 = smf.ols('W ~ X + Z', data=df).fit()
+df['W_hat'] = stage1.fittedvalues
+
+# Stage 2: Use the fitted values of W to estimate the second stage
+stage2 = smf.ols('Y ~ X + W_hat', data=df).fit()
+
+results_summary = stage2.summary()
+results_summary.tables[0]
+```
+:::
+
+::: {.column width="50%"}
+
+```{python}
+results_summary.tables[1]
+```
+
+**Reporting first stage results**:
+```{python}
+# Check instrument strength by evaluating R² with and without the instrument
+r2_with_iv = stage1.rsquared
+stage1_no_iv = smf.ols('W ~ X', data=df).fit()
+r2_without_iv = stage1_no_iv.rsquared
+f_statistic = stage1.f_test('Z = 0').fvalue
+
+print(f"\nR² with IV: {r2_with_iv}")
+print(f"R² without IV: {r2_without_iv}")
+print(f"F-statistic for the excluded instrument (Z): {f_statistic}")
+```
+:::
+
+::::
+
+:::
+
+---
+
+### IV for non-linearity - Using pythons `linearmodels` API
+
+:::{style="font-size: 75%;"}
+
+:::: {.columns}
+
+::: {.column width="50%"}
+```{python}
+import statsmodels.api as sm
+import statsmodels.formula.api as smf
+import linearmodels.iv.model as lm
+
+mlr1 = smf.ols(formula="Y ~ X + W", data=df).fit()
+
+mdatac = sm.add_constant(data=df, prepend=False)
+mlr2 = lm.IV2SLS(dependent=mdatac["Y"],
+                 exog=mdatac[["const", "X"]],
+                 endog=mdatac["W"],
+                 instruments=mdatac[["Z"]])
+
+mlr2 = mlr2.fit(cov_type="homoskedastic", debiased=True)
+
+mlr2.summary.tables[0]
+```
+:::
+
+::: {.column width="50%"}
+```{python}
+mlr2.summary.tables[1]
+```
+
+:::
+
+::::
+
+:::
+
+---
+
+### IV Approach for non-linearity - Testing
+:::{style="font-size: 100%;"}
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**Wu-Hausman-Test**
+```{python}
+mlr2.wu_hausman()
+```
+:::
+
+::: {.column width="50%"}
+**Wooldridge-Test**
+
+```{python}
+mlr2.wooldridge_regression
+```
+
+:::
+
+$\Rightarrow$ **Sargan-Test** not possible in our 1-Instrument setting!
+
+::::
+
+:::
+
+---
+
+### IV for non-linearity - Control Function Approach
+
+:::{style="font-size: 75%;"}
+
+:::: {.columns}
+
+::: {.column width="50%"}
+```{python}
+residuals_W = stage1.resid
+df['residuals_W'] = residuals_W
+
+# Then, include the residuals in the original regression model
+control_func_model = smf.ols('Y ~ X + W + residuals_W', data=df).fit()
+
+results_summary = control_func_model.summary()
+results_summary.tables[0]
+```
+:::
+::: {.column width="50%"}
+```{python}
+results_summary.tables[1]
+```
+
+:::
+::::
+:::
+
+---
+
+## IV for non-linear Models :mage:
+
+💡 **Idea: Partially Linear IV (PLIV) model**
+
+- Use of flexible machine learning methods (e.g., random forests, neural networks) in the first stage to capture potentially complex, non-linear relationships between endogenous variables and instruments. This makes it more robust in cases where the relationships are not strictly linear.
+- Controls for **1. Overfitting** and ensuring **2. Valid Inference**.
+  - Achieves this by **1. Cross-Fitting** and by solving **2. Neyman Orthogonal Scores**.
+  -  **TSLS** is straightforward and **based on traditional asymptotic theory**, but it can be unreliable in complex or high-dimensional settings.
+
+---
+
+### IV for non-linear Models :mage:
+
+:::{style="font-size: 75%;"}
+:::: {.columns}
+
+::: {.column width="50%"}
+- The Partially Linear IV (PLIV) model takes the following form:
+$$
+\begin{align}
+Y &=  D \theta_0 + g_0(X) + \xi, \quad E[\xi \mid Z, X] = 0 \\
+Z &= m_0(X) + V, \quad \quad E[V \mid X] = 0
+\end{align}
+$$
+
+:::
+::: {.column width="50%"}
+Where:
+
+- $Y$ is the outcome variable,
+- $D$ is the variable of interest (endogenous),
+- $Z$ denotes one or multiple instrumental variables,
+- $X = (X_1, \dots, X_p)$ is a exogenous vector consisting of other covariates,
+- $\xi$ and $V$ are stochastic errors.
+:::
+
+::::
+- And the the second stage solves the **Neyman Orthogonal Score**:
+$$
+\begin{align}\begin{aligned}\psi(W; \theta, \eta) &:= [Y - \ell(X) - \theta (D - r(X))] [Z - m(X)]\\&= - (D - r(X)) (Z - m(X)) \theta + (Y - \ell(X)) (Z - m(X))\\&= \psi_a(W; \eta) \theta + \psi_b(W; \eta)\end{aligned}\end{align}
+$$
+
+:::
+
+---
+
+### IV in non-linear Models :mage:
+Lets use the `DoubleML` package to solve our Simulation Example:
+```{python}
+from doubleml import DoubleMLData, DoubleMLPLIV
+from lightgbm import LGBMRegressor
+from sklearn.linear_model import LinearRegression
+dml_data = DoubleMLData(df,
+                        y_col="Y",
+                        d_cols=["W"],
+                        x_cols=["X"],
+                        z_cols=["Z"],
+                        )
+
+dml_pliv = DoubleMLPLIV(dml_data,
+                        ml_l=LGBMRegressor(verbose=-1, n_estimators=250, learning_rate=0.05, num_leaves=3),
+                        ml_m=LGBMRegressor(verbose=-1, n_estimators=1000, learning_rate=0.05),
+                        ml_r=LGBMRegressor(verbose=-1, n_estimators=500, learning_rate=0.05, num_leaves=5),
+                        n_folds=2
+                        )
+dml_pliv.fit()
+dml_pliv.summary
+```
+
+**We can access the $R^2$ Scores of the learners**:
+
+```{python}
+from sklearn.metrics import r2_score
+
+def r2(y_true, y_pred):
+    subset = np.logical_not(np.isnan(y_true))
+    return r2_score(y_true[subset], y_pred[subset])
+
+dml_pliv.evaluate_learners(metric=r2)
+```
+
+# Thank you for your attention :muscle:!
 
 # References {transition="concave-in"}
 
@@ -755,5 +1437,238 @@ $\Rightarrow$ Decomposition and rewriting would lead to the same form of IV appr
 :::
 
 
-# Appendix {.appendix transition="concave-in"}
+# Appendix: Double Machine Learning {.appendix transition="concave-in"}
+
+## Motivating Example - PLR
+
+* Revisit the PLR model from the beginning:
+
+
+$$
+\begin{align}
+Y &= \theta_0 D + g_0(X) + \varepsilon, & \mathbb{E}[\varepsilon | X, D] = 0 \\
+D &= m_0(X) + \vartheta, & \mathbb{E}[\vartheta | X] = 0
+\end{align}
+$$
+
+
+with 
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+- $Y$ - outcome variable
+- $D$ - policy/treatment variable
+- $X = (X_1, \dots X_p)^T$ - vector of additional controls
+- $\varepsilon$, $\vartheta$ - stochastic errors
+
+:::
+
+::: {.column width="50%"}
+
+<center>
+![DAG for PLR Model](figures/DAG_plr_001.png){width=300}
+</center>
+
+:::
+
+::::
+
+## Motivating Example - Regularization Bias
+
+* What if we simply plug-in ML predictions $\hat{g}(X)$ for $g_0(X)$ into
+$Y = \theta_0D + g_0(X) + \varepsilon$?
+
+<center> 
+
+![](figures/naive_approach.png){width=50%}
+
+<center> 
+
+## Motivating Example - Orthogonalization
+
+*  *Frisch-Waugh-Lovell* style approach: $\theta_0$ can be consistently estimated by **partialling out** $X$, i.e,
+
+    1. Predict $Y$ and $D$ by $\mathbb{E}[Y|X]$ and $\mathbb{E}[D|X]$, obtained using ML methods
+    2. Residualize $\tilde{Y} = Y - \mathbb{E}[Y|X]$ and $\tilde{D} = D - \mathbb{E}[D|X]$
+    3. Regress $\tilde{Y}$ on $\tilde{D}$ to obtain $\hat{\theta}$
+
+<center>
+
+![](figures/dml_approach.png){width=40%}
+
+<center>
+
+
+##  Double/Debiased Machine Learning (DML)
+
+- **Neyman Orthogonality** 
+  $$
+  \left.\partial_\eta \mathbb{E}[\psi(W; \theta_0, \eta)] \right|_{\eta=\eta_0} = 0
+  $$
+  ensures that the moment condition identifying $\theta_0$ is **insensitive to small pertubations** of the nuisance function $\eta$ around $\eta_0$
+
+- Assumptions for the nuisance elements (see @dml2018)
+$$
+\lVert \hat{m} - m_0 \rVert_{P,2} \times \big( \lVert \hat{m} - m_0 \rVert_{P,2} +  \lVert \hat{\ell} - \ell_0\rVert _{P,2}\big) \le \delta_N N^{-1/2}
+$$
+
+- Under some regularity conditions the estimator $\hat{\theta}$ concentrates in $1/\sqrt{N}$-neighborhood of $\theta_0$ and
+$$
+\sqrt{N}(\hat{\theta} - \theta_0) \to \mathcal{N}(0,\sigma^2)
+$$
+
+. . .
+
+$\Rightarrow$ simple approach to control for confounders, *if they can be used for ML models!*
+
+::: {.notes}
+Neyman Orthogonality is a crucial concept in DML. It ensures that the moment condition identifying the parameter \( \theta_0 \) is insensitive to small perturbations in the nuisance function \( \eta \) around its true value \( \eta_0 \). This robustness is achieved through the orthogonalization of the score function.
+
+For the nuisance elements, certain assumptions must hold, as detailed in the literature (e.g., @dml2018). Specifically, the product of the norms of the deviations of the estimated nuisance functions from their true counterparts must be bounded by a term proportional to \( N^{-1/2} \).
+
+Under regularity conditions, the estimator \( \hat{\theta} \) will concentrate within a \( 1/\sqrt{N} \)-neighborhood of the true parameter \( \theta_0 \). Moreover, the normalized difference \( \sqrt{N}(\hat{\theta} - \theta_0) \) converges in distribution to a normal distribution \( \mathcal{N}(0, \sigma^2) \).
+
+This orthogonalization approach provides a straightforward method to control for confounders, provided they can be included in machine learning models.
+:::
+
+
+## Neyman Orthogonality
+
+The naive approach minimizes the following MSE
+
+\begin{align}
+min_{\theta} \mathbb{E}[(Y - D\theta_0 - g_0(X))^2]
+\end{align}
+
+This implies the following moment equation
+
+\begin{align}
+\mathbb{E}[\underbrace{(Y - D\theta_0 - g_0(X))D}_{=:\psi (W, \theta_0, \eta)}]&=0
+\end{align}
+
+. . .
+
+Whereas for the partialling-out approach minimizes
+
+\begin{align}
+min_{\theta} \mathbb{E}\big[\big(Y - \mathbb{E}[Y|X] - (D-\mathbb{E}[D|X])\theta\big)^2\big]
+\end{align}
+
+which implies
+
+\begin{align}
+\mathbb{E}\big[\underbrace{\big(Y - \mathbb{E}[Y|X] - (D-\mathbb{E}[D|X])\theta\big)(D-\mathbb{E}[D|X])}_{=:\psi (W, \theta_0, \eta)}\big]&=0
+\end{align}
+
+
+## Neyman Orthogonality
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+#### Naive approach
+
+\begin{align}
+\psi (W, \theta_0, \eta) = & (Y - D\theta_0 - g_0(X))D
+\end{align}
+
+<br>
+
+Regression adjustment score
+
+\begin{align}
+\eta &= g(X), \\
+\eta_0 &= g_0(X).
+\end{align}
+
+
+:::
+
+::: {.column width="50%"}
+
+
+#### FWL partialling out
+
+\begin{align}
+\psi (W, \theta_0, \eta_0) = &  \Big((Y- E[Y|X])\\
+&-(D-E[D|X])\theta_0\Big)\\
+& (D-E[D|X])
+\end{align}
+
+Neyman-orthogonal score (Frisch-Waugh-Lovell)
+
+\begin{align}
+\eta &= (\ell(X), m(X)), \\
+\eta_0 &= ( \ell_0(X), m_0(X)), \\
+&= ( \mathbb{E} [Y \mid X], \mathbb{E}[D \mid X]).
+\end{align}
+
+:::
+
+::::
+
+## DML Key Ingredients
+
+### 1. Neyman Orthogonality
+
+* Inference is based on a moment condition that satisfies the **Neyman orthogonality condition** $\psi(W; \theta, \eta)$
+$$E[\psi(W; \theta_0, \eta_0)] = 0,$$
+
+* where $W:=(Y,D,X,Z)$ and with $\theta_0$ being the unique solution that obeys the **Neyman orthogonality condition**
+$$\left.\partial_\eta \mathbb{E}[\psi(W; \theta_0, \eta)] \right|_{\eta=\eta_0} = 0.$$
+
+* $\partial_{\eta}$ denotes the pathwise (Gateaux) derivative operator
+
+## DML Key Ingredients
+
+#### 1. Neyman Orthogonality
+
+* **Neyman orthogonality** ensures that the **moment condition** identifying $\theta_0$ is **insensitive to small pertubations** of the nuisance function $\eta$ around $\eta_0$
+
+* Using a Neyman-orthogonal score **eliminates the first order biases** arising from the replacement of $\eta_0$ with a ML estimator $\hat{\eta}_0$
+
+* PLR example: Partialling-out score function
+$$\psi(\cdot)= (Y-E[Y|X]-\theta (D - E[D|X]))(D-E[D|X])$$
+
+
+## DML Key Ingredients
+
+#### 2. High-Quality Machine Learning Estimators
+
+* The nuisance parameters are estimated with high-quality (fast-enough converging) machine learning methods.
+
+* Different structural assumptions on $\eta_0$ lead to the use of different machine-learning tools for estimating $\eta_0$ @dml2018 (Section 3)
+
+* Rate requirements depend on the causal model and orthogonal score, e.g. (see @dml2018), 
+    * PLR, partialling out: $\lVert \hat{m}_0 - m_0 \rVert_{P,2} \times \big( \lVert \hat{m}_0 - m_0 \rVert_{P,2} +  \lVert \hat{\ell}_0 - \ell_0\rVert _{P,2}\big) \le \delta_N N^{-1/2}$
+    * IRM/DR score, ATE: $\lVert \hat{m}_0 - m_0 \rVert_{P,2} \times \lVert \hat{\ell}_0 - \ell_0\rVert _{P,2} \le \delta_N N^{-1/2}$
+
+
+## DML Key Ingredients
+
+#### 3. Sample Splitting
+
+* To avoid the biases arising from overfitting, a form of **sample splitting** is used at the stage of producing the estimator of the main parameter $\theta_0$.
+
+* Efficiency gains by using cross-fitting (swapping roles of samples for train / hold-out)
+
+<center>
+
+<iframe width="650" height="385" src="https://www.youtube.com/embed/NWEoLe8mZqM?si=YQg6wjRRzIjQ_Rwr" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<center>
+
+## DML Key Ingredients
+
+#### Main result in @dml2018
+
+> There exist regularity conditions, such that the DML estimator $\tilde{\theta}_0$ concentrates in a $1/\sqrt{N}$-neighborhood of $\theta_0$ and the sampling error is approximately
+$$\sqrt{N}(\tilde{\theta}_0 - \theta_0) \sim N(0, \sigma^2),$$
+with
+$$\begin{align}\begin{aligned}\sigma^2 := J_0^{-2} \mathbb{E}(\psi^2(W; \theta_0, \eta_0)),\\J_0 = \mathbb{E}(\psi_a(W; \eta_0)).\end{aligned}\end{align}$$
+
+* See [this example](https://doubleml.shinyapps.io/BasicsDMLApp/) based on @dml2018
 
