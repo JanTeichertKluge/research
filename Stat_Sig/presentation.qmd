@@ -56,9 +56,12 @@ $\Rightarrow$ *"Everything is endogenous, except for God."*
 
 ## Examples of Endogeneity in Marketing
 
+- In many cases one is interested in understanding influences (*causal effects*) of an action (new webdesign, coupons, etc.) on an outcome (sales, KPIs, etc.)
+  - Needs valid inference on a parameter of interest 
 - In marketing, **price** is often endogenous because it is determined simultaneously with demand.
   * e.g. estimating price elasticity of demand
 - **Advertising** may also be endogenous due to unobserved factors influencing both sales and ad expenditures [@Rossi2014].
+
 
 ---
 
@@ -145,7 +148,7 @@ $\Rightarrow$ *"Everything is endogenous, except for God."*
 $\Rightarrow$ Good News: We focus on IV-Methods for today :grinning:
 
 
-# Theory {transition="concave-in"}
+# A brief insight into the Theory :books: {transition="concave-in"}
 
 ## Omitted Variable Bias
 Our goal is to do valid inference for a target parameter of interest $\beta$. Consider the following simple linear regression model (the *long* model) including all covariates:
@@ -494,7 +497,7 @@ $$
 Here, the new error term $(\beta v + u)$ consists of both the original error $u$ and the measurement error $v$. This causes **endogeneity** because the measurement error $v$ is likely correlated with the observed $E_i^*$, violating the assumption that the error term is uncorrelated with the independent variable, leading to biased and inconsistent estimates of $\beta$.
 
 
-# Dealing with Endogeneity
+# Dealing with Endogeneity :arrows_counterclockwise:
 
 ## Instrumental Variables (IVs)
 
@@ -520,18 +523,56 @@ Where
 
 ## Instrumental Variables (IVs)
 
-💡 **Idea: IV Estimation**
+💡 **Idea: IV Estimation^[@Ebbes2021]**
 
 - Search for instrumental variables, $Z$, i.e., exogenous variables that are correlated with the endogenous regressor $W$
   - Conditions for a Valid Instrumental Variable:
-    1. **IV1. Relevance**: $\text{Cor}(Z, X) \neq 0$
-    2. **IV2. Exogeneity**: $\text{Cor}(Z, \xi) = 0$
+    1. **IV1. Relevance**: $\text{Cor}(Z, X) \neq 0$ called the *relevance criterion*.
+    2. **IV2. Exogeneity**: $\text{Cor}(Z, \xi) = 0$ called the *exclusion restriction*
 - Isolate the part of the variation in $W$ that is not correlated with $\xi$
 - Use the exogenous variation in $W$ to estimate the regression coefficients
 
 . . .
 
 $\Rightarrow$ For linear models, we can follow the simple **Two-Stage Least Squares (TSLS)** approach!
+
+---
+
+## IVs in Marketing :chart_with_upwards_trend:
+
+**Managers' Behavior is Source of Endogeneity**
+
+:::{style="font-size: 70%;"}
+
+| **Dependent Variable**       | **Potentially Endogenous Regressor** | **Potential Causes for Endogeneity**                                                                 | **Potential IVs (with citations)**                                                                                         |
+|------------------------------|--------------------------------------|------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------|
+| Demand                       | Price                                | Managers set prices based on factors that are related to demand but are unobserved by the researcher:<br>- Promotional activities, Changes in popularity, Product characteristics (for cross-sectional analyses) | Costs of ingredients and transportation (Rooderkerk et al. 2013, p. 706);<br>Prices in other markets (Nevo 2001, p. 320)    |
+| Demand                       | Advertising                          | Managers set advertising based on factors that are related to demand but are unobserved by the researcher:<br>- Price changes, Changes in preferences or popularity, (Expected) sales volume      | Advertising expenditures of other (noncompeting) firms (Dinner et al. 2014, p. 534);<br>Advertising cost                    |
+| Demand                       | Detailing                            | Managers set detailing based on factors that are related to demand but are unobserved by the researcher, e.g., large accounts receive more detailing than small accounts                              | Costs for detailing (e.g., wages; Chintagunta and Desiraju 2005, p. 74)                                                      |
+| Firm Performance              | CMO Presence                         | Firms strategically choose to have a CMO, and this choice depends on unobserved firm characteristics as well as expected performance effects                        | CMO prevalence among peer firms (Germann et al. 2015, p. 8)                                                                 |
+
+
+: Possible IV Cases and IVs for Marketing, taken and slightly changed from @Ebbes2021 {tbl-colwidths="[10,10,50,30]"}
+
+:::
+
+---
+
+## IVs in Marketing :chart_with_upwards_trend:
+
+**Consumers' Behavior is Source of Endogeneity**
+
+:::{style="font-size: 70%;"}
+
+| **Dependent Variable**       | **Potentially Endogenous Regressor** | **Potential Causes for Endogeneity**                                                                 | **Potential IVs (with citations)**                                                                                         |
+|------------------------------|--------------------------------------|------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------|
+| Demand                       | Piracy                               | Unobserved factors (e.g., popularity) affect both a music album’s sales as well as piracy                                                 | RIAA announcement to start legal actions against file sharing (Bhattacharjee et al. 2007, p. 1364)                           |
+| Demand (offline channel)      | Demand (online channel)              | Preferences for channels are correlated                                                                                                   | Ease of access to online channel (Gentzkow 2007, p. 726)                                                                      |
+| Consumer Share of Wallet      | Membership in Loyalty Program        | Consumers with high intrinsic preference for a firm have a higher share of wallet and are more likely to join the firm’s loyalty program                                       | General inclination to join a loyalty program (Leenheer et al. 2007, p. 36)                                                   |
+
+: Possible IV Cases and IVs for Marketing, taken and slightly changed from @Ebbes2021 {tbl-colwidths="[10,10,50,30]"}
+
+:::
 
 ---
 
@@ -662,7 +703,7 @@ $$
 ---
 
 
-## Control Function Approach
+### Control Function Approach
 **Key Concepts**:
 
 
@@ -679,7 +720,7 @@ $$
 
 ---
 
-## Control Function Approach
+### Control Function Approach
 
 Lets look at a simple OLS Example with one endogenous variable:
 $$
@@ -694,7 +735,7 @@ Where
 
 Now, we will follow the **Stages** for the Control Function approach.
 
-## Control Function Approach
+### Control Function Approach
 
 1️⃣ **First Stage**
 
@@ -720,7 +761,7 @@ $$
 
 ---
 
-## Control Function Approach
+### Control Function Approach
 
 2️⃣ **Second Stage**:
 
@@ -737,7 +778,7 @@ $\Rightarrow$ @Kim2022 show that projection and rewriting would lead to the same
 
 ---
 
-## Control Function Approach
+### Control Function Approach
 
 **Advantages**:
 
@@ -1357,7 +1398,7 @@ results_summary.tables[1]
 
 ---
 
-### IV for non-linear Models :mage:
+### IV for non-linear Models
 
 :::{style="font-size: 75%;"}
 :::: {.columns}
@@ -1392,7 +1433,7 @@ $$
 
 ---
 
-### IV in non-linear Models :mage:
+### IV in non-linear Models
 Lets use the `DoubleML` package to solve our Simulation Example:
 ```{python}
 from doubleml import DoubleMLData, DoubleMLPLIV
