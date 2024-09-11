@@ -876,6 +876,7 @@ def create_scatter_plot(df):
     fig.add_trace(go.Scatter(x=df['X'], y=df['Y'], mode='markers', name='Y ~ X'))
     fig.add_trace(go.Scatter(x=df['W'], y=df['Y'], mode='markers', name='Y ~ W'))
     fig.add_trace(go.Scatter(x=df['Z'], y=df['Y'], mode='markers', name='Y ~ Z'))
+    fig.add_trace(go.Scatter(x=df['Z'], y=df['W'], mode='markers', name='W ~ Z'))
     fig.add_trace(go.Scatter(x=df['W'], y=df['$\\xi$'], mode='markers', name='$\\xi$ ~ W'))
     fig.add_trace(go.Scatter(x=df['Z'], y=df['$\\xi$'], mode='markers', name='$\\xi$ ~ Z'))
 
@@ -886,19 +887,22 @@ def create_scatter_plot(df):
                 buttons=[
                     dict(label="Y ~ X",
                          method="update",
-                         args=[{"visible": [True, False, False, False, False]}]),
+                         args=[{"visible": [True, False, False, False, False, False]}]),
                     dict(label="Y ~ W",
                          method="update",
-                         args=[{"visible": [False, True, False, False, False]}]),
+                         args=[{"visible": [False, True, False, False, False, False]}]),
                     dict(label="Y ~ Z",
                          method="update",
-                         args=[{"visible": [False, False, True, False, False]}]),
+                         args=[{"visible": [False, False, True, False, False, False]}]),
+                         dict(label="W ~ Z",
+                         method="update",
+                         args=[{"visible": [False, False, False, True, False, False]}]),
                     dict(label="$\\xi$ ~ W",
                          method="update",
-                         args=[{"visible": [False, False, False, True, False]}]),
+                         args=[{"visible": [False, False, False, False, True, False]}]),
                     dict(label="$\\xi$ ~ Z",
                          method="update",
-                         args=[{"visible": [False, False, False, False, True]}]),
+                         args=[{"visible": [False, False, False, False, False, True]}]),
                 ],
                 direction="down",
             )
@@ -1171,6 +1175,7 @@ def create_scatter_plot(df):
     fig.add_trace(go.Scatter(x=df['X'], y=df['Y'], mode='markers', name='Y ~ X'))
     fig.add_trace(go.Scatter(x=df['W'], y=df['Y'], mode='markers', name='Y ~ W'))
     fig.add_trace(go.Scatter(x=df['Z'], y=df['Y'], mode='markers', name='Y ~ Z'))
+    fig.add_trace(go.Scatter(x=df['Z'], y=df['W'], mode='markers', name='W ~ Z'))
     fig.add_trace(go.Scatter(x=df['W'], y=df['$\\xi$'], mode='markers', name='$\\xi$ ~ W'))
     fig.add_trace(go.Scatter(x=df['Z'], y=df['$\\xi$'], mode='markers', name='$\\xi$ ~ Z'))
 
@@ -1181,19 +1186,22 @@ def create_scatter_plot(df):
                 buttons=[
                     dict(label="Y ~ X",
                          method="update",
-                         args=[{"visible": [True, False, False, False, False]}]),
+                         args=[{"visible": [True, False, False, False, False, False]}]),
                     dict(label="Y ~ W",
                          method="update",
-                         args=[{"visible": [False, True, False, False, False]}]),
+                         args=[{"visible": [False, True, False, False, False, False]}]),
                     dict(label="Y ~ Z",
                          method="update",
-                         args=[{"visible": [False, False, True, False, False]}]),
+                         args=[{"visible": [False, False, True, False, False, False]}]),
+                    dict(label="W ~ Z",
+                         method="update",
+                         args=[{"visible": [False, False, False, True, False, False]}]),
                     dict(label="$\\xi$ ~ W",
                          method="update",
-                         args=[{"visible": [False, False, False, True, False]}]),
+                         args=[{"visible": [False, False, False, False, True, False]}]),
                     dict(label="$\\xi$ ~ Z",
                          method="update",
-                         args=[{"visible": [False, False, False, False, True]}]),
+                         args=[{"visible": [False, False, False, False, False, True]}]),
                 ],
                 direction="down",
             )
