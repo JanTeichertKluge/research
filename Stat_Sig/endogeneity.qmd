@@ -504,15 +504,7 @@ Here, the new error term $(\beta v + u)$ consists of both the original error $u$
 
 ## General
 
-- In the following, we look at different methods for dealing with endogeneity problems.
-- We start with a short introduction to the method and look at the theory behind it.
-- For each method we look at the practical approach, in this case we use **Python** with the packages `numpy`, `statsmodels` and `linearmodels`.
-
----
-
-## General
-
-- For the practical approach, we create a simulated data set that is used to briefly illustrate the methods (proof of concept):
+- For the practical approach, we create a simulated data set that is used to briefly illustrate the methods (proof of concept)^[For each method we look at the practical approach, in this case we use **Python** with the packages `numpy`, `statsmodels` and `linearmodels`.]:
 $$
 \begin{aligned}
 X &\sim \mathcal{N}(0, 1) \\
@@ -773,34 +765,40 @@ $$
 
 ---
 
-### TSLS Estimator in One Step
-
-- The TSLS estimator can also be calculated in a single step:
-$$
-\hat{\gamma}^{TSLS} = \frac{\widehat{\mathrm{Cov}}(Z, Y)}{\widehat{\mathrm{Cov}}(Z, W)}
-$$
-- It can be shown that the TSLS estimator is asymptotically normally distributed:
-$$
-\hat{\gamma}^{TSLS} \leadsto^d N\left(\gamma, \sigma^2_{\hat{\gamma}^{TSLS}}\right).
-$$
-- With variance estimator:
-$$
-\sigma^2_{\hat{\gamma}^{TSLS}} = \frac{1}{n}  \frac{\mathrm{Var}\left((Z - E[Z]) \xi \right)}{\left[\widehat{\mathrm{Cov}}(Z, W)\right]^2} .
-$$
-
----
-
 ### Practical Guidelines for Using TSLS^[according to @Ebbes2021]
 
-#### Reporting Results
+:::: {.columns}
+
+::: {.column width="50%"}
+
+**Reporting Results**
 - When using **2SLS**, researchers should present both the Ordinary Least Squares (OLS) and 2SLS results.
 - This includes showing the coefficients and standard errors for each approach.
 - Check if the direction of bias in OLS matches the theoretical expectations.
   - Example: In cases where upward bias is expected, such as price effects, 2SLS should show a more negative estimate than OLS [@Ebbes2021].
 
+:::
+
+::: {.column width="50%"}
+
+**Over-Identification Test**
+
+- When there are more IVs than endogenous regressors, a **Sargan test** (or Hansen J-test) should be performed.
+  - This test checks if the IVs are valid (exogenous) by testing their relationship to the residuals from the second-stage regression.
+  - Large p-values suggest that the IVs are valid, but this test should not replace theoretical reasoning [@wooldridge2010econometric; @bascle2008overidentification].
+  
+:::
+
+::::
+
 ---
 
 ### Practical Guidelines for Using TSLS
+
+
+:::: {.columns}
+
+::: {.column width="50%"}
 
 **First-Stage Regression**
 
@@ -809,10 +807,10 @@ $$
 - Key details to check:
   - Coefficients should have the expected sign and magnitude.
   - Report the standard errors for these estimates to ensure statistical significance [@Ebbes2011].
-  
----
 
-### Practical Guidelines for Using TSLS
+:::
+
+::: {.column width="50%"}
 
 **Evaluating Instrument Strength**
 
@@ -821,9 +819,18 @@ $$
 - Report the **F-statistic** for the excluded IVs.
   - A common benchmark is F > 10 for strong instruments, but this should be interpreted as a minimum requirement [@stock2002diagnostic; @rossi2014instrument].
   
+:::
+
+::::
+
 ---
 
 ### Practical Guidelines for Using TSLS
+
+
+:::: {.columns}
+
+::: {.column width="50%"}
 
 **Stability and Sensitivity Analysis**
 
@@ -831,9 +838,10 @@ $$
   - Use the theoretically strongest IV alone and compare it to using all IVs.
   - This helps check the stability of the results. If large differences are found, the validity of the IVs should be re-examined [@angrist2008mostly; @Ebbes2011].
   
----
 
-### Practical Guidelines for Using TSLS
+:::
+
+::: {.column width="50%"}
 
 **Endogeneity Testing**
 
@@ -841,16 +849,10 @@ $$
   - This test compares OLS estimates to 2SLS and checks if the OLS estimator is consistent.
   - If the null hypothesis is rejected, then 2SLS should be used [@wooldridge2010econometric; @verbeek2012econometrics].
   
----
+:::
 
-### Practical Guidelines for Using TSLS
+::::
 
-**Over-Identification Test**
-
-- When there are more IVs than endogenous regressors, a **Sargan test** (or Hansen J-test) should be performed.
-  - This test checks if the IVs are valid (exogenous) by testing their relationship to the residuals from the second-stage regression.
-  - Large p-values suggest that the IVs are valid, but this test should not replace theoretical reasoning [@wooldridge2010econometric; @bascle2008overidentification].
-  
 ---
 
 ## IV Approach - Hands on
@@ -1108,25 +1110,6 @@ $$
 
 ---
 
-### Copulas
-
-- Copulas help to link **CDF** to **Joint distribution** for any number of input parameters. 
-$$
-F_{XY} = C(F_X (x), F_Y (y))
-$$
-
-- Here, $C$ is the copula function which takes marginal CDF for each variable and creates a joint CDF.
-  - They allow one to easily model and estimate the distribution of random vectors by estimating marginals and copulae separately.
-
-- Simple Copula in the Normal/Gaussian Copula:
-$$
-C_N (u,v) = \Phi_R (\Phi^{-1}(u), \Phi^{-1}(v))
-$$
-
-Where, $u$ and $v$ are the random variables, $R$ the correlation matrix and $C_N$ is the normal copula.
-
----
-
 ### Copulas and Endogeneity
 
 - One of the primary applications of (gaussian) copulas is in addressing endogeneity, particularly in econometrics and marketing models.
@@ -1139,6 +1122,8 @@ Where, $u$ and $v$ are the random variables, $R$ the correlation matrix and $C_N
 
 ### The Gaussian Copula Approach (GC)
 
+:::{style="font-size: 75%;"}
+
 - The model is the same es before:
   $$
   Y = \alpha + \beta X + \gamma W + \xi
@@ -1146,8 +1131,37 @@ Where, $u$ and $v$ are the random variables, $R$ the correlation matrix and $C_N
 
 - **Sklar’s Theorem**:
   - Any joint distribution can be decomposed into marginal distributions and a copula, which captures the dependency between them.
-  - The Gaussian copula links the marginal distributions of the endogenous regressor and the error term.
 
+:::
+
+::: {.callout-important}
+Let $W$ be an endogenous regressor and $\xi$ be a structural error term. According to **Sklar's Theorem** (Sklar, 1959), there exists a copula function $C(\cdot, \cdot)$ such that the joint cumulative distribution function (CDF) of $W$ and $\xi$ can be written as:
+$$
+F(W, \xi) = C(H(W), G(\xi)) = C(U_W, U_\xi)
+$$
+
+where $U_W = H(W)$ and $U_\xi = G(\xi)$ are the marginal CDFs of $W$ and $\xi$, respectively, both following uniform distributions on $(0, 1)$.
+
+Thus, the copula $C(\cdot, \cdot)$ captures the dependence structure between $W$ and $\xi$, allowing the marginal distributions of $W$ and $\xi$ to be modeled separately from their joint dependence.
+:::
+
+---
+
+### The Gaussian Copula Approach (GC)
+
+@Park2012 propose a **generated regressor approach** for handling endogeneity using a copula-based transformation. Here's a concise description:
+
+They suggest that to correct for the endogeneity of $W$, one can use the following method:
+
+:::{style="font-size: 75%;"}
+
+- 1. **Transformation via the Copula:** First, transform the endogenous variable $W$ into a uniform random variable $U_W$ using its marginal CDF, i.e., $U_W = H(W)$, where $H(\cdot)$ is the CDF of $W$.
+   
+- 2. **Apply the Inverse Normal CDF:** Then, generate a new variable $W^* = \Phi^{-1}(U_W)$, where $\Phi^{-1}(\cdot)$ is the inverse of the standard normal cumulative distribution function (CDF). This transformation results in a normally distributed variable.
+
+- 3. **OLS Estimation:** Finally, include $W^*$ as an additional regressor in the OLS estimation of the structural equation. This step helps correct for the endogeneity of $W$, as including the transformed regressor $W^*$ allows for consistent estimation of the model parameters.
+
+:::
 
 ---
 
@@ -1161,29 +1175,38 @@ Where, $u$ and $v$ are the random variables, $R$ the correlation matrix and $C_N
 
   - Adds an additional term to the regression equation:
   $$
-  Y = \alpha + \beta X + \gamma W + \gamma_c W_c + \xi^*
+  Y = \alpha + \beta X + \gamma W + \gamma^* W^* + \xi^*
   $$
-  - $W_c = \Phi^{-1}(F_W(W))\), where \(\Phi^{-1}$ is the inverse normal CDF and $F_W$ is the empirical CDF of $W$.
+  - $W^* = \Phi^{-1}(U_W))\), where \(\Phi^{-1}$ is the inverse normal CDF and $F_W$ is the empirical CDF of $W$.
 
 --- 
 
 ### The Gaussian Copula Approach - Hands on
 
-- To illustrate the approach, lets construct data with non-normal distributed vales^[Adapted and slightly changed from [GitHub](https://github.com/tinoproductions/DirtyQuant/blob/master/Introduction%20to%20Copulas.ipynb)]:
-
-:::{style="font-size: 100%;"}
-
-- Mean vector: $\mu = \begin{bmatrix} 0 \\ 0 \end{bmatrix}$ and Covariance matrix: $\Sigma = \begin{bmatrix} 1 & 1.5 \\ 1.5 & 1 \end{bmatrix}$
-
-- Sample from the bivariate normal distribution: $(X_{\text{norm}}, Y_{\text{norm}}) \sim \mathcal{N}(\mu, \Sigma)$ and transform to uniform variables: $X_{\text{unif}} = \Phi(X_{\text{norm}}), \quad Y_{\text{unif}} = \Phi(Y_{\text{norm}})$
-
-- **Transform to Gamma and Beta distributions**:
+- To illustrate the approach, lets construct data with non-normal distributed endogenous regressor:
 $$
-\begin{align}
-\text{web}_{time} &= \Gamma^{-1}(X_{\text{unif}}; a=2, \text{scale}=5) \\
-\text{web}_{spend} &= \text{Beta}^{-1}(Y_{\text{unif}}; a=0.5, b=0.5, \text{loc}=5, \text{scale}=100)
-\end{align}
+\begin{aligned}
+X_{\text{exog}} &\sim \Gamma(1, 0.5) \\
+\epsilon_1 &\sim \mathcal{N}(0, 0.2^2) \\
+\epsilon_2 &\sim \mathcal{N}(0, 0.8^2)
+\end{aligned}
 $$
+
+The endogenous variable $X$ is generated as:
+$$
+X = X_{\text{exog}} + \epsilon_1
+$$
+
+The outcome variable $Y$ is given by:
+$$
+Y = \alpha + \beta X + (\epsilon_1 + \epsilon_2)
+$$
+
+:::{style="font-size: 75%;"}
+
+with parameters $\alpha = 2$, $\beta = 1.5$. Here, $\epsilon_1$ induces endogeneity in $X$ and $Y$, while $\epsilon_2$ introduces additional noise to the outcome.
+
+This structure demonstrates the influence of both the exogenous component and the shared error term in $X$ and $Y$.
 
 :::
 
@@ -1210,18 +1233,22 @@ from scipy.stats import norm
 from scipy.stats import t
 from scipy.stats import beta
 import matplotlib.pyplot as plt
+n = 1000
+np.random.seed(42)
 
+X_exog = np.random.gamma(1, 0.5, n)  # 
+epsilon =  0.2 * np.random.normal(0, 1, n)
+X = epsilon + X_exog
+epsilon += 0.8 * np.random.normal(0, 1, n)
+Y = 2 + 1.5 * X + epsilon
+data = pd.DataFrame({
+    'X': X,
+    'Y': Y
+})
+
+website_time = data["X"]
+website_spend = data["Y"]
 np.random.seed(seed=5)
-mean = [0,0]
-rho = 0.8
-cov = [[1,rho],[rho,1]] # diagonal covariance, points lie on x or y-axis
-
-norm_1,norm_2 = np.random.multivariate_normal(mean,cov,1000).T
-unif_1 = norm.cdf(norm_1)
-unif_2 = norm.cdf(norm_2)
-
-website_time = pd.DataFrame(gamma.ppf(unif_1, a=2, scale=5))
-website_spend =  pd.DataFrame(beta.ppf(unif_2,a=0.5, b=0.5, loc=5, scale=100))
 join_time_spend = pd.concat([website_time, website_spend], axis=1)
 join_time_spend.columns = ['Time', 'Cash']
 gamma_dist  = ff.create_distplot([website_time.values.reshape(-1)], group_labels = [' '])
@@ -1243,7 +1270,7 @@ t_dist.show()
 ### The Gaussian Copula Approach - Hands on
 
 ```{python}
-fig = px.scatter(join_time_spend, x = 'Time', y='Cash', width=1000, height=500,  range_y=[0,110], trendline='ols', trendline_color_override='DeepPink',  marginal_x='histogram', marginal_y='histogram')
+fig = px.scatter(join_time_spend, x = 'Time', y='Cash', width=800, height=400, trendline='ols', trendline_color_override='DeepPink',  marginal_x='histogram', marginal_y='histogram')
 fig.show()
 ```
 
@@ -1261,11 +1288,14 @@ ols_model.summary().tables[1]
 ### The Gaussian Copula Approach - Hands on
 
 ```{python}
-time_cdf =  pd.DataFrame(gamma.cdf(website_time.values, a = 2, scale=5))
-time_cdf_vs_original = pd.concat([time_cdf, website_time], axis=1)
+from scipy import stats
+
+ranks = stats.rankdata(website_time.values, method='average')
+u_w = (ranks - 0.5) / len(website_time.values)
+time_cdf_vs_original = pd.concat([pd.DataFrame(u_w), website_time], axis=1)
 time_cdf_vs_original.columns = ['CDF', 'Original']
 
-time_cdf_vs_original_plot = px.scatter(time_cdf_vs_original, x = 'Original', y='CDF', width=1000, height=500, title='Gamma Cumulative Distribution Function for Time',  marginal_x='histogram', marginal_y='histogram')
+time_cdf_vs_original_plot = px.scatter(time_cdf_vs_original, x = 'Original', y='CDF', width=1000, height=500, title='Cumulative Distribution Function for Time',  marginal_x='histogram', marginal_y='histogram')
 time_cdf_vs_original_plot.show()
 ```
 
@@ -1273,70 +1303,32 @@ time_cdf_vs_original_plot.show()
 
 ### The Gaussian Copula Approach - Hands on
 
-```{python}
-dollar_cdf = pd.DataFrame(beta.cdf(website_spend.values,a=0.5, b=0.5, loc=5, scale=100))
-dollar_cdf_vs_original = pd.concat([dollar_cdf, website_spend], axis=1)
-dollar_cdf_vs_original.columns = ['CDF', 'Original']
-
-dollar_cdf_vs_original_plot = px.scatter(dollar_cdf_vs_original, x = 'Original', y='CDF', width=1000, height=500, title='Beta Cumulative Distribution Function for Dollars Spent',  marginal_x='histogram', marginal_y='histogram')
-dollar_cdf_vs_original_plot.show()
-```
-
----
-
-### The Gaussian Copula Approach - Hands on
-
-```{python}
-join_time_spend_uniform = pd.concat([dollar_cdf, time_cdf], axis=1)
-join_time_spend_uniform.columns = ['Time', 'Cash']
-
-time_v_money_uniform = px.scatter(join_time_spend_uniform, x = 'Time', y='Cash', width=1000, height=500,  marginal_x='histogram', marginal_y='histogram', title='Dollars vs Time in Copula Space', trendline='ols', trendline_color_override='DeepPink', )
-time_v_money_uniform.show()
-```
-
----
-
-### The Gaussian Copula Approach - Hands on
-
-**OLS yiels:**
+**Including $W^*$ in the Regression**:
 
 :::{style="font-size: 75%;"}
+
+:::: {.columns}
+
+::: {.column width="50%"}
 ```{python}
-
-# Step 1: Generate synthetic data with endogeneity
-np.random.seed(42)
-n = 1000
-
-# True exogenous variable and random error
-X_exog = np.random.gamma(2, 3, n)  # heavy-tailed, non-normal exogenous component of X
-v = np.random.normal(0, 1, n)  # additional noise
-
-# Create correlation between X and epsilon (endogeneity)
-epsilon = np.random.normal(0, 1, n)
-X = 3 * epsilon + X_exog  # X is endogenous, correlated with epsilon
-
-# Generate outcome variable Y (true relationship: Y = 2 + 0.5 * X + epsilon)
-Y = 2 + 1.5 * X + epsilon
-
-# Step 2: Create a pandas DataFrame
-data = pd.DataFrame({
-    'X': X,
-    'Y': Y
-})
-
-website_time = data["X"]
-website_spend = data["Y"]
-
 df_all = pd.concat([website_spend, website_time], axis=1)
 df_all.columns = ['Cash', 'Time']
-df_all['cdf_Time'] = pd.DataFrame((website_time.rank())/1000)
-df_all['cdf_Cash'] = pd.DataFrame(norm.ppf((website_spend.rank()-0.5)/1000))
+df_all['Time_gc'] = pd.DataFrame(norm.ppf(u_w))
 
-ols_model = smf.ols('Cash ~ Time + cdf_Time', data=df_all).fit()
-ols_model.summary().tables[1]
+ols_model = smf.ols('Cash ~ Time + Time_gc', data=df_all).fit()
+results_summary = ols_model.summary()
+results_summary.tables[0]
 ```
 :::
 
+::: {.column width="50%"}
+```{python}
+results_summary.tables[1]
+```
+
+:::
+::::
+:::
 
 # Thank you for your attention :muscle:!
 
@@ -2124,7 +2116,7 @@ $$
 $\Rightarrow$ simple approach to control for confounders, *if they can be used for ML models!*
 
 ::: {.notes}
-Neyman Orthogonality is a crucial concept in DML. It ensures that the moment condition identifying the parameter \( \theta_0 \) is insensitive to small perturbations in the nuisance function \( \eta \) around its true value \( \eta_0 \). This robustness is achieved through the orthogonalization of the score function.
+Neyman Orthogonality is a crucial concept in DML. It ensures that the moment condition identifying the parameter $\theta_0 \) is insensitive to small perturbations in the nuisance function \( \eta \) around its true value \( \eta_0 \). This robustness is achieved through the orthogonalization of the score function.
 
 For the nuisance elements, certain assumptions must hold, as detailed in the literature (e.g., @dml2018). Specifically, the product of the norms of the deviations of the estimated nuisance functions from their true counterparts must be bounded by a term proportional to \( N^{-1/2} \).
 
