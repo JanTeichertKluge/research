@@ -44,8 +44,9 @@ $$
 
 ## Why does Endogeneity Matter?
 
-- **Statistical Significance**: Endogeneity can influence the significance of key variables.
-- **Causal Inference**: Without addressing endogeneity, any causal claims are questionable.
+- **Statistical Significance**: Endogeneity can influence the effect size (regression coefficient value).
+  - **Causal Inference**: Without addressing endogeneity, any causal claims are questionable.
+  - In economics the effect sizes is very important.
 - **Marketing Research**: Marketing models often involve simultaneous decisions by consumers and firms, introducing endogeneity [@Papies2022].
 
 . . .
@@ -145,7 +146,7 @@ $\Rightarrow$ *"Everything is endogenous, except for God."*
 
 . . .
 
-$\Rightarrow$ Good News: We focus on IV-Methods for today :grinning:
+$\Rightarrow$ Good News: We focus on IV-Methods and Copulas for today :grinning:
 
 
 # A brief insight into the Theory :books: {transition="concave-in"}
@@ -221,6 +222,7 @@ $$
 $$
 
 Or, in other words, $X$ and $W$ must be orthogonal: $X \perp W$.
+
 ---
 
 ## Simultaneity
@@ -256,6 +258,7 @@ Where:
 - $\beta$ gives us the elasticity of demand.
 
 :::
+
 
 . . .
 
@@ -499,6 +502,166 @@ Here, the new error term $(\beta v + u)$ consists of both the original error $u$
 
 # Dealing with Endogeneity :arrows_counterclockwise:
 
+## General
+
+- In the following, we look at different methods for dealing with endogeneity problems.
+- We start with a short introduction to the method and look at the theory behind it.
+- For each method we look at the practical approach, in this case we use **Python** with the packages `numpy`, `statsmodels` and `linearmodels`.
+
+---
+
+## General
+
+- For the practical approach, we create a simulated data set that is used to briefly illustrate the methods (proof of concept):
+$$
+\begin{aligned}
+X &\sim \mathcal{N}(0, 1) \\
+Z &\sim \mathcal{N}(0, 1) \\
+\xi &\sim \mathcal{N}(0, 1)
+\end{aligned}
+$$
+
+$$
+W = \text{snrW} \times \left( \beta_Z Z + \beta_\xi \xi \right) + (1 - \beta_Z - \beta_\xi) \epsilon, \quad \epsilon \sim \mathcal{N}(0, 1)
+$$
+
+$$
+Y = \alpha + \beta X + \gamma W + \xi
+$$
+
+with $\alpha = 2$, $\beta = 3$, $\gamma = 1.5$, $\beta_Z = 0.1$, $\beta_\xi = 0.3$, and $\text{snrW} = 3$.
+
+```{python}
+# Import necessary libraries
+import numpy as np
+import pandas as pd
+import statsmodels.api as sm
+import statsmodels.formula.api as smf
+import matplotlib.pyplot as plt
+import seaborn as sns
+from statsmodels.sandbox.regression.gmm import IV2SLS
+from statsmodels.stats.diagnostic import het_breuschpagan, breaks_hansen, linear_harvey_collier
+
+# Set random seed for reproducibility
+np.random.seed(42)
+
+# Data Generating Process (DGP)
+n = 1000
+alpha = 2
+beta = 3
+gamma = 1.5
+
+betaZ = 0.1 # Strength of Z on W
+betaXi = 0.3 # Strength of errorterm on W
+snrW = 3 # Signal to noise ratio for W
+
+
+def dgp(n, alpha, beta, gamma, betaZ, betaXi, snrW):
+
+  # Exogenous variables
+  X = np.random.normal(0, 1, n)  # Exogenous regressor
+  Z = np.random.normal(0, 1, n)  # Instrument for W
+  error_xi = np.random.normal(0, 1, n)  # Error term
+  # Create W with some endogenous relationship to error
+  W = snrW * (betaZ * Z + betaXi * error_xi) + (1 - betaZ - betaXi) * np.random.normal(0, 1, n)
+  # W is correlated with error_xi, hence endogenous
+  # Outcome variable Y
+  Y = alpha + beta * X + gamma * W + error_xi
+
+  return pd.DataFrame({'Y': Y, 'X': X, 'W': W, 'Z': Z, '$\\xi$': error_xi})
+```
+
+--- 
+
+## General
+
+```{python}
+import plotly.express as px
+import pandas as pd
+import plotly.graph_objects as go
+from ipywidgets import interact
+
+# Assuming df is your dataframe generated from the function
+df = dgp(n, alpha, beta, gamma, betaZ, betaXi, snrW)
+# Function to create scatter plot with dropdowns
+def create_scatter_plot(df):
+    fig = go.Figure()
+
+    # Add scatter plot traces
+    fig.add_trace(go.Scatter(x=df['X'], y=df['Y'], mode='markers', name='Y ~ X'))
+    fig.add_trace(go.Scatter(x=df['W'], y=df['Y'], mode='markers', name='Y ~ W'))
+    fig.add_trace(go.Scatter(x=df['Z'], y=df['Y'], mode='markers', name='Y ~ Z'))
+    fig.add_trace(go.Scatter(x=df['Z'], y=df['W'], mode='markers', name='W ~ Z'))
+    fig.add_trace(go.Scatter(x=df['W'], y=df['$\\xi$'], mode='markers', name='$\\xi$ ~ W'))
+    fig.add_trace(go.Scatter(x=df['Z'], y=df['$\\xi$'], mode='markers', name='$\\xi$ ~ Z'))
+
+    # Update layout with dropdown menu
+    fig.update_layout(
+        updatemenus=[
+            dict(
+                buttons=[
+                    dict(label="Y ~ X",
+                         method="update",
+                         args=[{"visible": [True, False, False, False, False, False]}]),
+                    dict(label="Y ~ W",
+                         method="update",
+                         args=[{"visible": [False, True, False, False, False, False]}]),
+                    dict(label="Y ~ Z",
+                         method="update",
+                         args=[{"visible": [False, False, True, False, False, False]}]),
+                         dict(label="W ~ Z",
+                         method="update",
+                         args=[{"visible": [False, False, False, True, False, False]}]),
+                    dict(label="$\\xi$ ~ W",
+                         method="update",
+                         args=[{"visible": [False, False, False, False, True, False]}]),
+                    dict(label="$\\xi$ ~ Z",
+                         method="update",
+                         args=[{"visible": [False, False, False, False, False, True]}]),
+                ],
+                direction="down",
+            )
+        ]
+    )
+
+    return fig
+
+# Create the scatter plot
+fig = create_scatter_plot(df)
+
+# Show the plot
+fig.show()
+```
+
+---
+
+
+## General
+
+We see that OLS will fail due to the endogeneity of $W$:
+
+:::{style="font-size: 75%;"}
+
+:::: {.columns}
+
+::: {.column width="50%"}
+```{python}
+ols_model = smf.ols('Y ~ X + W', data=df).fit()
+results_summary = ols_model.summary()
+results_summary.tables[0]
+```
+:::
+::: {.column width="50%"}
+```{python}
+results_summary.tables[1]
+```
+
+:::
+::::
+:::
+
+---
+
 ## Instrumental Variables (IVs)
 
 - Instrumental Variable Estimation: General approach for consistent estimation even in the presence of Endogeneity.
@@ -690,6 +853,84 @@ $$
   
 ---
 
+## IV Approach - Hands on
+
+:::{style="font-size: 75%;"}
+
+:::: {.columns}
+
+::: {.column width="50%"}
+```{python}
+import statsmodels.api as sm
+import statsmodels.formula.api as smf
+import linearmodels.iv.model as lm
+
+stage1 = smf.ols('W ~ X + Z', data=df).fit()
+df['W_hat'] = stage1.fittedvalues
+
+# Stage 2: Use the fitted values of W to estimate the second stage
+stage2 = smf.ols('Y ~ X + W_hat', data=df).fit()
+
+results_summary = stage2.summary()
+results_summary.tables[0]
+
+mlr1 = smf.ols(formula="Y ~ X + W", data=df).fit()
+
+mdatac = sm.add_constant(data=df, prepend=False)
+mlr2 = lm.IV2SLS(dependent=mdatac["Y"],
+                 exog=mdatac[["const", "X"]],
+                 endog=mdatac["W"],
+                 instruments=mdatac[["Z"]])
+
+mlr2 = mlr2.fit(cov_type="homoskedastic", debiased=True)
+
+mlr2.summary.tables[0]
+```
+:::
+
+::: {.column width="50%"}
+```{python}
+mlr2.summary.tables[1]
+```
+
+:::
+
+::::
+
+:::
+
+---
+
+## IV Approach - Hands on
+
+:::{style="font-size: 100%;"}
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**Wu-Hausman-Test**
+```{python}
+mlr2.wu_hausman()
+```
+:::
+
+::: {.column width="50%"}
+**Wooldridge-Test**
+
+```{python}
+mlr2.wooldridge_regression
+```
+
+:::
+
+$\Rightarrow$ **Sargan-Test** not possible in our 1-Instrument setting!
+
+::::
+
+:::
+
+---
+
 ## Control Function Approach
 
 - **Purpose**: A method to correct for endogeneity by incorporating an additional "control function" in the model to account for endogenous explanatory variables ([@Papies2017], [@Ebbes2011] and [@Petrin2010]).
@@ -790,13 +1031,40 @@ $\Rightarrow$ @Kim2022 show that projection and rewriting would lead to the same
 
 ---
 
-## Copulas
+## Control Function Approach - Hands on
+
+:::{style="font-size: 75%;"}
+
+:::: {.columns}
+
+::: {.column width="50%"}
+```{python}
+residuals_W = stage1.resid
+df['residuals_W'] = residuals_W
+
+# Then, include the residuals in the original regression model
+control_func_model = smf.ols('Y ~ X + W + residuals_W', data=df).fit()
+
+results_summary = control_func_model.summary()
+results_summary.tables[0]
+```
+:::
+::: {.column width="50%"}
+```{python}
+results_summary.tables[1]
+```
+
+:::
+::::
+:::
+
+## Copulas :link:
 
 - We've looked at IV Methods so far, but what if we can't find a valid instrument?
   - IV-free Methods: **Copulas**
 - **Copulas** decompose a joint probability distribution into:
   - **Marginals**: individual distributions, each with no inherent correlation.
-  - **Copula**: a coupling function that links the marginals, capturing the dependency structure.
+  - **Copula**: a coupling function that links :link: the marginals, capturing the dependency structure.
 
 ::: {.callout-important}
 **The copula allows us to specify the correlation between variables separately from their marginal distributions!**
@@ -864,117 +1132,64 @@ Where, $u$ and $v$ are the random variables, $R$ the correlation matrix and $C_N
 - One of the primary applications of (gaussian) copulas is in addressing endogeneity, particularly in econometrics and marketing models.
 - (Gaussian) copula can be used to model the correlation between endogenous variables and the error term. 
   - This is achieved by linking the non-normally distributed endogenous variable to a normally distributed error term through a copula structure​​.
-- The approach from Park and Gupta (2012), for instance, introduces a Gaussian copula correction term to the regression model. 
+- The approach from @Park2012 introduces a Gaussian copula correction term to the regression model.
+  - Suitable for management research where valid IVs are scarce.
 
 ---
 
-### Copulas - Intuition
+### The Gaussian Copula Approach (GC)
 
-We define the following DGP:
+- The model is the same es before:
+  $$
+  Y = \alpha + \beta X + \gamma W + \xi
+  $$
 
-$$
-\begin{aligned}
-X &\sim \mathcal{N}(0, 1) \\
-\xi &\sim \mathcal{N}(0, 1)
-\end{aligned}
-$$
+- **Sklar’s Theorem**:
+  - Any joint distribution can be decomposed into marginal distributions and a copula, which captures the dependency between them.
+  - The Gaussian copula links the marginal distributions of the endogenous regressor and the error term.
 
-$$
-W = \beta_\xi \xi + \mathcal{N}(0, 1)
-$$
 
-$$
-Y = \alpha + \beta X + \gamma W + \xi
-$$
+---
 
-with $\alpha = 2$, $\beta = 3$, $\gamma = 1.5$, $\beta_\xi = 0.3$
+### The Gaussian Copula Approach (GC)
 
-```{python}
-# Import necessary libraries
-import numpy as np
-import pandas as pd
-import statsmodels.api as sm
-import statsmodels.formula.api as smf
-import matplotlib.pyplot as plt
-import seaborn as sns
+- **Identifying Assumption**:
+  - The potentially endogenous regressor follows a **non-normal distribution**.
+  - The error term follows a **normal distribution**.
 
-# Set random seed for reproducibility
-np.random.seed(42)
+- **GC Estimation Process ^[@Park2012]**:
 
-# Data Generating Process (DGP)
-n = 1000
-alpha = 0.5
-beta = 1
-gamma = 1.5
-
-betaXi = 0.2 # Strength of errorterm on W
-
-def dgp(n, alpha, beta, gamma, betaXi):
-
-  # Exogenous variables
-  X = np.random.normal(0, 1, n)  # Exogenous regressor
-  error_xi = np.random.normal(0, 1, n)  # Error term
-  W = betaXi * error_xi + (1-betaXi) * np.random.normal(0, 1, n)
-  # W is correlated with error_xi, hence endogenous
-  Y = alpha + beta * X + gamma * W + error_xi
-
-  return pd.DataFrame({'Y': Y, 'X': X, 'W': W, '$\\xi$': error_xi})
-```
+  - Adds an additional term to the regression equation:
+  $$
+  Y = \alpha + \beta X + \gamma W + \gamma_c W_c + \xi^*
+  $$
+  - $W_c = \Phi^{-1}(F_W(W))\), where \(\Phi^{-1}$ is the inverse normal CDF and $F_W$ is the empirical CDF of $W$.
 
 --- 
 
-### Copulas - Intuition
+### The Gaussian Copula Approach - Hands on
 
-```{python}
-import plotly.express as px
-import pandas as pd
-import plotly.graph_objects as go
-from ipywidgets import interact
+- To illustrate the approach, lets construct data with non-normal distributed vales^[Adapted and slightly changed from [GitHub](https://github.com/tinoproductions/DirtyQuant/blob/master/Introduction%20to%20Copulas.ipynb)]:
 
-# Assuming df is your dataframe generated from the function
-df = dgp(n, alpha, beta, gamma, betaXi)
-# Function to create scatter plot with dropdowns
-def create_scatter_plot(df):
-    fig = go.Figure()
+:::{style="font-size: 100%;"}
 
-    # Add scatter plot traces
-    fig.add_trace(go.Scatter(x=df['X'], y=df['Y'], mode='markers', name='Y ~ X'))
-    fig.add_trace(go.Scatter(x=df['W'], y=df['Y'], mode='markers', name='Y ~ W'))
-    fig.add_trace(go.Scatter(x=df['W'], y=df['$\\xi$'], mode='markers', name='$\\xi$ ~ W'))
+- Mean vector: $\mu = \begin{bmatrix} 0 \\ 0 \end{bmatrix}$ and Covariance matrix: $\Sigma = \begin{bmatrix} 1 & 1.5 \\ 1.5 & 1 \end{bmatrix}$
 
-    # Update layout with dropdown menu
-    fig.update_layout(
-        updatemenus=[
-            dict(
-                buttons=[
-                    dict(label="Y ~ X",
-                         method="update",
-                         args=[{"visible": [True, False, False]}]),
-                    dict(label="Y ~ W",
-                         method="update",
-                         args=[{"visible": [False, True, False]}]),
-                    dict(label="$\\xi$ ~ W",
-                         method="update",
-                         args=[{"visible": [False, False, True]}]),
-                ],
-                direction="down",
-            )
-        ]
-    )
+- Sample from the bivariate normal distribution: $(X_{\text{norm}}, Y_{\text{norm}}) \sim \mathcal{N}(\mu, \Sigma)$ and transform to uniform variables: $X_{\text{unif}} = \Phi(X_{\text{norm}}), \quad Y_{\text{unif}} = \Phi(Y_{\text{norm}})$
 
-    return fig
+- **Transform to Gamma and Beta distributions**:
+$$
+\begin{align}
+\text{web}_{time} &= \Gamma^{-1}(\text{unif}_1; a=2, \text{scale}=5) \\
+\text{web}_{spend} &= \text{Beta}^{-1}(\text{unif}_2; a=0.5, b=0.5, \text{loc}=5, \text{scale}=100)
+\end{align}
+$$
 
-# Create the scatter plot
-fig = create_scatter_plot(df)
-
-# Show the plot
-fig.show()
-```
+:::
 
 ---
 
-
-### Copulas - Intuition
+### The Gaussian Copula Approach - Hands on
 
 ```{python}
 import pandas as pd
@@ -989,96 +1204,89 @@ from ipywidgets import HBox, VBox
 from scipy.optimize import fmin, minimize
 from scipy.stats import t
 from scipy.stats import norm
-from math import inf
-
-# import bs4 as bs
-import requests
-import yfinance as yf
 import datetime
-
 from scipy.stats import gamma
 from scipy.stats import norm
 from scipy.stats import t
 from scipy.stats import beta
 import matplotlib.pyplot as plt
 
+np.random.seed(seed=5)
+mean = [0,0]
+rho = 0.8
+cov = [[1,rho],[rho,1]] # diagonal covariance, points lie on x or y-axis
 
-fig = px.scatter(df, x = 'W', y='Y', width=700, height=500, trendline='ols', trendline_color_override='DeepPink', marginal_x='histogram', marginal_y='histogram', title='Bi-Variate Normal')
-fig.show()
-```
+norm_1,norm_2 = np.random.multivariate_normal(mean,cov,1000).T
+unif_1 = norm.cdf(norm_1)
+unif_2 = norm.cdf(norm_2)
 
-**OLS yiels:**
-
-:::{style="font-size: 75%;"}
-```{python}
-ols_model = smf.ols('Y ~ X + W', data=df).fit()
-ols_model.summary().tables[1]
-```
-
-:::
-
----
-
-### Copulas - Intuition
-
-```{python}
-unif_x = df["X"].values #norm.cdf(df["X"].values)
-unif_y = norm.cdf(df["Y"].values)
-unif_w = norm.cdf(df["W"].values)
-
-unif_data = pd.concat([pd.DataFrame(df["X"].values), 
-                       pd.DataFrame(df["W"].values), 
-                       pd.DataFrame(unif_w),
-                       pd.DataFrame(df["Y"].values)], 
-                       axis=1)
-
-unif_data.columns = ['X', 'W', 'inv_cdf_W', 'Y']
-
-fig = px.scatter(unif_data, x = 'inv_cdf_W', y='Y', width=700, height=500, trendline='ols', trendline_color_override='DeepPink', marginal_x='histogram', marginal_y='histogram', title='Bi-Variate Uniform')
-fig.show()
-```
-
-**OLS yiels:**
-
-:::{style="font-size: 75%;"}
-```{python}
-ols_model = smf.ols('Y ~ X + W + inv_cdf_W', data=unif_data).fit()
-ols_model.summary().tables[1]
-```
-:::
-
----
-
-### Copulas - Intuition
-
-```{python}
-website_time = pd.DataFrame(gamma.ppf(unif_w, a=2, scale=5))
-website_spend =  pd.DataFrame(beta.ppf(unif_y,a=0.5, b=0.5, loc=5, scale=100))
+website_time = pd.DataFrame(gamma.ppf(unif_1, a=2, scale=5))
+website_spend =  pd.DataFrame(beta.ppf(unif_2,a=0.5, b=0.5, loc=5, scale=100))
 join_time_spend = pd.concat([website_time, website_spend], axis=1)
 join_time_spend.columns = ['Time', 'Cash']
+gamma_dist  = ff.create_distplot([website_time.values.reshape(-1)], group_labels = [' '])
+gamma_dist.update_layout(showlegend=False, title_text='Time Spent on Website', width=1000, height=500)
+gamma_dist.show()
+```
 
+---
+
+### The Gaussian Copula Approach - Hands on
+```{python}
+t_dist  = ff.create_distplot([website_spend.values.reshape(-1)], group_labels = [' '])
+t_dist.update_layout(showlegend=False, title_text='Dollars Spent on Website', width=1000, height=500)
+t_dist.show()
+```
+
+---
+
+### The Gaussian Copula Approach - Hands on
+
+```{python}
 fig = px.scatter(join_time_spend, x = 'Time', y='Cash', width=1000, height=500,  range_y=[0,110], trendline='ols', trendline_color_override='DeepPink',  marginal_x='histogram', marginal_y='histogram')
 fig.show()
 ```
 
-**OLS yields**:
-
 :::{style="font-size: 75%;"}
+
 ```{python}
 ols_model = smf.ols('Cash ~ Time', data=join_time_spend).fit()
 ols_model.summary().tables[1]
 ```
+
 :::
 
 ---
 
-### Copulas - Intuition
+### The Gaussian Copula Approach - Hands on
 
-**Transforming distributions**
 ```{python}
 time_cdf =  pd.DataFrame(gamma.cdf(website_time.values, a = 2, scale=5))
-dollar_cdf = pd.DataFrame(beta.cdf(website_spend.values,a=0.5, b=0.5, loc=5, scale=100))
+time_cdf_vs_original = pd.concat([time_cdf, website_time], axis=1)
+time_cdf_vs_original.columns = ['CDF', 'Original']
 
+time_cdf_vs_original_plot = px.scatter(time_cdf_vs_original, x = 'Original', y='CDF', width=1000, height=500, title='Gamma Cumulative Distribution Function for Time',  marginal_x='histogram', marginal_y='histogram')
+time_cdf_vs_original_plot.show()
+```
+
+---
+
+### The Gaussian Copula Approach - Hands on
+
+```{python}
+dollar_cdf = pd.DataFrame(beta.cdf(website_spend.values,a=0.5, b=0.5, loc=5, scale=100))
+dollar_cdf_vs_original = pd.concat([dollar_cdf, website_spend], axis=1)
+dollar_cdf_vs_original.columns = ['CDF', 'Original']
+
+dollar_cdf_vs_original_plot = px.scatter(dollar_cdf_vs_original, x = 'Original', y='CDF', width=1000, height=500, title='Beta Cumulative Distribution Function for Dollars Spent',  marginal_x='histogram', marginal_y='histogram')
+dollar_cdf_vs_original_plot.show()
+```
+
+---
+
+### The Gaussian Copula Approach - Hands on
+
+```{python}
 join_time_spend_uniform = pd.concat([dollar_cdf, time_cdf], axis=1)
 join_time_spend_uniform.columns = ['Time', 'Cash']
 
@@ -1086,19 +1294,48 @@ time_v_money_uniform = px.scatter(join_time_spend_uniform, x = 'Time', y='Cash',
 time_v_money_uniform.show()
 ```
 
-**OLS yields**:
+---
+
+### The Gaussian Copula Approach - Hands on
+
+**OLS yiels:**
 
 :::{style="font-size: 75%;"}
 ```{python}
-ols_model = smf.ols('Cash ~ Time', data=join_time_spend_uniform).fit()
+
+# Step 1: Generate synthetic data with endogeneity
+np.random.seed(42)
+n = 1000
+
+# True exogenous variable and random error
+X_exog = np.random.gamma(2, 3, n)  # heavy-tailed, non-normal exogenous component of X
+v = np.random.normal(0, 1, n)  # additional noise
+
+# Create correlation between X and epsilon (endogeneity)
+epsilon = np.random.normal(0, 1, n)
+X = 3 * epsilon + X_exog  # X is endogenous, correlated with epsilon
+
+# Generate outcome variable Y (true relationship: Y = 2 + 0.5 * X + epsilon)
+Y = 2 + 1.5 * X + epsilon
+
+# Step 2: Create a pandas DataFrame
+data = pd.DataFrame({
+    'X': X,
+    'Y': Y
+})
+
+website_time = data["X"]
+website_spend = data["Y"]
+
+df_all = pd.concat([website_spend, website_time], axis=1)
+df_all.columns = ['Cash', 'Time']
+df_all['cdf_Time'] = pd.DataFrame((website_time.rank())/1000)
+df_all['cdf_Cash'] = pd.DataFrame(norm.ppf((website_spend.rank()-0.5)/1000))
+
+ols_model = smf.ols('Cash ~ Time + cdf_Time', data=df_all).fit()
 ols_model.summary().tables[1]
 ```
 :::
----
-
-### Copulas - Intuition
-```{python}
-```
 
 
 # Thank you for your attention :muscle:!
@@ -1110,7 +1347,9 @@ ols_model.summary().tables[1]
 ::: {#refs}
 :::
 
-# A short simulation :test_tube:
+# Appendix {.appendix transition="concave-in"}
+
+# Appendix: A short simulation :test_tube: {.appendix transition="concave-in"}
 
 ## Simulation Data
 
@@ -1416,7 +1655,7 @@ results_summary.tables[1]
 :::
 
 
-# But what about non-linear models :mage:?
+# Appendix: But what about non-linear models :mage:? {.appendix transition="concave-in"}
 
 ## IV in non-linear Models :mage:
 
@@ -1539,7 +1778,7 @@ fig.show()
 
 ---
 
-## Non-linear Simulation Data
+## Non-linear Simulation Data {.appendix}
 **We can plot a correlation matrix as a heatmap**:
 ```{python}
 pd.set_option('display.width', 70)
@@ -1550,7 +1789,7 @@ sns.heatmap(corr_matrix, cmap='coolwarm', annot=True)
 
 ---
 
-### OLS Approach for non-linearity
+## OLS Approach for non-linearity
 
 :::{style="font-size: 75%;"}
 
@@ -1574,7 +1813,7 @@ results_summary.tables[1]
 
 ---
 
-### IV Approach for non-linearity
+## IV Approach for non-linearity
 
 :::{style="font-size: 75%;"}
 
@@ -1620,7 +1859,7 @@ print(f"F-statistic for the excluded instrument (Z): {f_statistic}")
 
 ---
 
-### IV for non-linearity - Using pythons `linearmodels` API
+## IV for non-linearity - Using pythons `linearmodels` API
 
 :::{style="font-size: 75%;"}
 
@@ -1659,7 +1898,7 @@ mlr2.summary.tables[1]
 
 ---
 
-### IV Approach for non-linearity - Testing
+## IV Approach for non-linearity - Testing
 :::{style="font-size: 100%;"}
 
 :::: {.columns}
@@ -1688,7 +1927,7 @@ $\Rightarrow$ **Sargan-Test** not possible in our 1-Instrument setting!
 
 ---
 
-### IV for non-linearity - Control Function Approach
+## IV for non-linearity - Control Function Approach
 
 :::{style="font-size: 75%;"}
 
@@ -1728,7 +1967,7 @@ results_summary.tables[1]
 
 ---
 
-### IV for non-linear Models
+## IV for non-linear Models
 
 :::{style="font-size: 75%;"}
 :::: {.columns}
@@ -1763,7 +2002,7 @@ $$
 
 ---
 
-### IV in non-linear Models
+## IV in non-linear Models
 Lets use the `DoubleML` package to solve our Simulation Example:
 ```{python}
 from doubleml import DoubleMLData, DoubleMLPLIV
