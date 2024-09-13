@@ -35,12 +35,12 @@ $$
 - **Endogeneity** refers to situations where an explanatory variable is correlated with the error term in a regression model.
 - It is a critical issue because it leads to **biased estimates**, impacting the validity of causal inferences [@Ebbes2021].
 
-. . .
-
+::: {.callout-important}
 - Sources of <s>evil</s> **endogeneity** [@Hill2021]:
   - **1. Omitted variable bias**
   - **2. Measurement error**
   - **3. Simultaneity**.
+:::
 
 ## Why does Endogeneity Matter?
 
@@ -788,7 +788,327 @@ $\Rightarrow$ @Kim2022 show that projection and rewriting would lead to the same
 - **Flexibility**: Can handle various forms of endogeneity, such as simultaneity or omitted variables [@Ebbes2021].
 - **Robustness**: Works well even with a small number of instruments or noisy instruments [@Hill2021].
 
+---
 
+## Copulas
+
+- We've looked at IV Methods so far, but what if we can't find a valid instrument?
+  - IV-free Methods: **Copulas**
+- **Copulas** decompose a joint probability distribution into:
+  - **Marginals**: individual distributions, each with no inherent correlation.
+  - **Copula**: a coupling function that links the marginals, capturing the dependency structure.
+
+::: {.callout-important}
+**The copula allows us to specify the correlation between variables separately from their marginal distributions!**
+:::
+
+---
+
+### Copulas
+
+Probabilty Distributions, Marginal Distributions, Joint Distributions :scream: ?
+
+:::{style="font-size: 75%;"}
+
+::: {.callout-note}
+
+**Cumulative Distribution Function (CDF)**
+
+- **Definition**: The CDF of a random variable $X$ gives the probability that it takes on a value less than or equal to $x$. It provides the cumulative probability up to a specific point:
+$$
+F(x) = P(X \leq x)
+$$
+
+**Marginal Distribution Function**
+
+- **Definition**: The marginal distribution function of a random variable $X$ in a multivariate setting is the CDF of $X$ alone and describes its the distribution, ignoring the other variables in the joint distribution.:
+$$
+F_X(x) = P(X \leq x)
+$$
+
+
+**Joint Distribution Function**
+
+- **Definition**: The joint distribution function of two or more random variables $X_1, X_2, \dots, X_n$  gives the probability that each of the random variables takes on values less than or equal to specified points simultaneously:
+$$
+F(x_1, x_2, \dots, x_n) = P(X_1 \leq x_1, X_2 \leq x_2, \dots, X_n \leq x_n)
+$$
+
+:::
+
+:::
+
+---
+
+### Copulas
+
+- Copulas help to link **CDF** to **Joint distribution** for any number of input parameters. 
+$$
+F_{XY} = C(F_X (x), F_Y (y))
+$$
+
+- Here, $C$ is the copula function which takes marginal CDF for each variable and creates a joint CDF.
+  - They allow one to easily model and estimate the distribution of random vectors by estimating marginals and copulae separately.
+
+- Simple Copula in the Normal/Gaussian Copula:
+$$
+C_N (u,v) = \Phi_R (\Phi^{-1}(u), \Phi^{-1}(v))
+$$
+
+Where, $u$ and $v$ are the random variables, $R$ the correlation matrix and $C_N$ is the normal copula.
+
+---
+
+### Copulas and Endogeneity
+
+- One of the primary applications of (gaussian) copulas is in addressing endogeneity, particularly in econometrics and marketing models.
+- (Gaussian) copula can be used to model the correlation between endogenous variables and the error term. 
+  - This is achieved by linking the non-normally distributed endogenous variable to a normally distributed error term through a copula structure​​.
+- The approach from Park and Gupta (2012), for instance, introduces a Gaussian copula correction term to the regression model. 
+
+---
+
+### Copulas - Intuition
+
+We define the following DGP:
+
+$$
+\begin{aligned}
+X &\sim \mathcal{N}(0, 1) \\
+\xi &\sim \mathcal{N}(0, 1)
+\end{aligned}
+$$
+
+$$
+W = \beta_\xi \xi + \mathcal{N}(0, 1)
+$$
+
+$$
+Y = \alpha + \beta X + \gamma W + \xi
+$$
+
+with $\alpha = 2$, $\beta = 3$, $\gamma = 1.5$, $\beta_\xi = 0.3$
+
+```{python}
+# Import necessary libraries
+import numpy as np
+import pandas as pd
+import statsmodels.api as sm
+import statsmodels.formula.api as smf
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Set random seed for reproducibility
+np.random.seed(42)
+
+# Data Generating Process (DGP)
+n = 1000
+alpha = 0.5
+beta = 1
+gamma = 1.5
+
+betaXi = 0.2 # Strength of errorterm on W
+
+def dgp(n, alpha, beta, gamma, betaXi):
+
+  # Exogenous variables
+  X = np.random.normal(0, 1, n)  # Exogenous regressor
+  error_xi = np.random.normal(0, 1, n)  # Error term
+  W = betaXi * error_xi + (1-betaXi) * np.random.normal(0, 1, n)
+  # W is correlated with error_xi, hence endogenous
+  Y = alpha + beta * X + gamma * W + error_xi
+
+  return pd.DataFrame({'Y': Y, 'X': X, 'W': W, '$\\xi$': error_xi})
+```
+
+--- 
+
+### Copulas - Intuition
+
+```{python}
+import plotly.express as px
+import pandas as pd
+import plotly.graph_objects as go
+from ipywidgets import interact
+
+# Assuming df is your dataframe generated from the function
+df = dgp(n, alpha, beta, gamma, betaXi)
+# Function to create scatter plot with dropdowns
+def create_scatter_plot(df):
+    fig = go.Figure()
+
+    # Add scatter plot traces
+    fig.add_trace(go.Scatter(x=df['X'], y=df['Y'], mode='markers', name='Y ~ X'))
+    fig.add_trace(go.Scatter(x=df['W'], y=df['Y'], mode='markers', name='Y ~ W'))
+    fig.add_trace(go.Scatter(x=df['W'], y=df['$\\xi$'], mode='markers', name='$\\xi$ ~ W'))
+
+    # Update layout with dropdown menu
+    fig.update_layout(
+        updatemenus=[
+            dict(
+                buttons=[
+                    dict(label="Y ~ X",
+                         method="update",
+                         args=[{"visible": [True, False, False]}]),
+                    dict(label="Y ~ W",
+                         method="update",
+                         args=[{"visible": [False, True, False]}]),
+                    dict(label="$\\xi$ ~ W",
+                         method="update",
+                         args=[{"visible": [False, False, True]}]),
+                ],
+                direction="down",
+            )
+        ]
+    )
+
+    return fig
+
+# Create the scatter plot
+fig = create_scatter_plot(df)
+
+# Show the plot
+fig.show()
+```
+
+---
+
+
+### Copulas - Intuition
+
+```{python}
+import pandas as pd
+import numpy as np
+import statsmodels.api as sm
+import plotly.express as px
+import plotly.figure_factory as ff
+import statsmodels.formula.api as smf
+
+from arch import arch_model
+from ipywidgets import HBox, VBox
+from scipy.optimize import fmin, minimize
+from scipy.stats import t
+from scipy.stats import norm
+from math import inf
+
+# import bs4 as bs
+import requests
+import yfinance as yf
+import datetime
+
+from scipy.stats import gamma
+from scipy.stats import norm
+from scipy.stats import t
+from scipy.stats import beta
+import matplotlib.pyplot as plt
+
+
+fig = px.scatter(df, x = 'W', y='Y', width=700, height=500, trendline='ols', trendline_color_override='DeepPink', marginal_x='histogram', marginal_y='histogram', title='Bi-Variate Normal')
+fig.show()
+```
+
+**OLS yiels:**
+
+:::{style="font-size: 75%;"}
+```{python}
+ols_model = smf.ols('Y ~ X + W', data=df).fit()
+ols_model.summary().tables[1]
+```
+
+:::
+
+---
+
+### Copulas - Intuition
+
+```{python}
+unif_x = df["X"].values #norm.cdf(df["X"].values)
+unif_y = norm.cdf(df["Y"].values)
+unif_w = norm.cdf(df["W"].values)
+
+unif_data = pd.concat([pd.DataFrame(df["X"].values), 
+                       pd.DataFrame(df["W"].values), 
+                       pd.DataFrame(unif_w),
+                       pd.DataFrame(df["Y"].values)], 
+                       axis=1)
+
+unif_data.columns = ['X', 'W', 'inv_cdf_W', 'Y']
+
+fig = px.scatter(unif_data, x = 'inv_cdf_W', y='Y', width=700, height=500, trendline='ols', trendline_color_override='DeepPink', marginal_x='histogram', marginal_y='histogram', title='Bi-Variate Uniform')
+fig.show()
+```
+
+**OLS yiels:**
+
+:::{style="font-size: 75%;"}
+```{python}
+ols_model = smf.ols('Y ~ X + W + inv_cdf_W', data=unif_data).fit()
+ols_model.summary().tables[1]
+```
+:::
+
+---
+
+### Copulas - Intuition
+
+```{python}
+website_time = pd.DataFrame(gamma.ppf(unif_w, a=2, scale=5))
+website_spend =  pd.DataFrame(beta.ppf(unif_y,a=0.5, b=0.5, loc=5, scale=100))
+join_time_spend = pd.concat([website_time, website_spend], axis=1)
+join_time_spend.columns = ['Time', 'Cash']
+
+fig = px.scatter(join_time_spend, x = 'Time', y='Cash', width=1000, height=500,  range_y=[0,110], trendline='ols', trendline_color_override='DeepPink',  marginal_x='histogram', marginal_y='histogram')
+fig.show()
+```
+
+**OLS yields**:
+
+:::{style="font-size: 75%;"}
+```{python}
+ols_model = smf.ols('Cash ~ Time', data=join_time_spend).fit()
+ols_model.summary().tables[1]
+```
+:::
+
+---
+
+### Copulas - Intuition
+
+**Transforming distributions**
+```{python}
+time_cdf =  pd.DataFrame(gamma.cdf(website_time.values, a = 2, scale=5))
+dollar_cdf = pd.DataFrame(beta.cdf(website_spend.values,a=0.5, b=0.5, loc=5, scale=100))
+
+join_time_spend_uniform = pd.concat([dollar_cdf, time_cdf], axis=1)
+join_time_spend_uniform.columns = ['Time', 'Cash']
+
+time_v_money_uniform = px.scatter(join_time_spend_uniform, x = 'Time', y='Cash', width=1000, height=500,  marginal_x='histogram', marginal_y='histogram', title='Dollars vs Time in Copula Space', trendline='ols', trendline_color_override='DeepPink', )
+time_v_money_uniform.show()
+```
+
+**OLS yields**:
+
+:::{style="font-size: 75%;"}
+```{python}
+ols_model = smf.ols('Cash ~ Time', data=join_time_spend_uniform).fit()
+ols_model.summary().tables[1]
+```
+:::
+---
+
+### Copulas - Intuition
+```{python}
+```
+
+
+# Thank you for your attention :muscle:!
+
+# References {transition="concave-in"}
+
+## References
+
+::: {#refs}
+:::
 
 # A short simulation :test_tube:
 
@@ -1477,16 +1797,6 @@ def r2(y_true, y_pred):
 
 dml_pliv.evaluate_learners(metric=r2)
 ```
-
-# Thank you for your attention :muscle:!
-
-# References {transition="concave-in"}
-
-## References
-
-::: {#refs}
-:::
-
 
 # Appendix: Double Machine Learning {.appendix transition="concave-in"}
 
