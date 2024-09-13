@@ -1180,8 +1180,8 @@ Where, $u$ and $v$ are the random variables, $R$ the correlation matrix and $C_N
 - **Transform to Gamma and Beta distributions**:
 $$
 \begin{align}
-\text{web}_{time} &= \Gamma^{-1}(\text{unif}_1; a=2, \text{scale}=5) \\
-\text{web}_{spend} &= \text{Beta}^{-1}(\text{unif}_2; a=0.5, b=0.5, \text{loc}=5, \text{scale}=100)
+\text{web}_{time} &= \Gamma^{-1}(X_{\text{unif}}; a=2, \text{scale}=5) \\
+\text{web}_{spend} &= \text{Beta}^{-1}(Y_{\text{unif}}; a=0.5, b=0.5, \text{loc}=5, \text{scale}=100)
 \end{align}
 $$
 
