@@ -772,6 +772,7 @@ $$
 ::: {.column width="50%"}
 
 **Reporting Results**
+
 - When using **2SLS**, researchers should present both the Ordinary Least Squares (OLS) and 2SLS results.
 - This includes showing the coefficients and standard errors for each approach.
 - Check if the direction of bias in OLS matches the theoretical expectations.
@@ -814,6 +815,7 @@ $$
 
 **Evaluating Instrument Strength**
 
+- **Weak Instrument:** An instrument that has a weak correlation with the endogenous variable, leading to unreliable estimates in instrumental variable (IV) regressions.
 - **Report the R²** of the first-stage regression, both with and without the IVs included.
   - A large difference in R² indicates strong instruments.
 - Report the **F-statistic** for the excluded IVs.
@@ -1064,48 +1066,12 @@ results_summary.tables[1]
 
 - We've looked at IV Methods so far, but what if we can't find a valid instrument?
   - IV-free Methods: **Copulas**
-- **Copulas** decompose a joint probability distribution into:
-  - **Marginals**: individual distributions, each with no inherent correlation.
+- **Copulas** decompose a joint probability distribution (@nte-JDF) into:
+  - **Marginals**: individual distributions, each with no inherent correlation, see @nte-MDF.
   - **Copula**: a coupling function that links :link: the marginals, capturing the dependency structure.
 
 ::: {.callout-important}
 **The copula allows us to specify the correlation between variables separately from their marginal distributions!**
-:::
-
----
-
-### Copulas
-
-Probabilty Distributions, Marginal Distributions, Joint Distributions :scream: ?
-
-:::{style="font-size: 75%;"}
-
-::: {.callout-note}
-
-**Cumulative Distribution Function (CDF)**
-
-- **Definition**: The CDF of a random variable $X$ gives the probability that it takes on a value less than or equal to $x$. It provides the cumulative probability up to a specific point:
-$$
-F(x) = P(X \leq x)
-$$
-
-**Marginal Distribution Function**
-
-- **Definition**: The marginal distribution function of a random variable $X$ in a multivariate setting is the CDF of $X$ alone and describes its the distribution, ignoring the other variables in the joint distribution.:
-$$
-F_X(x) = P(X \leq x)
-$$
-
-
-**Joint Distribution Function**
-
-- **Definition**: The joint distribution function of two or more random variables $X_1, X_2, \dots, X_n$  gives the probability that each of the random variables takes on values less than or equal to specified points simultaneously:
-$$
-F(x_1, x_2, \dots, x_n) = P(X_1 \leq x_1, X_2 \leq x_2, \dots, X_n \leq x_n)
-$$
-
-:::
-
 :::
 
 ---
@@ -1130,19 +1096,19 @@ $$
   $$
 
 - **Sklar’s Theorem**:
-  - Any joint distribution can be decomposed into marginal distributions and a copula, which captures the dependency between them.
+  - Any joint distribution (@nte-JDF) can be decomposed into marginal distributions (@nte-MDF) and a copula, which captures the dependency between them.
 
 :::
 
 ::: {.callout-important}
-Let $W$ be an endogenous regressor and $\xi$ be a structural error term. According to **Sklar's Theorem** (Sklar, 1959), there exists a copula function $C(\cdot, \cdot)$ such that the joint cumulative distribution function (CDF) of $W$ and $\xi$ can be written as:
+Let $W$ be an endogenous regressor and $\xi$ be a structural error term. According to **Sklar's Theorem** (Sklar, 1959), there exists a copula function $C(\cdot, \cdot)$ such that the joint cumulative distribution function (@nte-CDF) of $W$ and $\xi$ can be written as:
 $$
 F(W, \xi) = C(H(W), G(\xi)) = C(U_W, U_\xi)
 $$
 
-where $U_W = H(W)$ and $U_\xi = G(\xi)$ are the marginal CDFs of $W$ and $\xi$, respectively, both following uniform distributions on $(0, 1)$.
+where $U_W = H(W)$ and $U_\xi = G(\xi)$ are the marginal CDFs (@nte-MDF) of $W$ and $\xi$, respectively, both following uniform distributions on $(0, 1)$.
 
-Thus, the copula $C(\cdot, \cdot)$ captures the dependence structure between $W$ and $\xi$, allowing the marginal distributions of $W$ and $\xi$ to be modeled separately from their joint dependence.
+Thus, the copula $C(\cdot, \cdot)$ captures the dependence structure between $W$ and $\xi$, allowing the marginal distributions (@nte-MDF) of $W$ and $\xi$ to be modeled separately from their joint dependence.
 :::
 
 ---
@@ -1153,11 +1119,11 @@ Thus, the copula $C(\cdot, \cdot)$ captures the dependence structure between $W$
 
 They suggest that to correct for the endogeneity of $W$, one can use the following method:
 
-:::{style="font-size: 75%;"}
+:::{style="font-size: 100%;"}
 
-- 1. **Transformation via the Copula:** First, transform the endogenous variable $W$ into a uniform random variable $U_W$ using its marginal CDF, i.e., $U_W = H(W)$, where $H(\cdot)$ is the CDF of $W$.
+- 1. **Transformation via the Copula:** First, transform the endogenous variable $W$ into a uniform random variable $U_W$ using its marginal CDF (@nte-MDF), i.e., $U_W = H(W)$, where $H(\cdot)$ is the CDF of $W$.
    
-- 2. **Apply the Inverse Normal CDF:** Then, generate a new variable $W^* = \Phi^{-1}(U_W)$, where $\Phi^{-1}(\cdot)$ is the inverse of the standard normal cumulative distribution function (CDF). This transformation results in a normally distributed variable.
+- 2. **Apply the Inverse Normal CDF:** Then, generate a new variable $W^* = \Phi^{-1}(U_W)$, where $\Phi^{-1}(\cdot)$ is the inverse of the standard normal cumulative distribution function (@nte-CDF). This transformation results in a normally distributed variable.
 
 - 3. **OLS Estimation:** Finally, include $W^*$ as an additional regressor in the OLS estimation of the structural equation. This step helps correct for the endogeneity of $W$, as including the transformed regressor $W^*$ allows for consistent estimation of the model parameters.
 
@@ -1177,7 +1143,7 @@ They suggest that to correct for the endogeneity of $W$, one can use the followi
   $$
   Y = \alpha + \beta X + \gamma W + \gamma^* W^* + \xi^*
   $$
-  - $W^* = \Phi^{-1}(U_W))\), where \(\Phi^{-1}$ is the inverse normal CDF and $F_W$ is the empirical CDF of $W$.
+  - $W^* = \Phi^{-1}(U_W))\), where \(\Phi^{-1}$ is the inverse normal CDF (@nte-CDF) and $F_W$ is the empirical CDF of $W$.
 
 --- 
 
@@ -2263,4 +2229,55 @@ with
 $$\begin{align}\begin{aligned}\sigma^2 := J_0^{-2} \mathbb{E}(\psi^2(W; \theta_0, \eta_0)),\\J_0 = \mathbb{E}(\psi_a(W; \eta_0)).\end{aligned}\end{align}$$
 
 * See [this example](https://doubleml.shinyapps.io/BasicsDMLApp/) based on @dml2018
+
+
+# Appendix: Details to Distributions {.appendix visibility="hidden}
+
+
+## Cumulative Distribution Function {.appendix visibility="hidden}
+
+:::{style="font-size: 100%;"}
+
+::: {#nte-CDF .callout-note}
+
+- **Definition**: The CDF of a random variable $X$ gives the probability that it takes on a value less than or equal to $x$. It provides the cumulative probability up to a specific point:
+$$
+F(x) = P(X \leq x)
+$$
+
+:::
+
+:::
+
+
+## Marginal Distribution Function {.appendix visibility="hidden}
+
+:::{style="font-size: 100%;"}
+
+::: {#nte-MDF .callout-note}
+
+- **Definition**: The marginal distribution function of a random variable $X$ in a multivariate setting is the CDF of $X$ alone and describes its the distribution, ignoring the other variables in the joint distribution.:
+$$
+F_X(x) = P(X \leq x)
+$$
+
+:::
+
+:::
+
+
+## Joint Distribution Function {.appendix visibility="hidden}
+
+:::{style="font-size: 100%;"}
+
+::: {#nte-JDF .callout-note}
+
+- **Definition**: The joint distribution function of two or more random variables $X_1, X_2, \dots, X_n$  gives the probability that each of the random variables takes on values less than or equal to specified points simultaneously:
+$$
+F(x_1, x_2, \dots, x_n) = P(X_1 \leq x_1, X_2 \leq x_2, \dots, X_n \leq x_n)
+$$
+
+:::
+
+:::
 

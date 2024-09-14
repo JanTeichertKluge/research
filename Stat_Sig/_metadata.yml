@@ -10,6 +10,7 @@ format:
     pagetitle: "Statistical Significance, Impact, and Relevance: Endogeneity"
     highlight-style: breezedark
     slide-number: true
+    crossrefs-hover: true
     code-copy: true
     code-fold: true
     code-link: true

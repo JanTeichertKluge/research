@@ -14,5 +14,9 @@ Header = function(h)
   if h.level == 2 and in_appendix then
     h.attributes["visibility"] = "uncounted"
   end
+  if h.classes:includes("appendix") then
+    in_appendix = true
+    h.attributes["visibility"] = "uncounted"
+  end
   return h
 end
