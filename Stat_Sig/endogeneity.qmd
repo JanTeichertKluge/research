@@ -1143,7 +1143,7 @@ They suggest that to correct for the endogeneity of $W$, one can use the followi
   $$
   Y = \alpha + \beta X + \gamma W + \gamma^* W^* + \xi^*
   $$
-  - $W^* = \Phi^{-1}(U_W))\), where \(\Phi^{-1}$ is the inverse normal CDF (@nte-CDF) and $F_W$ is the empirical CDF of $W$.
+  - $W^* = \Phi^{-1}(U_W))\), where \(\Phi^{-1}$ is the inverse normal CDF (@nte-CDF) and $U_W$ is the empirical CDF of $W$.
 
 --- 
 
