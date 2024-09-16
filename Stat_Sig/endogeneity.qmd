@@ -449,57 +449,6 @@ fig.show()
 
 ::::
 
----
-
-## Measurement Error
-
-The relationship between education and wages can be modeled (e.g. simplified *Mincer Equation*) as:
-
-$$
-\ln(W) = \alpha + \beta E + u
-$$
-
-Where:
-
-- $W$ is the wage,
-- $E$ is the years of education,
-- $u$ is the error term,
-- $\beta$ is the return to education (i.e., the effect of an additional year of education on wages).
-
----
-
-## Measurement Error
-
-If education $E$ is measured with error, say we observe $E^*$ instead of the true value $E$, then:
-
-$$
-E^* = E + v
-$$
-
-Where:
-
-- $E^*$ is the observed (but erroneous) measure of education,
-- $v$ is the measurement error.
-
-This leads to the observed equation:
-
-$$
-\ln(W) = \alpha + \beta (E^* - v) + u
-$$
-
----
-
-## Measurement Error
-
-Rearranging the previous equation gives:
-
-$$
-\ln(W) = \alpha + \beta E^* + (\beta v + u)
-$$
-
-Here, the new error term $(\beta v + u)$ consists of both the original error $u$ and the measurement error $v$. This causes **endogeneity** because the measurement error $v$ is likely correlated with the observed $E_i^*$, violating the assumption that the error term is uncorrelated with the independent variable, leading to biased and inconsistent estimates of $\beta$.
-
-
 # Dealing with Endogeneity :arrows_counterclockwise:
 
 ## General
@@ -514,11 +463,10 @@ Z &\sim \mathcal{N}(0, 1) \\
 $$
 
 $$
-W = \text{snrW} \times \left( \beta_Z Z + \beta_\xi \xi \right) + (1 - \beta_Z - \beta_\xi) \epsilon, \quad \epsilon \sim \mathcal{N}(0, 1)
-$$
-
-$$
-Y = \alpha + \beta X + \gamma W + \xi
+\begin{align}
+W &= \text{snrW} \times \left( \beta_Z Z + \beta_\xi \xi \right) + (1 - \beta_Z - \beta_\xi) \epsilon, \quad \epsilon \sim \mathcal{N}(0, 1) \\
+Y &= \alpha + \beta X + \gamma W + \xi
+\end{align}
 $$
 
 with $\alpha = 2$, $\beta = 3$, $\gamma = 1.5$, $\beta_Z = 0.1$, $\beta_\xi = 0.3$, and $\text{snrW} = 3$.
@@ -628,9 +576,7 @@ fig.show()
 ---
 
 
-## General
-
-We see that OLS will fail due to the endogeneity of $W$:
+## General - OLS Validation
 
 :::{style="font-size: 75%;"}
 
@@ -643,6 +589,7 @@ results_summary = ols_model.summary()
 results_summary.tables[0]
 ```
 :::
+
 ::: {.column width="50%"}
 ```{python}
 results_summary.tables[1]
@@ -701,9 +648,9 @@ $\Rightarrow$ For linear models, we can follow the simple **Two-Stage Least Squa
 
 | **Dependent Variable**       | **Potentially Endogenous Regressor** | **Potential Causes for Endogeneity**                                                                 | **Potential IVs (with citations)**                                                                                         |
 |------------------------------|--------------------------------------|------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------|
-| Demand                       | Price                                | Managers set prices based on factors that are related to demand but are unobserved by the researcher:<br>- Promotional activities, Changes in popularity, Product characteristics (for cross-sectional analyses) | Costs of ingredients and transportation (Rooderkerk et al. 2013, p. 706);<br>Prices in other markets (Nevo 2001, p. 320)    |
+| Demand                       | Price                                | Managers set prices based on factors that are related to demand but are unobserved by the researcher:<br>- Promotional activities, Changes in popularity, Product characteristics (for cross-sectional analyses) | Costs of ingredients and transportation (Rooderkerk et al. 2013, p. 706); Prices in other markets (Nevo 2001, p. 320)    |
 | Demand                       | Advertising                          | Managers set advertising based on factors that are related to demand but are unobserved by the researcher:<br>- Price changes, Changes in preferences or popularity, (Expected) sales volume      | Advertising expenditures of other (noncompeting) firms (Dinner et al. 2014, p. 534);<br>Advertising cost                    |
-| Demand                       | Detailing                            | Managers set detailing based on factors that are related to demand but are unobserved by the researcher, e.g., large accounts receive more detailing than small accounts                              | Costs for detailing (e.g., wages; Chintagunta and Desiraju 2005, p. 74)                                                      |
+| Demand                       | Detailing                            | Managers set detailing based on factors that are related to demand but are unobserved by the researcher, e.g., large accounts receive more detailing                              | Costs for detailing (e.g., wages; Chintagunta and Desiraju 2005, p. 74)                                                      |
 | Firm Performance              | CMO Presence                         | Firms strategically choose to have a CMO, and this choice depends on unobserved firm characteristics as well as expected performance effects                        | CMO prevalence among peer firms (Germann et al. 2015, p. 8)                                                                 |
 
 
@@ -776,7 +723,7 @@ $$
 - When using **2SLS**, researchers should present both the Ordinary Least Squares (OLS) and 2SLS results.
 - This includes showing the coefficients and standard errors for each approach.
 - Check if the direction of bias in OLS matches the theoretical expectations.
-  - Example: In cases where upward bias is expected, such as price effects, 2SLS should show a more negative estimate than OLS [@Ebbes2021].
+  - In cases where upward bias is expected, such as price effects, TSLS should show a more negative estimate than OLS [@Ebbes2021].
 
 :::
 
@@ -803,11 +750,10 @@ $$
 
 **First-Stage Regression**
 
-- Always report the complete results of the first-stage regression.
+- Always **report the complete results of the first-stage regression**.
   - This includes all instrumental variables (IVs) and exogenous regressors used in the equation.
-- Key details to check:
-  - Coefficients should have the expected sign and magnitude.
-  - Report the standard errors for these estimates to ensure statistical significance [@Ebbes2011].
+- Coefficients should have the expected sign and magnitude.
+- Report the standard errors for these estimates to ensure statistical significance [@Ebbes2011].
 
 :::
 
@@ -815,9 +761,8 @@ $$
 
 **Evaluating Instrument Strength**
 
-- **Weak Instrument:** An instrument that has a weak correlation with the endogenous variable, leading to unreliable estimates in instrumental variable (IV) regressions.
 - **Report the R²** of the first-stage regression, both with and without the IVs included.
-  - A large difference in R² indicates strong instruments.
+  - A large difference in R² indicates strong instruments^[**Weak Instrument:** An instrument that has a weak correlation with the endogenous variable, leading to unreliable estimates in instrumental variable (IV) regressions.].
 - Report the **F-statistic** for the excluded IVs.
   - A common benchmark is F > 10 for strong instruments, but this should be interpreted as a minimum requirement [@stock2002diagnostic; @rossi2014instrument].
   
@@ -1025,16 +970,6 @@ $\Rightarrow$ @Kim2022 show that projection and rewriting would lead to the same
 
 ---
 
-### Control Function Approach
-
-**Advantages**:
-
-- **Simplicity**: Easy to implement and interpret [@Wooldridge2015].
-- **Flexibility**: Can handle various forms of endogeneity, such as simultaneity or omitted variables [@Ebbes2021].
-- **Robustness**: Works well even with a small number of instruments or noisy instruments [@Hill2021].
-
----
-
 ## Control Function Approach - Hands on
 
 :::{style="font-size: 75%;"}
@@ -1143,7 +1078,7 @@ They suggest that to correct for the endogeneity of $W$, one can use the followi
   $$
   Y = \alpha + \beta X + \gamma W + \gamma^* W^* + \xi^*
   $$
-  - $W^* = \Phi^{-1}(U_W))\), where \(\Phi^{-1}$ is the inverse normal CDF (@nte-CDF) and $U_W$ is the empirical CDF of $W$.
+  - $W^* = \Phi^{-1}(U_W)$, where $\Phi^{-1}$ is the inverse normal CDF (@nte-CDF) and $U_W$ is the empirical CDF of $W$.
 
 --- 
 
@@ -1158,14 +1093,12 @@ X_{\text{exog}} &\sim \Gamma(1, 0.5) \\
 \end{aligned}
 $$
 
-The endogenous variable $X$ is generated as:
+With an endogenous variable $X$ and outcome variable $Y$ as:
 $$
-X = X_{\text{exog}} + \epsilon_1
-$$
-
-The outcome variable $Y$ is given by:
-$$
+\begin{align}
+X = X_{\text{exog}} + \epsilon_1 \\
 Y = \alpha + \beta X + (\epsilon_1 + \epsilon_2)
+\end{align}
 $$
 
 :::{style="font-size: 75%;"}
@@ -1217,18 +1150,84 @@ website_spend = data["Y"]
 np.random.seed(seed=5)
 join_time_spend = pd.concat([website_time, website_spend], axis=1)
 join_time_spend.columns = ['Time', 'Cash']
-gamma_dist  = ff.create_distplot([website_time.values.reshape(-1)], group_labels = [' '])
-gamma_dist.update_layout(showlegend=False, title_text='Time Spent on Website', width=1000, height=500)
-gamma_dist.show()
-```
+# Distribution for Time Spent on Website (Gamma-like)
+gamma_dist = ff.create_distplot(
+    [website_time.values],
+    group_labels=['Time Spent on Website'],
+    show_hist=True,
+    show_rug=False,
+    bin_size=0.25
+)
 
----
+# Distribution for Dollars Spent on Website (T-like)
+t_dist = ff.create_distplot(
+    [website_spend.values],
+    group_labels=['Dollars Spent on Website'],
+    show_hist=True,
+    show_rug=False,
+    bin_size=0.25,
+    colors=["darkviolet"]
+)
 
-### The Gaussian Copula Approach - Hands on
-```{python}
-t_dist  = ff.create_distplot([website_spend.values.reshape(-1)], group_labels = [' '])
-t_dist.update_layout(showlegend=False, title_text='Dollars Spent on Website', width=1000, height=500)
-t_dist.show()
+# Combine the two figures into one
+fig = make_subplots()
+
+# Add traces from gamma_dist
+for trace in gamma_dist.data:
+    fig.add_trace(trace)
+
+# Add traces from t_dist
+for trace in t_dist.data:
+    fig.add_trace(trace)
+
+# Define buttons for the dropdown menu
+buttons = [
+    dict(
+        label='Time Spent on Website',
+        method='update',
+        args=[
+            {'visible': [True, True, False, False]},  # Show first two traces
+            {'title': 'Time Spent on Website'}
+        ]
+    ),
+    dict(
+        label='Dollars Spent on Website',
+        method='update',
+        args=[
+            {'visible': [False, False, True, True]},  # Show last two traces
+            {'title': 'Dollars Spent on Website'}
+        ]
+    ),
+    dict(
+        label='Both Distributions',
+        method='update',
+        args=[
+            {'visible': [True, True, True, True]},  # Show all traces
+            {'title': 'Time and Dollars Spent on Website'}
+        ]
+    )
+]
+
+# Update layout with dropdown
+fig.update_layout(
+    updatemenus=[
+        dict(
+            active=0,
+            buttons=buttons,
+            x=0.6,
+            y=1.25,
+            xanchor='right',
+            yanchor='top'
+        )
+    ],
+    title='Time Spent on Website',
+    showlegend=False,
+    width=1000,
+    height=500
+)
+
+# Display the figure
+fig.show()
 ```
 
 ---
@@ -1269,8 +1268,6 @@ time_cdf_vs_original_plot.show()
 
 ### The Gaussian Copula Approach - Hands on
 
-**Including $W^*$ in the Regression**:
-
 :::{style="font-size: 75%;"}
 
 :::: {.columns}
@@ -1306,6 +1303,56 @@ results_summary.tables[1]
 :::
 
 # Appendix {.appendix transition="concave-in"}
+
+# Appendix - Measurement Error{.appendix}
+
+## Measurement Error
+
+The relationship between education and wages can be modeled (e.g. simplified *Mincer Equation*) as:
+
+$$
+\ln(W) = \alpha + \beta E + u
+$$
+
+Where:
+
+- $W$ is the wage,
+- $E$ is the years of education,
+- $u$ is the error term,
+- $\beta$ is the return to education (i.e., the effect of an additional year of education on wages).
+
+---
+
+## Measurement Error
+
+If education $E$ is measured with error, say we observe $E^*$ instead of the true value $E$, then:
+
+$$
+E^* = E + v
+$$
+
+Where:
+
+- $E^*$ is the observed (but erroneous) measure of education,
+- $v$ is the measurement error.
+
+This leads to the observed equation:
+
+$$
+\ln(W) = \alpha + \beta (E^* - v) + u
+$$
+
+---
+
+## Measurement Error
+
+Rearranging the previous equation gives:
+
+$$
+\ln(W) = \alpha + \beta E^* + (\beta v + u)
+$$
+
+Here, the new error term $(\beta v + u)$ consists of both the original error $u$ and the measurement error $v$. This causes **endogeneity** because the measurement error $v$ is likely correlated with the observed $E_i^*$, violating the assumption that the error term is uncorrelated with the independent variable, leading to biased and inconsistent estimates of $\beta$.
 
 # Appendix: A short simulation :test_tube: {.appendix transition="concave-in"}
 
