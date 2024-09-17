@@ -1,6 +1,11 @@
+format:
+  revealjs:
+    pagetitle: "Statistical Significance, Impact, and Relevance: Endogeneity"
+---
+
 # Statistical Significance, Impact, and Relevance
 
-On this page you will find documents on the subject of endogeneity. This presentation is part of the PhD course Statistical Significance, Impact, and Relevance. The presentation is build in [Quarto](https://quarto.org/), an open-source publishing system that enables the creation of dynamic, reproducible presentations by seamlessly integrating markdown, code, and outputs. Unlike PowerPoint, Quarto allows for automated content updates and version control through code, while offering greater flexibility and customization compared to Beamer’s LaTeX-based approach. This makes Quarto especially ideal for data-driven presentations that require collaboration and maintainability.
+On this page (go to [**tinyurl.com/endogeneity**](https://tinyurl.com/endogeneity)) you will find documents on the subject of endogeneity. This presentation is part of the PhD course Statistical Significance, Impact, and Relevance. The presentation is build in [Quarto](https://quarto.org/), an open-source publishing system that enables the creation of dynamic, reproducible presentations by seamlessly integrating markdown, code, and outputs. Unlike PowerPoint, Quarto allows for automated content updates and version control through code, while offering greater flexibility and customization compared to Beamer’s LaTeX-based approach. This makes Quarto especially ideal for data-driven presentations that require collaboration and maintainability.
 
 
 - [**You can view the interactive `html` presentation directly in your browser here:**](https://janteichertkluge.github.io/research/Stat_Sig/endogeneity.html#/)
