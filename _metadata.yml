@@ -1,5 +1,5 @@
 format:
-  revealjs:
+  html:
     pagetitle: "Jans Research Hub"
     highlight-style: breezedark
 
