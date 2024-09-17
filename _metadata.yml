@@ -1,0 +1,6 @@
+format:
+  html:
+    pagetitle: "Jans Research Hub"
+    highlight-style: breezedark
+
+from: markdown+emoji # enables emojis see https://gist.github.com/rxaviers/7360908
