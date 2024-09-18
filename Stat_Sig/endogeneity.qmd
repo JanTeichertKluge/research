@@ -124,6 +124,29 @@ $\Rightarrow$ *"Everything is endogenous, except for God."*
 
 ^[Own illustration based on @Papies2022]
 
+
+::: {.notes}
+
+1. **Awareness (1990-2000)**:
+   - During this phase, awareness of endogeneity as a problem began to rise, but relatively few marketing papers explicitly addressed it.
+   - The primary method used to address endogeneity during this period was **Instrumental Variables (IV)** estimation, where researchers attempted to find valid instruments to correct for bias.
+   - Important early papers, such as Moore et al. (1991), Erickson et al. (1992), and Villas-Boas and Winer (1999), raised awareness of the endogeneity problem, especially in estimating the effects of prices and other marketing variables.
+
+2. **Takeoff (2000-2010)**:
+   - This phase saw a significant increase in the number of papers addressing endogeneity using econometric methods.
+   - IV estimation continued to dominate, but researchers began to rely more on available instruments (like lagged variables) and to explore more sophisticated methods such as control functions.
+   - The understanding of IV limitations, such as the risk of weak or invalid instruments, grew during this period, with important discussions like those by Bound et al. (1995) influencing the field.
+   - Papers began exploring the practical implications of endogenous regressors in a wide variety of marketing models, including those related to advertising and pricing.
+
+3. **Diversification (2010-present)**:
+   - In this period, a diversification of methods emerged, with IV still prominent but alternatives like **Latent Instrumental Variables (LIV)**, **Gaussian Copula (GC)**, and **quasi-experimental approaches** (such as difference-in-differences and regression discontinuity) gaining popularity.
+   - Researchers started to develop methods that don’t require instruments but directly model the joint distribution of the endogenous variable and error terms.
+   - Quasi-experimental approaches became more common as researchers leveraged richer datasets to address endogeneity without IVs, expanding the methodological toolkit beyond traditional methods.
+
+The three phases represent a shift from early awareness of endogeneity, through widespread adoption of IV methods, to a broader acceptance of diverse approaches for causal identification in marketing research.
+
+:::
+
 ---
 
 ## Overview
