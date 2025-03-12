@@ -386,16 +386,12 @@ p^t_{i} = \frac{\exp(\kappa_i y^t_{i})}{\sum_{a=1}^k \exp(\kappa_i y^a_{i})}
 </ul></li>
 <li>The performance gap increases with the number of treatments and in zero-shot settings.
 <ul>
-<li>Why one would consider zero-shot learning for causal inference?</li>
+<li>Zero-shot Causal Inference would be allow for testing the model on unseen treatments (e.g.&nbsp;what if a new thumbnail is introduced).</li>
 </ul></li>
 </ul></li>
 <li><strong>Robustness</strong>
 <ul>
-<li>NICE maintains superior performance under varying treatment assignment biases, highlighting its robustness in real-world scenarios.</li>
-</ul></li>
-<li><strong>Takeaway</strong>
-<ul>
-<li>Incorporating the rich, high-dimensional information present in image treatments leads to significantly improved causal effect estimates.</li>
+<li>NICE claims superior performance under varying treatment assignment biases, highlighting its robustness in real-world scenarios.</li>
 </ul></li>
 </ul>
 </section>
@@ -405,7 +401,9 @@ p^t_{i} = \frac{\exp(\kappa_i y^t_{i})}{\sum_{a=1}^k \exp(\kappa_i y^a_{i})}
 <li><strong>Key Contributions</strong>
 <ul>
 <li>Introduces NICE, a framework that leverages image treatments for causal effect estimation.</li>
-<li>Demonstrates improved ITE estimation compared to existing methods through extensive experiments.</li>
+<li>Demonstrates improved ITE estimation compared to existing methods.</li>
+<li>Uses a combination of MSE and MMD losses to balance treatment representations and reduce confounding effects.</li>
+<li>Validates the approach on semi-synthetic data.</li>
 </ul></li>
 <li><strong>Future Research</strong>
 <ul>

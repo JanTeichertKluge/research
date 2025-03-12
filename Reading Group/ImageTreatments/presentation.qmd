@@ -225,20 +225,19 @@ $\Rightarrow$ The dataset consists of $n$ pairs: $\{x_i, I_{t_i}, y_{i}^{t_i}\}_
   - NICE consistently outperforms all baseline methods on the PEHE metric.
     - But all "baseline" methods are not tailored for handling images, so its not a fair comparison?!
   - The performance gap increases with the number of treatments and in zero-shot settings.
-    - Why one would consider zero-shot learning for causal inference?
+    - Zero-shot Causal Inference would be allow for testing the model on unseen treatments (e.g. what if a new thumbnail is introduced).
 
 - **Robustness**  
-  - NICE maintains superior performance under varying treatment assignment biases, highlighting its robustness in real-world scenarios.
-
-- **Takeaway**  
-  - Incorporating the rich, high-dimensional information present in image treatments leads to significantly improved causal effect estimates.
+  - NICE claims superior performance under varying treatment assignment biases, highlighting its robustness in real-world scenarios.
 
 
 ## Conclusions & Future Directions
 
 - **Key Contributions**  
   - Introduces NICE, a framework that leverages image treatments for causal effect estimation.
-  - Demonstrates improved ITE estimation compared to existing methods through extensive experiments.
+  - Demonstrates improved ITE estimation compared to existing methods.
+  - Uses a combination of MSE and MMD losses to balance treatment representations and reduce confounding effects.
+  - Validates the approach on semi-synthetic data.
 
 - **Future Research**  
   - Extending the framework to more complex data types (e.g., video, multimodal data).
