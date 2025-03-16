@@ -1,0 +1,85 @@
+.author-container {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+	gap: 10px;
+	margin-top: 4cm;
+}
+
+hr {
+    height: 3px;
+    background-color: #0000000;
+}
+
+.author {
+	text-align: center;
+	font-size: 80%;
+}
+
+.logo-container {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-end;
+	gap: 20px;
+}
+
+.image-container {
+	position: relative;
+	cursor: pointer;
+}
+.annotation1 {
+	position: absolute;
+	top: 110px;
+	left: 180px;
+	width: 150px;
+	height: 150px;
+	background-color: #265A93;
+	opacity:0.7;
+	padding: 5px;
+	border: 2px solid black;
+	display: none;
+}
+.annotation1.active {
+	display: block; 
+}
+.annotation2 {
+	position: absolute;
+	top: 275px;
+	left: 180px;
+	width: 150px;
+	height: 35px;
+	background-color: #265A93;
+	opacity:0.7;
+	padding: 5px;
+	border: 2px solid black;
+	display: none;
+}
+.annotation2.active {
+	display: block; 
+}
+.annotation3 {
+	position: absolute;
+	top: 325px;
+	left: 180px;
+	width: 150px;
+	height: 90px;
+	background-color: #265A93;
+	opacity:0.7;
+	padding: 5px;
+	border: 2px solid black;
+	display: none;
+}
+.annotation3.active {
+	display: block; 
+}
+
+.affiliation-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.affiliation {
+  text-align: center;
+}

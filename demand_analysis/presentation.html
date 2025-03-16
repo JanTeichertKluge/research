@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="presentation_files/libs/clipboard/clipboard.min.js"></script>
+<script src="presentation_files/libs/quarto-html/tabby.min.js"></script>
+<script src="presentation_files/libs/quarto-html/popper.min.js"></script>
+<script src="presentation_files/libs/quarto-html/tippy.umd.min.js"></script>
+<link href="presentation_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="presentation_files/libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="presentation_files/libs/quarto-html/quarto-syntax-highlighting-d129a44951930463e8a313df5966fbea.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="presentation_files/libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="presentation_files/libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="presentation_files/libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.6.39">
+
+  <title>Demand Analysis</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="presentation_files/libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="presentation_files/libs/revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        background-color: #232629;
+        color: #7a7c7d;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #7a7c7d;  padding-left: 4px; }
+    div.sourceCode
+      { color: #cfcfc2; background-color: #232629; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #cfcfc2; } /* Normal */
+    code span.al { color: #95da4c; background-color: #4d1f24; font-weight: bold; } /* Alert */
+    code span.an { color: #3f8058; } /* Annotation */
+    code span.at { color: #2980b9; } /* Attribute */
+    code span.bn { color: #f67400; } /* BaseN */
+    code span.bu { color: #7f8c8d; } /* BuiltIn */
+    code span.cf { color: #fdbc4b; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #3daee9; } /* Char */
+    code span.cn { color: #27aeae; font-weight: bold; } /* Constant */
+    code span.co { color: #7a7c7d; } /* Comment */
+    code span.cv { color: #7f8c8d; } /* CommentVar */
+    code span.do { color: #a43340; } /* Documentation */
+    code span.dt { color: #2980b9; } /* DataType */
+    code span.dv { color: #f67400; } /* DecVal */
+    code span.er { color: #da4453; text-decoration: underline; } /* Error */
+    code span.ex { color: #0099ff; font-weight: bold; } /* Extension */
+    code span.fl { color: #f67400; } /* Float */
+    code span.fu { color: #8e44ad; } /* Function */
+    code span.im { color: #27ae60; } /* Import */
+    code span.in { color: #c45b00; } /* Information */
+    code span.kw { color: #cfcfc2; font-weight: bold; } /* Keyword */
+    code span.op { color: #cfcfc2; } /* Operator */
+    code span.ot { color: #27ae60; } /* Other */
+    code span.pp { color: #27ae60; } /* Preprocessor */
+    code span.re { color: #2980b9; background-color: #153042; } /* RegionMarker */
+    code span.sc { color: #3daee9; } /* SpecialChar */
+    code span.ss { color: #da4453; } /* SpecialString */
+    code span.st { color: #f44f4f; } /* String */
+    code span.va { color: #27aeae; } /* Variable */
+    code span.vs { color: #da4453; } /* VerbatimString */
+    code span.wa { color: #da4453; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="presentation_files/libs/revealjs/dist/theme/quarto-bbba47c1a7be15890839b3d113fc56fa.css">
+  <link rel="stylesheet" href="styles.css">
+  <link href="presentation_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="presentation_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="presentation_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="presentation_files/libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
+  <link href="presentation_files/libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
+  <link href="presentation_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="quarto-title-block center">
+  <h1 class="title">Adventures in demand analysis using AI</h1>
+  <p class="subtitle">Evaluations on buybox data, embedding dimensions and significant heterogeneous effects</p>
+
+<div class="quarto-title-authors">
+</div>
+
+</section>
+<section id="what-has-changed-compared-to-the-jasa-version" class="slide level2">
+<h2>What has changed compared to the JASA version?</h2>
+<ul>
+<li><p><strong>The Treatment Variable</strong> In the submitted JASA Version, we used the <code>NEW</code> Price (labeled as <span class="math inline">\(P_t\)</span>) as Treatment, now we use the <code>BUY_BOX</code> Price (labeled as <span class="math inline">\(P^{bb}_t\)</span>) as Treatment. For that we had to repull the data from <em>keepa</em> and recreate the dataset.</p></li>
+<li><p><strong>The time gap between periods</strong> The time gap between the two periods has been removed (7 days gap in the JASA version). Now each time-dependent variable <span class="math inline">\(X_t\)</span> is calculated on the basis of the previous 28 days, so that <span class="math inline">\(X_{t-1}\)</span> is adjacent to the “oldest” day of <span class="math inline">\(X_t\)</span>.</p>
+<ul>
+<li>That increased the sample size.</li>
+</ul></li>
+<li><p><strong>Training Procedure</strong><br>
+At the beginning of the year, we experimented with hyperparameter optimization within the multimodal neural network using Ray-Tune. The following search space was run through:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href=""></a>  search_space <span class="op">=</span> {</span>
+<span id="cb1-2"><a href=""></a>    <span class="st">"embedding_dim"</span>: tune.choice([<span class="va">None</span>, <span class="dv">256</span>, <span class="dv">512</span>, <span class="dv">1024</span>]),</span>
+<span id="cb1-3"><a href=""></a>    <span class="st">"fusion_head"</span>: tune.choice([[<span class="dv">64</span>], [<span class="dv">128</span>], [<span class="dv">256</span>, <span class="dv">128</span>], [<span class="dv">512</span>, <span class="dv">256</span>, <span class="dv">128</span>]]),</span>
+<span id="cb1-4"><a href=""></a>    <span class="st">"lr"</span>: tune.loguniform(<span class="fl">1e-4</span>, <span class="fl">1e-1</span>),</span>
+<span id="cb1-5"><a href=""></a>    <span class="st">"batch_size"</span>: tune.choice([<span class="dv">16</span>, <span class="dv">32</span>]),</span>
+<span id="cb1-6"><a href=""></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+</ul>
+</section>
+<section id="changes-in-the-distribution-of-the-treatment-variable" class="slide level2">
+<h2>Changes in the distribution of the treatment variable</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="lvl_dist.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Distributions of P_t and P^{bb}_t, KS test between P_t and P_bb_t: statistic=0.05212, p-value=6.9573e-41"><img data-src="lvl_dist.png" style="width:100.0%" alt="Distributions of P_t and P^{bb}_t, KS test between P_t and P_bb_t: statistic=0.05212, p-value=6.9573e-41"></a></p>
+<figcaption>Distributions of <span class="math inline">\(P_t\)</span> and <span class="math inline">\(P^{bb}_t\)</span>, KS test between P_t and P_bb_t: statistic=0.05212, p-value=6.9573e-41</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="dif_dist.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Distributions of \Delta P_t and \Delta P^{bb}_t, KS test between Delta_P_t and Delta_P_bb_t: statistic=0.02137, p-value=3.0383e-07"><img data-src="dif_dist.png" style="width:100.0%" alt="Distributions of \Delta P_t and \Delta P^{bb}_t, KS test between Delta_P_t and Delta_P_bb_t: statistic=0.02137, p-value=3.0383e-07"></a></p>
+<figcaption>Distributions of <span class="math inline">\(\Delta P_t\)</span> and <span class="math inline">\(\Delta P^{bb}_t\)</span>, KS test between Delta_P_t and Delta_P_bb_t: statistic=0.02137, p-value=3.0383e-07</figcaption>
+</figure>
+</div>
+</section>
+<section id="observations" class="slide level2">
+<h2>Observations</h2>
+<ul>
+<li>The hyperparameter tuning did lead to a slight improvement in the models predictive performance.
+<ul>
+<li>For the <code>BUY_BOX</code> and <span class="math inline">\(0\)</span> Days Gap Setting, the optimal embedding dimension was selected to <span class="math inline">\(512\)</span>.</li>
+</ul></li>
+<li>It seems that the models embedding dimension (e.g.&nbsp;using the cross-attention-block if there was a specific dimension defined) has a significant impact on the lower dimensional projections of the embeddings used for clustering.</li>
+</ul>
+</section>
+<section id="changes-on-the-ate-estimation" class="slide level2">
+<h2>Changes on the ATE Estimation</h2>
+<ul>
+<li>JASA Version (using <code>NEW</code> Price, <span class="math inline">\(7\)</span> Days Gap): <span class="math inline">\(ATE \approx −0.53\)</span></li>
+<li>New Setting A (using <code>BUY_BOX</code> Price, <span class="math inline">\(0\)</span> Days Gap, tuned (using cross-attention)): <span class="math inline">\(ATE \approx −0.75\)</span></li>
+<li>New Setting A (using <code>BUY_BOX</code> Price, <span class="math inline">\(0\)</span> Days Gap, same hyperparams as in JASA): <span class="math inline">\(ATE \approx −0.75\)</span></li>
+<li>New Setting B (using <code>BUY_BOX</code> Price, <span class="math inline">\(7\)</span> Days Gap, tuned (using cross-attention)): <span class="math inline">\(ATE \approx −0.75\)</span></li>
+<li>New Setting B (using <code>BUY_BOX</code> Price, <span class="math inline">\(7\)</span> Days Gap, same hyperparams as in JASA): <span class="math inline">\(ATE \approx −0.75\)</span></li>
+</ul>
+</section>
+<section id="cluster-averages---gates" class="slide level2">
+<h2>Cluster Averages - GATEs</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="GATE_JASA.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="Cluster Averages from the JASA Version"><img data-src="GATE_JASA.png" style="width:60.0%" alt="Cluster Averages from the JASA Version"></a></p>
+<figcaption>Cluster Averages from the JASA Version</figcaption>
+</figure>
+</div>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="GATE_512.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" title="GATE for the A (tuned), 0 Days Gap Setting"><img data-src="GATE_512.png" style="width:100.0%" alt="GATE for the A (tuned), 0 Days Gap Setting"></a></p>
+<figcaption>GATE for the A (tuned), <span class="math inline">\(0\)</span> Days Gap Setting</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="GATE_512_7D.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5" title="GATE for the B (tuned), 7 Days Gap Setting"><img data-src="GATE_512_7D.png" style="width:100.0%" alt="GATE for the B (tuned), 7 Days Gap Setting"></a></p>
+<figcaption>GATE for the B (tuned), <span class="math inline">\(7\)</span> Days Gap Setting</figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="GATE_None.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6" title="GATE for the A (“JASA”. hyperparams), 0 Days Gap Setting"><img data-src="GATE_None.png" style="width:100.0%" alt="GATE for the A (“JASA”. hyperparams), 0 Days Gap Setting"></a></p>
+<figcaption>GATE for the A (“JASA”. hyperparams), <span class="math inline">\(0\)</span> Days Gap Setting</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="GATE_None_7D.png" class="lightbox" data-gallery="quarto-lightbox-gallery-7" title="GATE for the B (“JASA”. hyperparams), 7 Days Gap Setting"><img data-src="GATE_None_7D.png" style="width:100.0%" alt="GATE for the B (“JASA”. hyperparams), 7 Days Gap Setting"></a></p>
+<figcaption>GATE for the B (“JASA”. hyperparams), <span class="math inline">\(7\)</span> Days Gap Setting</figcaption>
+</figure>
+</div>
+</div></div>
+</section>
+<section id="pca-visualization-of-the-embeddings-jasa-version" class="slide level2">
+<h2>PCA Visualization of the Embeddings (JASA Version)</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="cluster_none_JASA.png" class="lightbox" data-gallery="quarto-lightbox-gallery-8" title="PCA Visualization of the Embeddings as in JASA Submission"><img data-src="cluster_none_JASA.png" style="width:80.0%" alt="PCA Visualization of the Embeddings as in JASA Submission"></a></p>
+<figcaption>PCA Visualization of the Embeddings as in JASA Submission</figcaption>
+</figure>
+</div>
+</section>
+<section id="pca-visualization-of-the-embeddings-a-0-day-gap" class="slide level2">
+<h2>PCA Visualization of the Embeddings (A, <span class="math inline">\(0\)</span> Day Gap)</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="cluster_512.png" class="lightbox" data-gallery="quarto-lightbox-gallery-9" title="PCA Visualization of the Embeddings with an embedding dimension of 512 using cross-attention"><img data-src="cluster_512.png" style="width:70.0%" alt="PCA Visualization of the Embeddings with an embedding dimension of 512 using cross-attention"></a></p>
+<figcaption>PCA Visualization of the Embeddings with an embedding dimension of <span class="math inline">\(512\)</span> using cross-attention</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="cluster_None.png" class="lightbox" data-gallery="quarto-lightbox-gallery-10" title="PCA Visualization of the Embeddings with no embedding dimension (using concatenated embeddings, dim \approx 2100 (txt + img), \approx 1100 (txt))"><img data-src="cluster_None.png" style="width:70.0%" alt="PCA Visualization of the Embeddings with no embedding dimension (using concatenated embeddings, dim \approx 2100 (txt + img), \approx 1100 (txt))"></a></p>
+<figcaption>PCA Visualization of the Embeddings with no embedding dimension (using concatenated embeddings, dim <span class="math inline">\(\approx 2100\)</span> (txt + img), <span class="math inline">\(\approx 1100\)</span> (txt))</figcaption>
+</figure>
+</div>
+</section>
+<section id="pca-visualization-of-the-embeddings-b-7-day-gap" class="slide level2">
+<h2>PCA Visualization of the Embeddings (B, <span class="math inline">\(7\)</span> Day Gap)</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="cluster_512_7D.png" class="lightbox" data-gallery="quarto-lightbox-gallery-11" title="PCA Visualization of the Embeddings with an embedding dimension of 512 using cross-attention"><img data-src="cluster_512_7D.png" style="width:70.0%" alt="PCA Visualization of the Embeddings with an embedding dimension of 512 using cross-attention"></a></p>
+<figcaption>PCA Visualization of the Embeddings with an embedding dimension of <span class="math inline">\(512\)</span> using cross-attention</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="cluster_None_7D.png" class="lightbox" data-gallery="quarto-lightbox-gallery-12" title="PCA Visualization of the Embeddings with no embedding dimension (using concatenated embeddings, dim \approx 2100 (txt + img), \approx 1100 (txt))"><img data-src="cluster_None_7D.png" style="width:70.0%" alt="PCA Visualization of the Embeddings with no embedding dimension (using concatenated embeddings, dim \approx 2100 (txt + img), \approx 1100 (txt))"></a></p>
+<figcaption>PCA Visualization of the Embeddings with no embedding dimension (using concatenated embeddings, dim <span class="math inline">\(\approx 2100\)</span> (txt + img), <span class="math inline">\(\approx 1100\)</span> (txt))</figcaption>
+</figure>
+</div>
+</section>
+<section id="cates-on-cluster-similarities" class="slide level2">
+<h2>CATEs on Cluster Similarities</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="CATE_JASA.png" class="lightbox" data-gallery="quarto-lightbox-gallery-13" title="CATE Coefs from the JASA Version"><img data-src="CATE_JASA.png" style="width:60.0%" alt="CATE Coefs from the JASA Version"></a></p>
+<figcaption>CATE Coefs from the JASA Version</figcaption>
+</figure>
+</div>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="CATE_512.png" class="lightbox" data-gallery="quarto-lightbox-gallery-14" title="CATE Coefs for the A (tuned), 0 Days Gap Setting"><img data-src="CATE_512.png" style="width:100.0%" alt="CATE Coefs for the A (tuned), 0 Days Gap Setting"></a></p>
+<figcaption>CATE Coefs for the A (tuned), <span class="math inline">\(0\)</span> Days Gap Setting</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="CATE_7D_512.png" class="lightbox" data-gallery="quarto-lightbox-gallery-15" title="CATE Coefs for the B (tuned), 7 Days Gap Setting"><img data-src="CATE_7D_512.png" style="width:100.0%" alt="CATE Coefs for the B (tuned), 7 Days Gap Setting"></a></p>
+<figcaption>CATE Coefs for the B (tuned), <span class="math inline">\(7\)</span> Days Gap Setting</figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="CATE_None.png" class="lightbox" data-gallery="quarto-lightbox-gallery-16" title="CATE Coefs for the A (“JASA”. hyperparams), 0 Days Gap Setting"><img data-src="CATE_None.png" style="width:100.0%" alt="CATE Coefs for the A (“JASA”. hyperparams), 0 Days Gap Setting"></a></p>
+<figcaption>CATE Coefs for the A (“JASA”. hyperparams), <span class="math inline">\(0\)</span> Days Gap Setting</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="CATE_None_7D.png" class="lightbox" data-gallery="quarto-lightbox-gallery-17" title="CATE Coefs for the B (“JASA”. hyperparams), 7 Days Gap Setting"><img data-src="CATE_None_7D.png" style="width:100.0%" alt="CATE Coefs for the B (“JASA”. hyperparams), 7 Days Gap Setting"></a></p>
+<figcaption>CATE Coefs for the B (“JASA”. hyperparams), <span class="math inline">\(7\)</span> Days Gap Setting</figcaption>
+</figure>
+</div>
+</div></div>
+</section>
+<section id="why-are-the-cate-coefficients-less-significant" class="slide level2">
+<h2>Why are the CATE coefficients less significant?</h2>
+<ul>
+<li>Let’s check for correlation and multicollinearity between the similarities (on validation data):</li>
+</ul>
+<div style="font-size: 50%;">
+<div class="columns">
+<div class="column" style="width:70%;">
+<p><strong>Correlation Matrix</strong></p>
+<p><strong>JASA Version</strong></p>
+<table class="caption-top" style="width:100%;">
+<colgroup>
+<col style="width: 26%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>Cluster 0</th>
+<th>Cluster 1</th>
+<th>Cluster 2</th>
+<th>Cluster 3</th>
+<th>Cluster 4</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Cluster 0</strong></td>
+<td><strong>1.000</strong></td>
+<td>0.182</td>
+<td>0.383</td>
+<td>-0.470</td>
+<td><strong>-0.792</strong></td>
+</tr>
+<tr class="even">
+<td><strong>Cluster 1</strong></td>
+<td>0.182</td>
+<td><strong>1.000</strong></td>
+<td><strong>-0.559</strong></td>
+<td><strong>-0.952</strong></td>
+<td>0.371</td>
+</tr>
+<tr class="odd">
+<td><strong>Cluster 2</strong></td>
+<td>0.383</td>
+<td><strong>-0.559</strong></td>
+<td><strong>1.000</strong></td>
+<td>0.354</td>
+<td><strong>-0.844</strong></td>
+</tr>
+<tr class="even">
+<td><strong>Cluster 3</strong></td>
+<td>-0.470</td>
+<td><strong>-0.952</strong></td>
+<td>0.354</td>
+<td><strong>1.000</strong></td>
+<td>-0.075</td>
+</tr>
+<tr class="odd">
+<td><strong>Cluster 4</strong></td>
+<td><strong>-0.792</strong></td>
+<td>0.371</td>
+<td><strong>-0.844</strong></td>
+<td>-0.075</td>
+<td><strong>1.000</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>A (tuned), 0 Days Gap</strong></p>
+<table class="caption-top" style="width:100%;">
+<colgroup>
+<col style="width: 26%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>Cluster 0</th>
+<th>Cluster 1</th>
+<th>Cluster 2</th>
+<th>Cluster 3</th>
+<th>Cluster 4</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Cluster 0</strong></td>
+<td><strong>1.000</strong></td>
+<td>-0.423</td>
+<td><strong>0.880</strong></td>
+<td><strong>-0.616</strong></td>
+<td><strong>-0.963</strong></td>
+</tr>
+<tr class="even">
+<td><strong>Cluster 1</strong></td>
+<td>-0.423</td>
+<td><strong>1.000</strong></td>
+<td><strong>-0.801</strong></td>
+<td>-0.443</td>
+<td><strong>0.653</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>Cluster 2</strong></td>
+<td><strong>0.880</strong></td>
+<td><strong>-0.801</strong></td>
+<td><strong>1.000</strong></td>
+<td>-0.171</td>
+<td><strong>-0.976</strong></td>
+</tr>
+<tr class="even">
+<td><strong>Cluster 3</strong></td>
+<td><strong>-0.616</strong></td>
+<td>-0.443</td>
+<td>-0.171</td>
+<td><strong>1.000</strong></td>
+<td>0.383</td>
+</tr>
+<tr class="odd">
+<td><strong>Cluster 4</strong></td>
+<td><strong>-0.963</strong></td>
+<td><strong>0.653</strong></td>
+<td><strong>-0.976</strong></td>
+<td>0.383</td>
+<td><strong>1.000</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>A (“JASA”. hyperparams), 0 Days Gap</strong></p>
+<table class="caption-top" style="width:100%;">
+<colgroup>
+<col style="width: 26%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>Cluster 0</th>
+<th>Cluster 1</th>
+<th>Cluster 2</th>
+<th>Cluster 3</th>
+<th>Cluster 4</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Cluster 0</strong></td>
+<td><strong>1.000</strong></td>
+<td><strong>-0.845</strong></td>
+<td>0.496</td>
+<td>0.154</td>
+<td><strong>-0.888</strong></td>
+</tr>
+<tr class="even">
+<td><strong>Cluster 1</strong></td>
+<td><strong>-0.845</strong></td>
+<td><strong>1.000</strong></td>
+<td>0.024</td>
+<td><strong>-0.651</strong></td>
+<td><strong>0.519</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>Cluster 2</strong></td>
+<td>0.496</td>
+<td>0.024</td>
+<td><strong>1.000</strong></td>
+<td><strong>-0.762</strong></td>
+<td><strong>-0.806</strong></td>
+</tr>
+<tr class="even">
+<td><strong>Cluster 3</strong></td>
+<td>0.154</td>
+<td><strong>-0.651</strong></td>
+<td><strong>-0.762</strong></td>
+<td><strong>1.000</strong></td>
+<td>0.277</td>
+</tr>
+<tr class="odd">
+<td><strong>Cluster 4</strong></td>
+<td><strong>-0.888</strong></td>
+<td><strong>0.519</strong></td>
+<td><strong>-0.806</strong></td>
+<td>0.277</td>
+<td><strong>1.000</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>B (tuned), 7 Days Gap</strong></p>
+<table class="caption-top" style="width:100%;">
+<colgroup>
+<col style="width: 26%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>Cluster 0</th>
+<th>Cluster 1</th>
+<th>Cluster 2</th>
+<th>Cluster 3</th>
+<th>Cluster 4</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Cluster 0</strong></td>
+<td><strong>1.000</strong></td>
+<td><strong>-0.927</strong></td>
+<td><strong>-0.939</strong></td>
+<td>0.437</td>
+<td>0.422</td>
+</tr>
+<tr class="even">
+<td><strong>Cluster 1</strong></td>
+<td><strong>-0.927</strong></td>
+<td><strong>1.000</strong></td>
+<td><strong>0.741</strong></td>
+<td>-0.068</td>
+<td><strong>-0.730</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>Cluster 2</strong></td>
+<td><strong>-0.939</strong></td>
+<td><strong>0.741</strong></td>
+<td><strong>1.000</strong></td>
+<td><strong>-0.719</strong></td>
+<td>-0.083</td>
+</tr>
+<tr class="even">
+<td><strong>Cluster 3</strong></td>
+<td>0.437</td>
+<td>-0.068</td>
+<td><strong>-0.719</strong></td>
+<td><strong>1.000</strong></td>
+<td><strong>-0.628</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>Cluster 4</strong></td>
+<td>0.422</td>
+<td><strong>-0.730</strong></td>
+<td>-0.083</td>
+<td><strong>-0.628</strong></td>
+<td><strong>1.000</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>B (“JASA”. hyperparams), 7 Days Gap</strong></p>
+<table class="caption-top" style="width:100%;">
+<colgroup>
+<col style="width: 26%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>Cluster 0</th>
+<th>Cluster 1</th>
+<th>Cluster 2</th>
+<th>Cluster 3</th>
+<th>Cluster 4</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Cluster 0</strong></td>
+<td><strong>1.000</strong></td>
+<td><strong>-0.785</strong></td>
+<td>0.274</td>
+<td><strong>-0.871</strong></td>
+<td><strong>0.510</strong></td>
+</tr>
+<tr class="even">
+<td><strong>Cluster 1</strong></td>
+<td><strong>-0.785</strong></td>
+<td><strong>1.000</strong></td>
+<td><strong>-0.797</strong></td>
+<td>0.434</td>
+<td>0.089</td>
+</tr>
+<tr class="odd">
+<td><strong>Cluster 2</strong></td>
+<td>0.274</td>
+<td><strong>-0.797</strong></td>
+<td><strong>1.000</strong></td>
+<td>0.167</td>
+<td><strong>-0.649</strong></td>
+</tr>
+<tr class="even">
+<td><strong>Cluster 3</strong></td>
+<td><strong>-0.871</strong></td>
+<td>0.434</td>
+<td>0.167</td>
+<td><strong>1.000</strong></td>
+<td><strong>-0.854</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>Cluster 4</strong></td>
+<td><strong>0.510</strong></td>
+<td>0.089</td>
+<td><strong>-0.649</strong></td>
+<td><strong>-0.854</strong></td>
+<td><strong>1.000</strong></td>
+</tr>
+</tbody>
+</table>
+</div><div class="column" style="width:30%;">
+<p><strong>Variance Inflation Factors (VIF)</strong></p>
+<p><strong>JASA Version</strong></p>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th></th>
+<th>VIF</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Cluster 0</td>
+<td>151.97</td>
+</tr>
+<tr class="even">
+<td>Cluster 1</td>
+<td>1013.28</td>
+</tr>
+<tr class="odd">
+<td>Cluster 2</td>
+<td>59.36</td>
+</tr>
+<tr class="even">
+<td>Cluster 3</td>
+<td>1055.31</td>
+</tr>
+<tr class="odd">
+<td>Cluster 4</td>
+<td>291.56</td>
+</tr>
+</tbody>
+</table>
+<p><strong>A (tuned), 0 Days Gap</strong></p>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th></th>
+<th>VIF</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Cluster 0</td>
+<td>27123.58</td>
+</tr>
+<tr class="even">
+<td>Cluster 1</td>
+<td>3602.31</td>
+</tr>
+<tr class="odd">
+<td>Cluster 2</td>
+<td>44858.82</td>
+</tr>
+<tr class="even">
+<td>Cluster 3</td>
+<td>2732.78</td>
+</tr>
+<tr class="odd">
+<td>Cluster 4</td>
+<td>90461.25</td>
+</tr>
+</tbody>
+</table>
+<p><strong>A (“JASA”. hyperparams), 0 Days Gap</strong></p>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th></th>
+<th>VIF</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Cluster 0</td>
+<td>369.99</td>
+</tr>
+<tr class="even">
+<td>Cluster 1</td>
+<td>372.18</td>
+</tr>
+<tr class="odd">
+<td>Cluster 2</td>
+<td>48.12</td>
+</tr>
+<tr class="even">
+<td>Cluster 3</td>
+<td>145.20</td>
+</tr>
+<tr class="odd">
+<td>Cluster 4</td>
+<td>74.35</td>
+</tr>
+</tbody>
+</table>
+<p><strong>B (tuned), 7 Days Gap</strong></p>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th></th>
+<th>VIF</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Cluster 0</td>
+<td>15851.82</td>
+</tr>
+<tr class="even">
+<td>Cluster 1</td>
+<td>7987.60</td>
+</tr>
+<tr class="odd">
+<td>Cluster 2</td>
+<td>19922.60</td>
+</tr>
+<tr class="even">
+<td>Cluster 3</td>
+<td>1039.14</td>
+</tr>
+<tr class="odd">
+<td>Cluster 4</td>
+<td>4353.91</td>
+</tr>
+</tbody>
+</table>
+<p><strong>B (“JASA”. hyperparams), 7 Days Gap</strong></p>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th></th>
+<th>VIF</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Cluster 0</td>
+<td>61.48</td>
+</tr>
+<tr class="even">
+<td>Cluster 1</td>
+<td>58.04</td>
+</tr>
+<tr class="odd">
+<td>Cluster 2</td>
+<td>107.47</td>
+</tr>
+<tr class="even">
+<td>Cluster 3</td>
+<td>362.28</td>
+</tr>
+<tr class="odd">
+<td>Cluster 4</td>
+<td>353.58</td>
+</tr>
+</tbody>
+</table>
+</div></div>
+</div>
+</section>
+<section id="mathcalx2-test-for-the-cate-coefficients" class="slide level2">
+<h2><span class="math inline">\(\mathcal{X}^2\)</span> Test for the CATE Coefficients</h2>
+<p>(On the 5 Cluster Similarities and lagged price and sales)</p>
+<ul>
+<li><strong>JASA Version</strong>:
+<ul>
+<li>Linear Specification p-value: 0.0310 (sample size: 24895)</li>
+<li>Linear Specification (Interactions) p-value: 0.0306 (sample size: 24895)</li>
+<li>PLR Specification p-value: 0.0773 (sample size: 24895)</li>
+</ul></li>
+<li><strong>A (tuned), 0 Days Gap</strong>:
+<ul>
+<li>Linear Specification p-value: 3.2880e-06 (sample size: 34349)</li>
+<li>Linear Specification (Interactions) p-value: 3.3198e-06 (sample size: 34349)</li>
+<li>PLR Specification p-value: 1.8642e-05 (sample size: 34349)</li>
+</ul></li>
+<li><strong>A (“JASA”. hyperparams), 0 Days Gap</strong>:
+<ul>
+<li>Linear Specification p-value: 1.5535e-07 (sample size: 34349)</li>
+<li>Linear Specification (Interactions) p-value: 1.1515e-07 (sample size: 34349)</li>
+<li>PLR Specification p-value: 7.9711-07 (sample size: 34349)</li>
+</ul></li>
+<li><strong>B (tuned), 7 Days Gap</strong>:
+<ul>
+<li>Linear Specification p-value: 0.0262 (sample size: 25133)</li>
+<li>Linear Specification (Interactions) p-value: 0.0133 (sample size: 25133)</li>
+<li>PLR Specification p-value: 0.0002 (sample size: 25133)</li>
+</ul></li>
+<li><strong>B (“JASA”. hyperparams), 7 Days Gap</strong>:
+<ul>
+<li>Linear Specification p-value: 0.0017 (sample size: 25133)</li>
+<li>Linear Specification (Interactions) p-value: 0.0014 (sample size: 25133)</li>
+<li>PLR Specification p-value: 0.0004 (sample size: 25133)</li>
+</ul></li>
+</ul>
+</section>
+<section id="sorted-effects" class="slide level2">
+<h2>Sorted Effects</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="SORT_JASA.png" class="lightbox" data-gallery="quarto-lightbox-gallery-18" title="Sorted Effects from the JASA Version"><img data-src="SORT_JASA.png" style="width:60.0%" alt="Sorted Effects from the JASA Version"></a></p>
+<figcaption>Sorted Effects from the JASA Version</figcaption>
+</figure>
+</div>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="SORT_512.png" class="lightbox" data-gallery="quarto-lightbox-gallery-19" title="Sorted Effects for the A (tuned), 0 Days Gap"><img data-src="SORT_512.png" style="width:100.0%" alt="Sorted Effects for the A (tuned), 0 Days Gap"></a></p>
+<figcaption>Sorted Effects for the A (tuned), <span class="math inline">\(0\)</span> Days Gap</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="SORT_512_7D.png" class="lightbox" data-gallery="quarto-lightbox-gallery-20" title="Sorted Effects for the B (tuned), 7 Days Gap"><img data-src="SORT_512_7D.png" style="width:100.0%" alt="Sorted Effects for the B (tuned), 7 Days Gap"></a></p>
+<figcaption>Sorted Effects for the B (tuned), <span class="math inline">\(7\)</span> Days Gap</figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="SORT_None.png" class="lightbox" data-gallery="quarto-lightbox-gallery-21" title="Sorted Effects for the A (“JASA”. hyperparams), 0 Days Gap"><img data-src="SORT_None.png" style="width:100.0%" alt="Sorted Effects for the A (“JASA”. hyperparams), 0 Days Gap"></a></p>
+<figcaption>Sorted Effects for the A (“JASA”. hyperparams), <span class="math inline">\(0\)</span> Days Gap</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="SORT_None_7D.png" class="lightbox" data-gallery="quarto-lightbox-gallery-22" title="Sorted Effects for the B (“JASA”. hyperparams), 7 Days Gap"><img data-src="SORT_None_7D.png" style="width:100.0%" alt="Sorted Effects for the B (“JASA”. hyperparams), 7 Days Gap"></a></p>
+<figcaption>Sorted Effects for the B (“JASA”. hyperparams), <span class="math inline">\(7\)</span> Days Gap</figcaption>
+</figure>
+</div>
+</div></div>
+
+</section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+<p>Adventures in demand analysis using AI</p>
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="presentation_files/libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="presentation_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="presentation_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="presentation_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="presentation_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="presentation_files/libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
+  <script src="presentation_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="presentation_files/libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="presentation_files/libs/revealjs/plugin/search/search.js"></script>
+  <script src="presentation_files/libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="presentation_files/libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"8\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'chalkboard': {"buttons":true,"boardmarkerWidth":5,"theme":"chalkboard"},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'none',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1050,
+
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.1,
+
+        math: {
+          mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, RevealChalkboard, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+    window.document.addEventListener("DOMContentLoaded", function (event) {
+      const toggleBodyColorMode = (bsSheetEl) => {
+        const mode = bsSheetEl.getAttribute("data-mode");
+        const bodyEl = window.document.querySelector("body");
+        if (mode === "dark") {
+          bodyEl.classList.add("quarto-dark");
+          bodyEl.classList.remove("quarto-light");
+        } else {
+          bodyEl.classList.add("quarto-light");
+          bodyEl.classList.remove("quarto-dark");
+        }
+      }
+      const toggleBodyColorPrimary = () => {
+        const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+        if (bsSheetEl) {
+          toggleBodyColorMode(bsSheetEl);
+        }
+      }
+      toggleBodyColorPrimary();  
+      const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+      tabsets.forEach(function(tabset) {
+        const tabby = new Tabby('#' + tabset.id);
+      });
+      const isCodeAnnotation = (el) => {
+        for (const clz of el.classList) {
+          if (clz.startsWith('code-annotation-')) {                     
+            return true;
+          }
+        }
+        return false;
+      }
+      const onCopySuccess = function(e) {
+        // button target
+        const button = e.trigger;
+        // don't keep focus
+        button.blur();
+        // flash "checked"
+        button.classList.add('code-copy-button-checked');
+        var currentTitle = button.getAttribute("title");
+        button.setAttribute("title", "Copied!");
+        let tooltip;
+        if (window.bootstrap) {
+          button.setAttribute("data-bs-toggle", "tooltip");
+          button.setAttribute("data-bs-placement", "left");
+          button.setAttribute("data-bs-title", "Copied!");
+          tooltip = new bootstrap.Tooltip(button, 
+            { trigger: "manual", 
+              customClass: "code-copy-button-tooltip",
+              offset: [0, -8]});
+          tooltip.show();    
+        }
+        setTimeout(function() {
+          if (tooltip) {
+            tooltip.hide();
+            button.removeAttribute("data-bs-title");
+            button.removeAttribute("data-bs-toggle");
+            button.removeAttribute("data-bs-placement");
+          }
+          button.setAttribute("title", currentTitle);
+          button.classList.remove('code-copy-button-checked');
+        }, 1000);
+        // clear code selection
+        e.clearSelection();
+      }
+      const getTextToCopy = function(trigger) {
+          const codeEl = trigger.previousElementSibling.cloneNode(true);
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+      }
+      const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+        text: getTextToCopy
+      });
+      clipboard.on('success', onCopySuccess);
+      if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+        const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+          text: getTextToCopy,
+          container: window.document.getElementById('quarto-embedded-source-code-modal')
+        });
+        clipboardModal.on('success', onCopySuccess);
+      }
+        var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+        var mailtoRegex = new RegExp(/^mailto:/);
+          var filterRegex = new RegExp('/' + window.location.host + '/');
+        var isInternal = (href) => {
+            return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+        }
+        // Inspect non-navigation links and adorn them if external
+     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+        for (var i=0; i<links.length; i++) {
+          const link = links[i];
+          if (!isInternal(link.href)) {
+            // undo the damage that might have been done by quarto-nav.js in the case of
+            // links that we want to consider external
+            if (link.dataset.originalHref !== undefined) {
+              link.href = link.dataset.originalHref;
+            }
+          }
+        }
+      function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+        const config = {
+          allowHTML: true,
+          maxWidth: 500,
+          delay: 100,
+          arrow: false,
+          appendTo: function(el) {
+              return el.closest('section.slide') || el.parentElement;
+          },
+          interactive: true,
+          interactiveBorder: 10,
+          theme: 'light-border',
+          placement: 'bottom-start',
+        };
+        if (contentFn) {
+          config.content = contentFn;
+        }
+        if (onTriggerFn) {
+          config.onTrigger = onTriggerFn;
+        }
+        if (onUntriggerFn) {
+          config.onUntrigger = onUntriggerFn;
+        }
+          config['offset'] = [0,0];
+          config['maxWidth'] = 700;
+        window.tippy(el, config); 
+      }
+      const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+      for (var i=0; i<noterefs.length; i++) {
+        const ref = noterefs[i];
+        tippyHover(ref, function() {
+          // use id or data attribute instead here
+          let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+          try { href = new URL(href).hash; } catch {}
+          const id = href.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note) {
+            return note.innerHTML;
+          } else {
+            return "";
+          }
+        });
+      }
+      const findCites = (el) => {
+        const parentEl = el.parentElement;
+        if (parentEl) {
+          const cites = parentEl.dataset.cites;
+          if (cites) {
+            return {
+              el,
+              cites: cites.split(' ')
+            };
+          } else {
+            return findCites(el.parentElement)
+          }
+        } else {
+          return undefined;
+        }
+      };
+      var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+      for (var i=0; i<bibliorefs.length; i++) {
+        const ref = bibliorefs[i];
+        const citeInfo = findCites(ref);
+        if (citeInfo) {
+          tippyHover(citeInfo.el, function() {
+            var popup = window.document.createElement('div');
+            citeInfo.cites.forEach(function(cite) {
+              var citeDiv = window.document.createElement('div');
+              citeDiv.classList.add('hanging-indent');
+              citeDiv.classList.add('csl-entry');
+              var biblioDiv = window.document.getElementById('ref-' + cite);
+              if (biblioDiv) {
+                citeDiv.innerHTML = biblioDiv.innerHTML;
+              }
+              popup.appendChild(citeDiv);
+            });
+            return popup.innerHTML;
+          });
+        }
+      }
+    });
+    </script>
+    <script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+    (function() {
+      let previousOnload = window.onload;
+      window.onload = () => {
+        if (previousOnload) {
+          previousOnload();
+        }
+        lightboxQuarto.on('slide_before_load', (data) => {
+          const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+          const href = trigger.getAttribute('href');
+          if (href !== null) {
+            const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+            if (imgEl !== null) {
+              const srcAttr = imgEl.getAttribute("src");
+              if (srcAttr && srcAttr.startsWith("data:")) {
+                slideConfig.href = srcAttr;
+              }
+            }
+          } 
+        });
+      
+        lightboxQuarto.on('slide_after_load', (data) => {
+          const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(slideNode);
+          }
+        });
+      
+      };
+      
+    })();
+              </script>
+    
+
+</body></html>

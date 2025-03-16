@@ -1,0 +1,310 @@
+---
+title: "Adventures in demand analysis using AI"
+subtitle: "Evaluations on buybox data, embedding dimensions and significant heterogeneous effects"
+---
+
+
+## What has changed compared to the JASA version?
+
+- **The Treatment Variable**
+  In the submitted JASA Version, we used the `NEW`  Price (labeled as $P_t$) as Treatment, now we use the `BUY_BOX` Price (labeled as $P^{bb}_t$) as Treatment.
+  For that we had to repull the data from *keepa* and recreate the dataset.
+
+- **The time gap between periods**
+  The time gap between the two periods has been removed (7 days gap in the JASA version).
+   Now each time-dependent variable $X_t$ is calculated on the basis of the previous 28 days, so that $X_{t-1}$ is adjacent to the "oldest" day of $X_t$.
+
+   - That increased the sample size.
+
+- **Training Procedure**  
+  At the beginning of the year, we experimented with hyperparameter optimization within the multimodal neural network using Ray-Tune. 
+  The following search space was run through:
+  
+  ```python
+    search_space = {
+      "embedding_dim": tune.choice([None, 256, 512, 1024]),
+      "fusion_head": tune.choice([[64], [128], [256, 128], [512, 256, 128]]),
+      "lr": tune.loguniform(1e-4, 1e-1),
+      "batch_size": tune.choice([16, 32]),
+  }
+  ```
+
+## Changes in the distribution of the treatment variable
+
+![Distributions of $P_t$ and $P^{bb}_t$, KS test between P_t and P_bb_t: statistic=0.05212, p-value=6.9573e-41](lvl_dist.png){width="100%"}
+
+![Distributions of $\Delta P_t$ and $\Delta P^{bb}_t$, KS test between Delta_P_t and Delta_P_bb_t: statistic=0.02137, p-value=3.0383e-07](dif_dist.png){width="100%"}
+
+## Observations
+
+- The hyperparameter tuning did lead to a slight improvement in the models predictive performance.
+  - For the `BUY_BOX` and $0$ Days Gap Setting, the optimal embedding dimension was selected to $512$.
+- It seems that the models embedding dimension (e.g. using the cross-attention-block if there was a specific dimension defined) has a significant impact on the lower dimensional projections of the embeddings used for clustering.
+
+## Changes on the ATE Estimation
+
+- JASA Version (using `NEW` Price, $7$ Days Gap): $ATE \approx −0.53$
+- New Setting A (using `BUY_BOX` Price, $0$ Days Gap, tuned (using cross-attention)): $ATE \approx −0.75$
+- New Setting A (using `BUY_BOX` Price, $0$ Days Gap, same hyperparams as in JASA): $ATE \approx −0.75$
+- New Setting B (using `BUY_BOX` Price, $7$ Days Gap, tuned (using cross-attention)): $ATE \approx −0.75$
+- New Setting B (using `BUY_BOX` Price, $7$ Days Gap, same hyperparams as in JASA): $ATE \approx −0.75$
+
+## Cluster Averages - GATEs
+
+![Cluster Averages from the JASA Version](GATE_JASA.png){width="60%"}
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+![GATE for the A (tuned), $0$ Days Gap Setting](GATE_512.png){width="100%"}
+
+![GATE for the B (tuned), $7$ Days Gap Setting](GATE_512_7D.png){width="100%"}
+
+:::
+
+::: {.column width="50%"}
+
+![GATE for the A ("JASA". hyperparams), $0$ Days Gap Setting](GATE_None.png){width="100%"}
+
+![GATE for the B ("JASA". hyperparams), $7$ Days Gap Setting](GATE_None_7D.png){width="100%"}
+
+:::
+
+::::
+
+
+## PCA Visualization of the Embeddings (JASA Version)
+
+![PCA Visualization of the Embeddings as in JASA Submission](cluster_none_JASA.png){width="80%"}
+
+
+
+## PCA Visualization of the Embeddings (A, $0$ Day Gap)
+
+![PCA Visualization of the Embeddings with an embedding dimension of $512$ using cross-attention](cluster_512.png){width="70%"}
+
+
+![PCA Visualization of the Embeddings with no embedding dimension  (using concatenated embeddings, dim $\approx 2100$ (txt + img), $\approx 1100$ (txt))](cluster_None.png){width="70%"}
+
+
+
+## PCA Visualization of the Embeddings (B, $7$ Day Gap)
+
+![PCA Visualization of the Embeddings with an embedding dimension of $512$ using cross-attention](cluster_512_7D.png){width="70%"}
+
+
+![PCA Visualization of the Embeddings with no embedding dimension (using concatenated embeddings, dim $\approx 2100$ (txt + img), $\approx 1100$ (txt))](cluster_None_7D.png){width="70%"}
+
+
+
+## CATEs on Cluster Similarities
+
+![CATE Coefs from the JASA Version](CATE_JASA.png){width="60%"}
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+![CATE Coefs for the A (tuned), $0$ Days Gap Setting](CATE_512.png){width="100%"}
+
+![CATE Coefs for the B (tuned), $7$ Days Gap Setting](CATE_7D_512.png){width="100%"}
+
+:::
+
+::: {.column width="50%"}
+
+![CATE Coefs  for the A ("JASA". hyperparams), $0$ Days Gap Setting](CATE_None.png){width="100%"}
+
+![CATE Coefs  for the B ("JASA". hyperparams), $7$ Days Gap Setting](CATE_None_7D.png){width="100%"}
+
+:::
+
+::::
+
+## Why are the CATE coefficients less significant?
+
+- Let's check for correlation and multicollinearity between the similarities (on validation data):
+
+:::{style="font-size: 50%;"}
+
+:::: {.columns}
+
+::: {.column width="70%"}
+
+**Correlation Matrix**
+
+**JASA Version**
+
+|                    | Cluster 0 | Cluster 1 | Cluster 2 | Cluster 3 | Cluster 4 |
+|--------------------|-----------|-----------|-----------|-----------|-----------|
+| **Cluster 0**      | **1.000** | 0.182     | 0.383     | -0.470    | **-0.792**|
+| **Cluster 1**      | 0.182     | **1.000** | **-0.559**| **-0.952**| 0.371     |
+| **Cluster 2**      | 0.383     | **-0.559**| **1.000** | 0.354     | **-0.844**|
+| **Cluster 3**      | -0.470    | **-0.952**| 0.354     | **1.000** | -0.075    |
+| **Cluster 4**      | **-0.792**| 0.371     | **-0.844**| -0.075    | **1.000** |
+
+
+**A (tuned), 0 Days Gap**
+
+|                    | Cluster 0 | Cluster 1 | Cluster 2 | Cluster 3 | Cluster 4 |
+|--------------------|-----------|-----------|-----------|-----------|-----------|
+| **Cluster 0**      | **1.000** | -0.423    | **0.880** | **-0.616**| **-0.963**|
+| **Cluster 1**      | -0.423    | **1.000** | **-0.801**| -0.443    | **0.653** |
+| **Cluster 2**      | **0.880** | **-0.801**| **1.000** | -0.171    | **-0.976**|
+| **Cluster 3**      | **-0.616**| -0.443    | -0.171    | **1.000** | 0.383     |
+| **Cluster 4**      | **-0.963**| **0.653** | **-0.976**| 0.383     | **1.000** |
+
+
+**A (“JASA”. hyperparams), 0 Days Gap**
+
+|                    | Cluster 0 | Cluster 1 | Cluster 2 | Cluster 3 | Cluster 4 |
+|--------------------|-----------|-----------|-----------|-----------|-----------|
+| **Cluster 0**      | **1.000** | **-0.845**| 0.496     | 0.154     | **-0.888**|
+| **Cluster 1**      | **-0.845**| **1.000** | 0.024     | **-0.651**| **0.519** |
+| **Cluster 2**      | 0.496     | 0.024     | **1.000** | **-0.762**| **-0.806**|
+| **Cluster 3**      | 0.154     | **-0.651**| **-0.762**| **1.000** | 0.277     |
+| **Cluster 4**      | **-0.888**| **0.519** | **-0.806**| 0.277     | **1.000** |
+
+
+**B (tuned), 7 Days Gap**
+
+|                    | Cluster 0 | Cluster 1 | Cluster 2 | Cluster 3 | Cluster 4 |
+|--------------------|-----------|-----------|-----------|-----------|-----------|
+| **Cluster 0**      | **1.000** | **-0.927**| **-0.939**| 0.437     | 0.422     |
+| **Cluster 1**      | **-0.927**| **1.000** | **0.741** | -0.068    | **-0.730**|
+| **Cluster 2**      | **-0.939**| **0.741** | **1.000** | **-0.719**| -0.083    |
+| **Cluster 3**      | 0.437     | -0.068    | **-0.719**| **1.000** | **-0.628**|
+| **Cluster 4**      | 0.422     | **-0.730**| -0.083    | **-0.628**| **1.000** |
+
+
+**B (“JASA”. hyperparams), 7 Days Gap**
+
+|                    | Cluster 0 | Cluster 1 | Cluster 2 | Cluster 3 | Cluster 4 |
+|--------------------|-----------|-----------|-----------|-----------|-----------|
+| **Cluster 0**      | **1.000** | **-0.785**| 0.274     | **-0.871**| **0.510** |
+| **Cluster 1**      | **-0.785**| **1.000** | **-0.797**| 0.434     | 0.089     |
+| **Cluster 2**      | 0.274     | **-0.797**| **1.000** | 0.167     | **-0.649**|
+| **Cluster 3**      | **-0.871**| 0.434     | 0.167     | **1.000** | **-0.854**|
+| **Cluster 4**      | **0.510** | 0.089     | **-0.649**| **-0.854**| **1.000** |
+
+
+:::
+
+::: {.column width="30%"}
+
+**Variance Inflation Factors (VIF)**
+
+**JASA Version**
+
+|           | VIF       |
+|-----------|-----------|
+| Cluster 0 | 151.97    |
+| Cluster 1 | 1013.28   |
+| Cluster 2 | 59.36     |
+| Cluster 3 | 1055.31   |
+| Cluster 4 | 291.56    |
+
+
+**A (tuned), 0 Days Gap**
+
+|           | VIF         |
+|-----------|-------------|
+| Cluster 0 | 27123.58    |
+| Cluster 1 | 3602.31     |
+| Cluster 2 | 44858.82    |
+| Cluster 3 | 2732.78     |
+| Cluster 4 | 90461.25    |
+
+
+**A (“JASA”. hyperparams), 0 Days Gap**
+
+|           | VIF        |
+|-----------|------------|
+| Cluster 0 | 369.99     |
+| Cluster 1 | 372.18     |
+| Cluster 2 | 48.12      |
+| Cluster 3 | 145.20     |
+| Cluster 4 | 74.35      |
+
+
+**B (tuned), 7 Days Gap**
+
+|           | VIF         |
+|-----------|-------------|
+| Cluster 0 | 15851.82    |
+| Cluster 1 | 7987.60     |
+| Cluster 2 | 19922.60    |
+| Cluster 3 | 1039.14     |
+| Cluster 4 | 4353.91     |
+
+
+**B (“JASA”. hyperparams), 7 Days Gap**
+
+|           | VIF       |
+|-----------|-----------|
+| Cluster 0 | 61.48     |
+| Cluster 1 | 58.04     |
+| Cluster 2 | 107.47    |
+| Cluster 3 | 362.28    |
+| Cluster 4 | 353.58    |
+
+:::
+
+::::
+
+:::
+
+
+## $\mathcal{X}^2$ Test for the CATE Coefficients
+
+(On the 5 Cluster Similarities and lagged price and sales)
+
+- **JASA Version**: 
+  - Linear Specification p-value: 0.0310 (sample size: 24895)
+  - Linear Specification (Interactions) p-value: 0.0306 (sample size: 24895)
+  - PLR Specification p-value: 0.0773 (sample size: 24895)
+
+- **A (tuned), 0 Days Gap**:
+  - Linear Specification p-value: 3.2880e-06 (sample size: 34349)
+  - Linear Specification (Interactions) p-value: 3.3198e-06 (sample size: 34349)
+  - PLR Specification p-value: 1.8642e-05 (sample size: 34349)
+
+- **A ("JASA". hyperparams), 0 Days Gap**:
+  - Linear Specification p-value: 1.5535e-07 (sample size: 34349)
+  - Linear Specification (Interactions) p-value: 1.1515e-07 (sample size: 34349)
+  - PLR Specification p-value: 7.9711-07 (sample size: 34349)
+
+- **B (tuned), 7 Days Gap**:	
+  - Linear Specification p-value: 0.0262 (sample size: 25133)
+  - Linear Specification (Interactions) p-value: 0.0133 (sample size: 25133)
+  - PLR Specification p-value: 0.0002 (sample size: 25133)
+
+- **B ("JASA". hyperparams), 7 Days Gap**:
+  - Linear Specification p-value: 0.0017 (sample size: 25133)
+  - Linear Specification (Interactions) p-value: 0.0014 (sample size: 25133)
+  - PLR Specification p-value: 0.0004 (sample size: 25133)
+
+## Sorted Effects
+
+![Sorted Effects from the JASA Version](SORT_JASA.png){width="60%"}
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+![Sorted Effects for the A (tuned), $0$ Days Gap](SORT_512.png){width="100%"}
+
+![Sorted Effects for the B (tuned), $7$ Days Gap](SORT_512_7D.png){width="100%"}
+
+:::
+
+::: {.column width="50%"}
+
+![Sorted Effects for the A ("JASA". hyperparams), $0$ Days Gap](SORT_None.png){width="100%"}
+
+![Sorted Effects for the B ("JASA". hyperparams), $7$ Days Gap](SORT_None_7D.png){width="100%"}
+
+:::
+
+::::
