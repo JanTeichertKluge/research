@@ -211,7 +211,7 @@
 <h2>What has changed compared to the JASA version?</h2>
 <ul>
 <li><p><strong>The Treatment Variable</strong> In the submitted JASA Version, we used the <code>NEW</code> Price (labeled as <span class="math inline">\(P_t\)</span>) as Treatment, now we use the <code>BUY_BOX</code> Price (labeled as <span class="math inline">\(P^{bb}_t\)</span>) as Treatment. For that we had to repull the data from <em>keepa</em> and recreate the dataset.</p></li>
-<li><p><strong>The time gap between periods</strong> The time gap between the two periods has been removed (7 days gap in the JASA version). Now each time-dependent variable <span class="math inline">\(X_t\)</span> is calculated on the basis of the previous 28 days, so that <span class="math inline">\(X_{t-1}\)</span> is adjacent to the “oldest” day of <span class="math inline">\(X_t\)</span>.</p>
+<li><p><strong>The time gap between periods</strong> The time gap between the two periods has been removed (7 days gap in the JASA version (and <strong>Setting B</strong>)). Now each time-dependent variable <span class="math inline">\(X_t\)</span> is calculated on the basis of the previous 28 days, so that <span class="math inline">\(X_{t-1}\)</span> is adjacent to the “oldest” day of <span class="math inline">\(X_t\)</span> (<strong>Setting A</strong>)</p>
 <ul>
 <li>That increased the sample size.</li>
 </ul></li>
@@ -222,7 +222,10 @@ At the beginning of the year, we experimented with hyperparameter optimization w
 <span id="cb1-3"><a href=""></a>    <span class="st">"fusion_head"</span>: tune.choice([[<span class="dv">64</span>], [<span class="dv">128</span>], [<span class="dv">256</span>, <span class="dv">128</span>], [<span class="dv">512</span>, <span class="dv">256</span>, <span class="dv">128</span>]]),</span>
 <span id="cb1-4"><a href=""></a>    <span class="st">"lr"</span>: tune.loguniform(<span class="fl">1e-4</span>, <span class="fl">1e-1</span>),</span>
 <span id="cb1-5"><a href=""></a>    <span class="st">"batch_size"</span>: tune.choice([<span class="dv">16</span>, <span class="dv">32</span>]),</span>
-<span id="cb1-6"><a href=""></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<span id="cb1-6"><a href=""></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>The results from the Tuned Model are labeled as <strong>tuned</strong>.</li>
+</ul></li>
 </ul>
 </section>
 <section id="changes-in-the-distribution-of-the-treatment-variable" class="slide level2">

@@ -11,8 +11,8 @@ subtitle: "Evaluations on buybox data, embedding dimensions and significant hete
   For that we had to repull the data from *keepa* and recreate the dataset.
 
 - **The time gap between periods**
-  The time gap between the two periods has been removed (7 days gap in the JASA version).
-   Now each time-dependent variable $X_t$ is calculated on the basis of the previous 28 days, so that $X_{t-1}$ is adjacent to the "oldest" day of $X_t$.
+  The time gap between the two periods has been removed (7 days gap in the JASA version (and **Setting B**)).
+   Now each time-dependent variable $X_t$ is calculated on the basis of the previous 28 days, so that $X_{t-1}$ is adjacent to the "oldest" day of $X_t$ (**Setting A**)
 
    - That increased the sample size.
 
@@ -28,6 +28,8 @@ subtitle: "Evaluations on buybox data, embedding dimensions and significant hete
       "batch_size": tune.choice([16, 32]),
   }
   ```
+  - The results from the Tuned Model are labeled as **tuned**.
+
 
 ## Changes in the distribution of the treatment variable
 
