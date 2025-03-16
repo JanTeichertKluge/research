@@ -85,7 +85,7 @@ subtitle: "Evaluations on buybox data, embedding dimensions and significant hete
 ![PCA Visualization of the Embeddings with an embedding dimension of $512$ using cross-attention](cluster_512.png){width="70%"}
 
 
-![PCA Visualization of the Embeddings with no embedding dimension  (using concatenated embeddings, dim $\approx 2100$ (txt + img), $\approx 1100$ (txt))](cluster_None.png){width="70%"}
+![PCA Visualization of the Embeddings with no embedding dimension  (using concatenated embeddings, dim $\approx 2100$ (txt + img), $\approx 1100$ (txt))](cluster_none.png){width="70%"}
 
 
 
@@ -94,7 +94,7 @@ subtitle: "Evaluations on buybox data, embedding dimensions and significant hete
 ![PCA Visualization of the Embeddings with an embedding dimension of $512$ using cross-attention](cluster_512_7D.png){width="70%"}
 
 
-![PCA Visualization of the Embeddings with no embedding dimension (using concatenated embeddings, dim $\approx 2100$ (txt + img), $\approx 1100$ (txt))](cluster_None_7D.png){width="70%"}
+![PCA Visualization of the Embeddings with no embedding dimension (using concatenated embeddings, dim $\approx 2100$ (txt + img), $\approx 1100$ (txt))](cluster_none_7D.png){width="70%"}
 
 
 
