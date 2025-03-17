@@ -90,7 +90,6 @@ subtitle: "Evaluations on buybox data, embedding dimensions and significant hete
 ![PCA Visualization of the Embeddings with no embedding dimension  (using concatenated embeddings, dim $\approx 2100$ (txt + img), $\approx 1100$ (txt))](cluster_none.png){width="70%"}
 
 
-
 ## PCA Visualization of the Embeddings (B, $7$ Day Gap)
 
 ![PCA Visualization of the Embeddings with an embedding dimension of $512$ using cross-attention](cluster_512_7D.png){width="70%"}
@@ -99,6 +98,64 @@ subtitle: "Evaluations on buybox data, embedding dimensions and significant hete
 ![PCA Visualization of the Embeddings with no embedding dimension (using concatenated embeddings, dim $\approx 2100$ (txt + img), $\approx 1100$ (txt))](cluster_none_7D.png){width="70%"}
 
 
+## 3D Visualization of the Embeddings (JASA Version)
+:::: {.columns}
+
+::: {.column width="50%"}
+
+![PCA Visualization of the Embeddings as in JASA Submission (txt only)](CLUSTER_TXT_JASA_.png){width="100%"}
+
+:::
+
+::: {.column width="50%"}
+
+![PCA Visualization of the Embeddings as in JASA Submission (txt and img)](CLUSTER_IMG_JASA_.png){width="100%"}
+
+:::
+
+::::
+
+## 3D Visualization of the Embeddings (A, $0$ Day Gap)
+:::: {.columns}
+
+::: {.column width="50%"}
+
+![PCA Visualization of the Embeddings with no embedding dimension  (using concatenated embeddings, dim $\approx 2100$ (txt + img), $\approx 1100$ (txt only))](CLUSTER_TXT_0_DAYS_NONE.png){width="100%"}
+
+![PCA Visualization of the Embeddings with an embedding dimension of $512$ using cross-attention (txt only)](CLUSTER_TXT_0_DAYS_512.png){width="100%"}
+
+:::
+
+::: {.column width="50%"}
+
+![PCA Visualization of the Embeddings with no embedding dimension  (using concatenated embeddings, dim $\approx 2100$ (txt + img), $\approx 1100$ (txt and img))](CLUSTER_IMG_0_DAYS_NONE.png){width="100%"}
+
+![PCA Visualization of the Embeddings with an embedding dimension of $512$ using cross-attention (txt and img)](CLUSTER_IMG_0_DAYS_512.png){width="100%"}
+:::
+
+::::
+
+
+## 3D Visualization of the Embeddings (B, $7$ Day Gap)
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+![PCA Visualization of the Embeddings with no embedding dimension  (using concatenated embeddings, dim $\approx 2100$ (txt + img), $\approx 1100$ (txt only))](CLUSTER_TXT_7_DAYS_NONE.png){width="100%"}
+
+![PCA Visualization of the Embeddings with an embedding dimension of $512$ using cross-attention (txt only)](CLUSTER_TXT_7_DAYS_512.png){width="100%"}
+
+:::
+
+::: {.column width="50%"}
+
+![PCA Visualization of the Embeddings with no embedding dimension  (using concatenated embeddings, dim $\approx 2100$ (txt + img), $\approx 1100$ (txt and img))](CLUSTER_IMG_7_DAYS_NONE.png){width="100%"}
+
+![PCA Visualization of the Embeddings with an embedding dimension of $512$ using cross-attention (txt and img)](CLUSTER_IMG_7_DAYS_512.png){width="100%"}
+:::
+
+::::
 
 ## CATEs on Cluster Similarities
 
