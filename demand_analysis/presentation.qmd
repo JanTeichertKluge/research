@@ -43,6 +43,281 @@ subtitle: "Evaluations on buybox data, embedding dimensions and significant hete
   - For the `BUY_BOX` and $0$ Days Gap Setting, the optimal embedding dimension was selected to $512$.
 - It seems that the models embedding dimension (e.g. using the cross-attention-block if there was a specific dimension defined) has a significant impact on the lower dimensional projections of the embeddings used for clustering.
 
+
+## Predictive Performance
+
+:::{style="font-size: 50%;"}
+
+<table>
+  <thead>
+    <tr>
+      <th rowspan="2">Approach</th>
+      <th colspan="4">JASA</th>
+      <th colspan="4">Setting A (JASA hyp.)</th>
+      <th colspan="4">Setting A (tuned)</th>
+      <th colspan="4">Setting B (JASA hyp.)</th>
+      <th colspan="4">Setting B (tuned)</th>
+    </tr>
+    <tr>
+      <th>Q</th>
+      <th>P</th>
+      <th>ΔQ</th>
+      <th>ΔP</th>
+      <th>Q</th>
+      <th>P</th>
+      <th>ΔQ</th>
+      <th>ΔP</th>
+      <th>Q</th>
+      <th>P</th>
+      <th>ΔQ</th>
+      <th>ΔP</th>
+      <th>Q</th>
+      <th>P</th>
+      <th>ΔQ</th>
+      <th>ΔP</th>
+      <th>Q</th>
+      <th>P</th>
+      <th>ΔQ</th>
+      <th>ΔP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>OLS (Tabular)</td>
+      <td>22.08</td>
+      <td>17.10</td>
+      <td>6.11</td>
+      <td>0.36</td>
+      <td>21.25</td>
+      <td>19.13</td>
+      <td>8.38</td>
+      <td>0.44</td>
+      <td>21.25</td>
+      <td>19.13</td>
+      <td>8.38</td>
+      <td>0.44</td>
+      <td>21.23</td>
+      <td>19.01</td>
+      <td>6.99</td>
+      <td>0.37</td>
+      <td>21.23</td>
+      <td>19.01</td>
+      <td>6.99</td>
+      <td>0.37</td>
+    </tr>
+    <tr>
+      <td>Boosting (Tabular)</td>
+      <td>45.84</td>
+      <td>20.37</td>
+      <td>13.21</td>
+      <td>-2.60</td>
+      <td>48.79</td>
+      <td>21.31</td>
+      <td>16.97</td>
+      <td>-2.09</td>
+      <td>48.79</td>
+      <td>21.31</td>
+      <td>16.97</td>
+      <td>-2.09</td>
+      <td>48.92</td>
+      <td>21.33</td>
+      <td>15.77</td>
+      <td>-3.77</td>
+      <td>48.92</td>
+      <td>21.33</td>
+      <td>15.77</td>
+      <td>-3.77</td>
+    </tr>
+    <tr>
+      <td>OLS (Tabular + PCA)</td>
+      <td>48.69</td>
+      <td>59.07</td>
+      <td>6.15</td>
+      <td>0.40</td>
+      <td>48.56</td>
+      <td>60.63</td>
+      <td>8.40</td>
+      <td>0.45</td>
+      <td>45.65</td>
+      <td>53.83</td>
+      <td>8.38</td>
+      <td>0.42</td>
+      <td>48.58</td>
+      <td>58.90</td>
+      <td>7.15</td>
+      <td>0.39</td>
+      <td>46.19</td>
+      <td>55.38</td>
+      <td>7.09</td>
+      <td>0.35</td>
+    </tr>
+    <tr>
+      <td>Boosting (Tabular + PCA)</td>
+      <td>56.02</td>
+      <td>63.17</td>
+      <td>14.99</td>
+      <td>-1.28</td>
+      <td>54.46</td>
+      <td>65.77</td>
+      <td>16.26</td>
+      <td>-15.74</td>
+      <td>-0.55</td>
+      <td>64.02</td>
+      <td>16.15</td>
+      <td>-0.39</td>
+      <td>53.82</td>
+      <td>63.99</td>
+      <td>16.20</td>
+      <td>-1.59</td>
+      <td>52.96</td>
+      <td>65.62</td>
+      <td>12.71</td>
+      <td>-2.10</td>
+    </tr>
+    <tr>
+      <td>OLS (Tabular + Similarities)</td>
+      <td>48.60</td>
+      <td>57.70</td>
+      <td>6.16</td>
+      <td>0.43</td>
+      <td>48.94</td>
+      <td>59.80</td>
+      <td>8.40</td>
+      <td>0.45</td>
+      <td>45.14</td>
+      <td>53.23</td>
+      <td>8.41</td>
+      <td>0.44</td>
+      <td>49.01</td>
+      <td>59.34</td>
+      <td>7.15</td>
+      <td>0.40</td>
+      <td>45.96</td>
+      <td>55.04</td>
+      <td>7.11</td>
+      <td>0.36</td>
+    </tr>
+    <tr>
+      <td>Boosting (Tabular + Similarities)</td>
+      <td>56.12</td>
+      <td>62.28</td>
+      <td>15.37</td>
+      <td>-0.30</td>
+      <td>54.54</td>
+      <td>65.42</td>
+      <td>17.07</td>
+      <td>0.24</td>
+      <td>55.50</td>
+      <td>64.60</td>
+      <td>16.21</td>
+      <td>-0.74</td>
+      <td>55.15</td>
+      <td>64.98</td>
+      <td>16.71</td>
+      <td>-0.90</td>
+      <td>55.45</td>
+      <td>63.95</td>
+      <td>14.63</td>
+      <td>-1.91</td>
+    </tr>
+    <tr>
+      <td>OLS (Tabular + Embeddings)</td>
+      <td>51.08</td>
+      <td>59.66</td>
+      <td>5.81</td>
+      <td>-0.04</td>
+      <td>51.72</td>
+      <td>61.53</td>
+      <td>8.12</td>
+      <td>0.22</td>
+      <td>47.90</td>
+      <td>63.09</td>
+      <td>7.57</td>
+      <td>-0.00</td>
+      <td>51.56</td>
+      <td>61.30</td>
+      <td>7.18</td>
+      <td>0.13</td>
+      <td>48.35</td>
+      <td>64.01</td>
+      <td>5.45</td>
+      <td>-0.17</td>
+    </tr>
+    <tr>
+      <td>Boosting (Tabular + Embeddings)</td>
+      <td>55.73</td>
+      <td>64.05</td>
+      <td>14.03</td>
+      <td>-0.72</td>
+      <td>54.70</td>
+      <td>66.75</td>
+      <td>14.76</td>
+      <td>-0.71</td>
+      <td>54.73</td>
+      <td>65.33</td>
+      <td>14.02</td>
+      <td>-0.87</td>
+      <td>53.91</td>
+      <td>66.29</td>
+      <td>12.48</td>
+      <td>-0.96</td>
+      <td>52.68</td>
+      <td>65.91</td>
+      <td>12.54</td>
+      <td>-1.30</td>
+    </tr>
+    <tr>
+      <td>Deep Time Independent</td>
+      <td>51.24</td>
+      <td>64.67</td>
+      <td>0.05</td>
+      <td>-0.07</td>
+      <td>51.53</td>
+      <td>58.40</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>47.85</td>
+      <td>63.09</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>50.64</td>
+      <td>62.11</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>47.23</td>
+      <td>64.31</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>Deep Time Dependent</td>
+      <td>61.77</td>
+      <td>65.43</td>
+      <td>11.35</td>
+      <td>1.03</td>
+      <td>59.80</td>
+      <td>59.65</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>59.83</td>
+      <td>64.15</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>58.94</td>
+      <td>59.80</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>59.87</td>
+      <td>54.82</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+
+:::
+
+
 ## Changes on the ATE Estimation
 
 - JASA Version (using `NEW` Price, $7$ Days Gap): $ATE \approx −0.53$
