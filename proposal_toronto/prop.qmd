@@ -1,0 +1,375 @@
+---
+title: "Research Prospectus: Bridging Semiparametric Orthogonality and In-Context Bayesian Inference via Propensity-Augmented Prior-Data Fitted Networks"
+subtitle: "Enhancing Causal Foundation Models through Explicit Nuisance Parameter Tokenization"
+author: "Jan Teichert-Kluge"
+date: "January 6, 2026"
+format:
+  pdf:
+    documentclass: article
+    number-sections: false
+    geometry:
+      - margin=1in
+---
+
+**Applicant:** Jan Teichert-Kluge, University of Hamburg
+
+**Host:** Prof. Rahul G. Krishnan, University of Toronto / Vector Institute
+
+**Keywords:** Causal Inference, Foundation Models, Prior-Data Fitted Networks, Double Machine Learning, Propensity Scores, In-Context Learning
+
+---
+
+# 1. Executive Summary
+
+This research prospectus delineates a proposal for a visiting research stay at the University of Toronto, specifically designed to foster a high-impact collaboration between the applicant, Jan Teichert-Kluge (University of Hamburg), and the host group led by Prof. Rahul G. Krishnan. The project aims to synthesize two currently distinct paradigms in causal inference: the rigorous, asymptotic guarantees of **Double Machine Learning (DML)** and the transformative, generative capabilities of **Prior-Data Fitted Networks (PFNs)**.
+
+The central hypothesis of this proposal posits that the performance, robustness, and data efficiency of Causal Foundation Models (such as CausalFM) can be significantly enhanced by explicitly integrating estimated nuisance parameters—specifically the propensity score—into the model’s input context. While current PFN architectures implicitly learn treatment assignment mechanisms from raw covariates, this "implicit" approach may suffer in regimes of high-dimensional confounding or weak overlap. By augmenting the input tokens with explicitly estimated propensity scores (derived via the DML framework), we aim to induce a **"Neural Double Robustness,"** allowing the foundation model to leverage the efficiency of semiparametric statistics while retaining the flexibility of Bayesian in-context learning.
+
+This document serves as a comprehensive theoretical and methodological roadmap for the proposed stay. It details the mathematical foundations of the approach, contrasting the Neyman orthogonality of the "Hamburg School" with the generative priors of the "Toronto School." It outlines the architecture of the proposed **Propensity-Augmented Causal PFN (PA-CausalPFN)**, defines the necessary theoretical assumptions regarding nuisance parameter convergence and prior support, and provides a granular work plan for implementation and evaluation on benchmarks like ACIC and RealCause. The ultimate goal is to produce a "Foundation Model for Science" that satisfies the rigorous reliability standards of econometrics.
+
+---
+
+# 2. Introduction: The Convergence of Two Causal Paradigms
+
+The discipline of causal inference is currently witnessing a bifurcation in methodology that presents a unique opportunity for synthesis. On one side, the econometrics and statistics communities have spent decades refining semiparametric methods that offer provable guarantees about the behavior of estimators in finite samples. This lineage, extending from the seminal work of Rosenbaum and Rubin on propensity scores to the modern Double Machine Learning (DML) frameworks established by Chernozhukov and colleagues, prioritizes the identification of "nuisance parameters"—auxiliary functions like the outcome regression and propensity score—that must be controlled to isolate the causal effect [1].
+
+On the other side, the machine learning community, particularly groups like Prof. Krishnan's at the University of Toronto, is pioneering the use of **Foundation Models** for tabular and causal reasoning. The development of **Prior-Data Fitted Networks (PFNs)** represents a radical departure from classical estimation [3]. Instead of fitting a model to a specific dataset, PFNs effectively "learn to learn," acquiring a Bayesian inference algorithm within the weights of a transformer pre-trained on millions of synthetic structural causal models (SCMs). This allows for instant, training-free inference on new datasets via in-context learning [3].
+
+## 2.1 The Research Problem
+
+While Causal-PFNs (such as CausalFM) demonstrate remarkable empirical performance, they face a theoretical hurdle when viewed through the lens of classical causal inference. In standard PFN architectures, the model is fed raw covariates $X$, treatment $A$, and outcome $Y$. The transformer must implicitly reconstruct the complex data-generating process (DGP), including the treatment assignment mechanism $P(A|X)$, solely from the context window.
+
+This implicit reconstruction poses substantial challenges:
+
+1.  **Dimensionality and Attention:** In high-dimensional settings, the relevant confounders may be sparse or buried in noise. Without explicit guidance, the transformer's attention mechanism may struggle to identify the correct "balancing score," leading to inefficient posterior concentration [6].
+2.  **Lack of Robustness:** If the test data distribution shifts slightly outside the support of the training prior—for instance, if the selection mechanism is sharper or more complex than the synthetic SCMs generated during pre-training—the model lacks a fallback mechanism. It relies entirely on its internal representation of the DGP [4].
+3.  **The "Black Box" of Confounding:** Unlike DML, which explicitly separates the estimation of the nuisance parameter (propensity) from the target parameter (causal effect), standard PFNs entangle these tasks. This entanglement forfeits the benefits of **Neyman Orthogonality**, which ensures that small errors in estimating the confounders do not translate into first-order errors in the causal estimate [8].
+
+## 2.2 The Proposed Solution
+
+This research stay proposes to bridge this gap by developing the **Propensity-Augmented Causal PFN (PA-CausalPFN)**. The core idea is simple yet theoretically profound: *What if we calculate the propensity score using robust external estimators (as in DML) and feed this score as a "privileged token" into the Causal PFN?*
+
+We hypothesize that this explicit injection of the propensity score will guide the transformer's attention mechanism, allowing it to perform an operation analogous to **"Neural Propensity Matching"** or **"In-Context Inverse Probability Weighting."** This hybrid approach aims to combine the best of both worlds: the automated, Bayesian uncertainty quantification of PFNs and the robustness and efficiency of Double Machine Learning [2].
+
+---
+
+# 3. Background and Synergies
+
+## 3.1 The Applicant: Jan Teichert-Kluge and the Hamburg School
+
+Jan Teichert-Kluge’s research at the University of Hamburg is anchored in the theoretical frameworks of **Double Machine Learning (DML)**. Working under Prof. Martin Spindler, a key contributor to the DML literature, Teichert-Kluge has specialized in extending these semiparametric methods to complex, unstructured data modalities.
+
+His work, particularly **"DoubleMLDeep,"** explores how neural networks can be used as nuisance parameter estimators within the DML framework to handle image and text confounders [8]. This involves designing architectures that can extract causal features from high-dimensional inputs to satisfy the unconfoundedness assumption. His expertise lies in:
+
+*   **Nuisance Parameter Estimation:** Designing models specifically to estimate $g(X) = E[Y|X, A]$ and $m(X) = E[A|X]$ minimizing bias [6].
+*   **Multimodal Causality:** Integrating diverse data streams (text, tabular, image) into causal pipelines, a skill highly relevant to the next generation of multimodal foundation models [12].
+*   **Software Ecosystems:** As a contributor to the DoubleML Python package, he possesses the engineering capability to bridge statistical libraries with deep learning frameworks like PyTorch [14].
+
+## 3.2 The Host: Rahul G. Krishnan and the Toronto School
+
+Prof. Rahul G. Krishnan’s lab is at the forefront of **Deep Causal Generative Modeling**. Their work challenges the traditional boundaries of how causal models are learned. Instead of training on a single dataset, they advocate for learning the *inference algorithm itself*.
+
+Key innovations from the host group include:
+
+*   **CausalFM & CausalPFN:** These models formulate causal inference as a sequence modeling problem. By training on priors over SCMs, they enable a transformer to infer Average Treatment Effects (ATE) and Conditional Average Treatment Effects (CATE) purely from context [3].
+*   **TabPFN:** The underlying architecture for these models, TabPFN, has proven that transformers can outperform gradient-boosted trees on tabular data by approximating Bayesian inference [16].
+*   **SCM-Based Priors:** The group has developed sophisticated methods for defining priors over causal graphs, allowing them to generate synthetic training data that covers a vast space of potential real-world causal mechanisms [3].
+
+## 3.3 The Collaborative Synergy
+
+The proposed stay creates a unique intellectual arbitrage. The "Hamburg School" emphasizes asymptotic correctness, orthogonality, and explicit control of nuisance parameters. The "Toronto School" emphasizes generalization, amortization, and implicit Bayesian reasoning.
+Teichert-Kluge brings the "Explicit" methodology (DML) to Toronto, aiming to harden the "Implicit" methodology (PFN) against misspecification. Conversely, the stay allows Teichert-Kluge to adopt the "Foundation Model" paradigm, moving his research from training individual estimators to building general-purpose causal inference engines.
+
+---
+
+# 4. Theoretical Framework: The Intersection of DML and PFN
+
+To rigorously justify the proposed architecture, we must first establish the theoretical underpinnings of the two parent frameworks and identify the mathematical intuition behind their integration.
+
+## 4.1 The Potential Outcomes Framework & Nuisance Parameters
+
+We operate within the Neyman-Rubin causal model. For a unit $i$, we observe $Z_i = (Y_i, A_i, X_i)$, where $Y_i$ is the outcome, $A_i \in \{0, 1\}$ is the treatment, and $X_i \in \mathbb{R}^d$ are covariates. We assume:
+
+1.  **Unconfoundedness:** $Y(0), Y(1) \perp A \mid X$.
+2.  **Overlap:** $0 < \epsilon < P(A=1|X) < 1 - \epsilon$.
+
+The target estimand is typically the Average Treatment Effect $\tau = E[Y(1) - Y(0)]$. Under unconfoundedness, this is identified as:
+
+$$
+\tau = E[\mu(1, X) - \mu(0, X)]
+$$
+
+This identification relies on two key functions, termed **nuisance parameters**:
+
+1.  **Outcome Regression:** $\mu(a, x) = E[Y|A=a, X=x]$.
+2.  **Propensity Score:** $\pi(x) = P(A=1 \mid X=x)$.
+
+## 4.2 The Case for Double Machine Learning (DML)
+
+The DML framework addresses a critical flaw in naive machine learning applications for causality: **Regularization Bias**. If we simply use a random forest to learn $\mu(a, x)$ and plug it into the equation above, the regularization required to handle high-dimensional $X$ introduces a bias that converges slowly (at rate $n^{-1/4}$ or worse), preventing $\sqrt{n}$-consistent estimation of $\tau$.
+
+DML solves this using Neyman Orthogonality. It constructs a score function $\psi(Z; \tau, \eta)$ (where $\eta = (\mu, \pi)$ are the nuisance parameters) such that the derivative of the score with respect to the nuisance parameters is zero at the true values [8].
+The standard orthogonal score (Efficient Influence Function) for ATE is:
+
+$$
+\psi(Z; \tau, \mu, \pi) = \mu(1, X) - \mu(0, X) + \frac{A(Y - \mu(1, X))}{\pi(X)} - \frac{(1-A)(Y - \mu(0, X))}{1-\pi(X)} - \tau
+$$
+
+**Crucial Insight:** The propensity score $\pi(X)$ plays a mechanical role in *de-biasing* the estimate. It reweights the residuals to account for the selection mechanism. Even if the outcome model $\mu$ is wrong, if $\pi$ is correct, the estimator remains consistent (Double Robustness) [2].
+
+## 4.3 The Case for Prior-Data Fitted Networks (PFN)
+
+PFNs approach the problem from a Bayesian perspective. Instead of deriving a score function, we seek the posterior predictive distribution $P(\tau \mid D_{obs})$.
+Since exact Bayesian inference is intractable for general SCMs, PFNs approximate it using a transformer $\phi$.
+
+$$
+P(\tau \mid D_{obs}) \approx \phi(D_{obs})
+$$
+
+The transformer is trained on a distribution of datasets generated from a prior $\Pi_{SCM}$. The training objective minimizes the Kullback-Leibler divergence between the transformer's output and the true posterior implied by the prior [3].
+**The Conflict:** In DML, we explicitly tell the model "Use $\pi(X)$ to fix the bias in $\mu(X)$." In PFN, we essentially hope the transformer *discovers* this reweighting strategy on its own. While transformers are universal approximators, learning this division of labor from finite context examples is inefficient and error-prone [5].
+
+---
+
+# 5. Methodology: Propensity-Augmented Causal PFN (PA-CausalPFN)
+
+We propose a novel architecture that explicitly incorporates the insights of DML into the PFN framework.
+
+## 5.1 Architecture Overview
+
+The **PA-CausalPFN** modifies the input representation and attention mechanisms of the standard CausalFM to accept and utilize an explicitly estimated propensity score $\hat{\pi}(X)$.
+
+### 5.1.1 Step 1: Explicit Nuisance Estimation (Pre-Processing)
+
+Before the data enters the transformer, we employ an external estimator to compute propensity scores.
+
+$$
+\hat{\pi}_i = \hat{P}(A=1 \mid X_i)
+$$
+
+This estimator can be a TabPFN-Classifier (maintaining the "foundation model" philosophy) or a traditional method like Lasso or XGBoost (leveraging standard DML practices). This step effectively performs Dimension Reduction on the confounding space, compressing the relevant selection information from $\mathbb{R}^d$ to $\mathbb{R}^1$ [7].
+
+### 5.1.2 Step 2: Augmented Tokenization
+
+The standard CausalFM token for unit $i$ is an embedding of $(X_i, A_i, Y_i)$. We augment this to include $\hat{\pi}_i$.
+We propose a Composite Embedding Layer:
+
+1.  **Covariate Embedding ($h_x$):** A dense projection of the raw covariates $X_i$.
+2.  **Propensity Embedding ($h_{\pi}$):** A specialized embedding for the scalar $\hat{\pi}_i$. Given the critical importance of values near 0 and 1 (overlap violations), we propose using Fourier Feature Encodings or Binning Embeddings for $\hat{\pi}_i$ to provide high-frequency resolution of the probability space.
+
+    $$
+    h_{\pi} = \text{MLP}(\text{Fourier}(\hat{\pi}_i))
+    $$
+3.  **Treatment/Outcome Embedding ($h_{ay}$):** Standard embeddings for observed $A_i$ and $Y_i$.
+
+The final token $T_i$ is the fusion (concatenation or element-wise sum) of these components:
+
+$$
+T_i = \text{LayerNorm}(W_x h_x + W_{\pi} h_{\pi} + W_{ay} h_{ay})
+$$
+
+### 5.1.3 Step 3: Propensity-Aware Attention Bias
+
+Standard transformers use dot-product attention: $\text{Attn}(Q, K) = \text{softmax}(QK^T / \sqrt{d})$.
+We propose testing a Structurally Biased Attention Mechanism that explicitly encodes the intuition of propensity matching.
+
+$$
+\text{Attn}_{PA}(i, j) = \text{softmax}\left( \frac{Q_i K_j^T}{\sqrt{d}} - \lambda \cdot \psi(\hat{\pi}_i, \hat{\pi}_j) \right)
+$$
+
+Here, $\psi(\hat{\pi}_i, \hat{\pi}_j)$ is a distance function (e.g., $|\text{logit}(\hat{\pi}_i) - \text{logit}(\hat{\pi}_j)|$) and $\lambda$ is a learnable parameter. This bias term penalizes the model for attending to units with vastly different propensities, effectively forcing a "Soft Matching" operation within the attention layers. This allows the model to prioritize "comparable" units for counterfactual inference, mirroring the logic of PSM [1].
+
+## 5.2 Prior Construction: The "Noisy Propensity" Prior
+
+The success of any PFN hinges on its prior. We cannot simply train on perfect propensity scores, as real-world estimates are noisy. We must simulate this noise during training to robustify the model.
+
+**Generative Process for Training Data:**
+
+1.  **Sample SCM:** Draw a structural equation model $S \sim \Pi_{SCM}$.
+2.  **Generate Data:** Sample $N$ units of $(X, A, Y)$ from $S$.
+3.  **Compute Oracle Propensity:** Calculate the true $\pi^*(X) = P_S(A=1|X)$.
+4.  **Inject Estimation Noise:** Generate the input propensity token $\hat{\pi}$ by perturbing $\pi^*$.
+
+    $$
+    \text{logit}(\hat{\pi}(X)) = \text{logit}(\pi^*(X)) + \mathcal{N}(0, \sigma^2_{est})
+    $$
+
+    Crucially, $\sigma_{est}$ should be sampled from a distribution (e.g., $\text{Gamma}(\alpha, \beta)$) for each training batch. This trains the model to handle a spectrum of propensity qualities—from "Oracle" quality (where it should rely heavily on $\hat{\pi}$) to "Garbage" quality (where it should fall back to implicit learning from $X$).
+
+## 5.3 Theoretical Assumptions
+
+To formalize this proposal, we operate under specific theoretical assumptions regarding the interplay between the propensity score and the PFN's learning capability.
+
+*   **Assumption 1: Balancing Score Sufficiency (Rosenbaum & Rubin, 1983)**
+    The propensity score is a balancing score, meaning $X \perp A \mid \pi(X)$.
+    *Theoretical implication for PA-CausalPFN:* If the transformer's attention mechanism can learn to condition strictly on $\pi(X)$ (facilitated by our biased attention head), it effectively blocks the backdoor path from $A$ to $Y$, unbiasedly identifying the causal effect without needing to reconstruct the full high-dimensional dependence of $A$ on $X$ [21].
+*   **Assumption 2: Nuisance Parameter Convergence**
+    We assume the external estimator $\hat{\pi}$ converges to the true $\pi^*$ at a rate $r_n$.
+    In DML, consistency requires the product of outcome and propensity rates to be $o(n^{-1/2})$.
+    *Theoretical implication for PA-CausalPFN:* We hypothesize a "Neural Double Robustness." If $\hat{\pi}$ is accurate (fast rate), the "matching" attention head dominates, yielding low bias. If $\hat{\pi}$ is inaccurate (slow rate or biased), the transformer's universal approximation capability allows it to use the raw $X$ embeddings to correct the error, akin to the bias correction term in AIPW (Augmented Inverse Probability Weighting) [2].
+*   **Assumption 3: Prior Support Overlap**
+    We assume the test dataset's DGP lies within the support of the PFN's training prior $\Pi_{SCM}$.
+    *Refinement:* By providing $\hat{\pi}$, we relax this assumption. Even if the complex mapping $X \to A$ in the test set is out-of-distribution for the prior, the simpler mapping $\pi \to A$ (which is identity) remains within distribution. Thus, injecting propensity improves Generalization to Out-of-Distribution (OOD) Selection Mechanisms [4].
+
+---
+
+# 6. Implementation Plan
+
+The proposed research stay will be structured into four distinct phases over a 4-6 month period.
+
+## Phase 1: Infrastructure and Replication (Weeks 1-4)
+
+*   **Goal:** Establish a working environment merging DoubleML and CausalFM.
+*   **Tasks:**
+    *   Replicate the baseline CausalFM results on IHDP and ACIC benchmarks using the provided codebases [3].
+    *   Set up a DoubleML pipeline (using AutoGluon or TabPFN as learners) to generate cross-fitted propensity scores for these benchmarks.
+    *   **Milestone:** A unified data loader that outputs tuples $(X, \hat{\pi}, A, Y)$ ready for transformer ingestion.
+
+## Phase 2: Architecture Development and Training (Weeks 5-12)
+
+*   **Goal:** Design and train the PA-CausalPFN.
+*   **Tasks:**
+    *   **Architecture:** Modify the CausalFM embedding layer to accept $\hat{\pi}$ (using Fourier features) and implement the propensity-biased attention mechanism.
+    *   **Prior Engineering:** Implement the "Noisy Propensity" generator in the synthetic data pipeline. This involves calibrating the noise injection $\sigma_{est}$ to match realistic estimation errors found in finite samples [24].
+    *   **Training:** Perform large-scale pre-training of the PA-CausalPFN on the Vector Institute’s GPU clusters.
+
+## Phase 3: "Stress Testing" and Validation (Weeks 13-18)
+
+*   **Goal:** Empirically validate the "Double Robustness" hypothesis.
+*   **Experiments:**
+    *   **The "Bad Overlap" Test:** Construct synthetic datasets with extreme propensity distributions (many units near 0 or 1). Compare PA-CausalPFN vs. standard CausalFM. We hypothesize PA-CausalPFN will exhibit superior stability due to explicit overlap awareness [25].
+    *   **The "High-Dim" Test:** Generate datasets with $d=1000$ but sparse confounding. Standard PFNs should struggle to find the signal; PA-CausalPFN (fed with a Lasso-derived $\hat{\pi}$) should succeed [7].
+    *   **The "Misspecified Prior" Test:** Test on data generated from mechanisms explicitly excluded from the PFN training prior (e.g., highly oscillatory selection functions).
+
+## Phase 4: Synthesis and Dissemination (Weeks 19-24)
+
+*   **Goal:** Publish results.
+*   **Tasks:**
+    *   Analyze results using metrics: PEHE (Precision in Estimation of Heterogeneous Effect), Bias, and Coverage.
+    *   Draft a paper targeting NeurIPS or ICLR.
+    *   **Title:** "Neural Double Robustness: Augmenting Causal Foundation Models with Explicit Nuisance Parameters."
+
+---
+
+# 7. Experimental Validation & Benchmarks
+
+To ensure the research meets the rigorous standards of both the ML and Econometrics communities, we will employ a comprehensive suite of benchmarks.
+
+## Table 1: Proposed Evaluation Benchmarks
+
+| Benchmark Suite | Description | Evaluation Goal | Relevant Literature |
+| :--- | :--- | :--- | :--- |
+| **IHDP** | Infant Health and Development Program (Semi-synthetic). | Standard baseline for CATE estimation. | [5] |
+| **ACIC 2016/2018** | Atlantic Causal Inference Conference competitions. | High-dimensional, heterogeneous confounding structures. | [5] |
+| **RealCause** | Realistic datasets derived from generative models fit to real data. | Evaluating performance on realistic data manifolds. | [16] |
+| **Twins** | Real-world medical data with naturally occurring counterfactual proxies. | Performance in medical domains with selection bias. | [3] |
+| **"Torture" Suite** | Custom synthetic data with $d=1000$, sparsity, and near-violation of positivity. | Testing the limits of implicit vs. explicit regularization. | [7] |
+
+## Baselines for Comparison
+
+1.  **Vanilla CausalFM / CausalPFN:** To measure the lift provided by the propensity token.
+2.  **Standard DoubleML:** Using LightGBM or ResNet as learners. To compare the "Foundation Model" approach against the "Train-per-dataset" approach.
+3.  **Dragonnet / TARNet:** Deep learning baselines that jointly learn representation and propensity, but without the Foundation Model pre-training [9].
+
+---
+
+# 8. Expected Contributions and Broader Impact
+
+## 8.1 Scientific Contribution
+
+This project promises to deliver the first **Doubly Robust Foundation Model** for tabular causal inference. By formally integrating the concept of nuisance parameters into the input space of a PFN, we provide a blueprint for "Neuro-Symbolic" causal modeling where statistical principles (orthogonality, balancing) guide the architectural inductive biases of deep generative models.
+
+## 8.2 Impact on Practice
+
+If successful, PA-CausalPFN would revolutionize applied causal inference. Practitioners in epidemiology or economics could use the model to obtain instant, robust causal estimates that automatically account for the quality of their propensity model. It lowers the barrier to entry for high-quality causal analysis while providing the safety rails of double robustness [3].
+
+## 8.3 Institutional Synergy
+
+This project serves as a strategic bridge between the University of Hamburg’s expertise in theoretical econometrics (DoubleML) and the University of Toronto’s leadership in deep learning (Vector Institute). It facilitates the transfer of "DML" knowledge to the "Foundation Model" community and vice versa, potentially leading to long-term collaborative grants and joint publications.
+
+---
+
+# 9. Conclusion
+
+The integration of estimated propensity scores into Causal-PFN represents a logical and necessary evolution of Tabular Foundation Models. It respects the "First Principle" of causal inference—that the treatment assignment mechanism is a distinct structural component that deserves explicit modeling—while retaining the flexibility and speed of in-context learning.
+
+For the applicant, Jan Teichert-Kluge, this research stay is an opportunity to apply his deep expertise in DoubleML to the cutting edge of Generative AI. For the host, Prof. Rahul Krishnan, this collaboration introduces rigorous econometric concepts into the CausalFM framework, addressing key limitations regarding robustness and sample efficiency.
+
+We posit that **PA-CausalPFN** will not only set a new state-of-the-art on causal benchmarks but will also define a new paradigm of **"Assisted Foundation Models"**—models that work in concert with classical estimators to achieve reliable, scientific discovery.
+
+---
+
+# 10. Selected References and Context
+
+The following references ground this proposal in the relevant literature from both the Hamburg and Toronto groups, as well as the broader field.
+
+*   **Foundation Models & PFNs:**
+    *   **CausalFM:** *Foundation Models for Causal Inference via Prior-Data Fitted Networks.* (Anonymous/Krishnan Lab, 2026). The primary basis for this proposal [3].
+    *   **TabPFN:** Hollmann, N., et al. (2023). *TabPFN: A Transformer That Solves Small Tabular Classification Problems in a Second.* [16].
+    *   **CausalPFN:** Balazadeh, V., et al. (2025). *CausalPFN: Amortized Causal Effect Estimation via In-Context Learning.* [5].
+*   **Double Machine Learning & Semiparametrics:**
+    *   **DoubleMLDeep:** Bach, P., Teichert-Kluge, J., et al. (2024). *DoubleMLDeep: Estimation of causal effects with multimodal data.* [8]. Demonstrates the applicant's capability to merge DL and Causality.
+    *   **DML Theory:** Chernozhukov, V., et al. (2018). *Double/debiased machine learning for treatment and structural parameters.* [8].
+    *   **Propensity Theory:** Rosenbaum, P. R., & Rubin, D. B. (1983). *The central role of the propensity score in observational studies for causal effects.* [29].
+*   **Double Robustness & Neural Networks:**
+    *   **Dragonnet:** Shi, C., Blei, D., & Veitch, V. (2019). (Neural architectures with propensity heads).
+    *   **Targeted Learning:** *Targeted Maximum Likelihood Estimation (TMLE)* [26].
+
+---
+
+# Appendix A: Technical Notes on "Neural Orthogonality"
+
+We use the term "Neural Orthogonality" to describe the anticipated behavior of PA-CausalPFN. In classical DML, orthogonality is a mathematical property of the score function $\psi$. In PA-CausalPFN, we expect the transformer to learn an orthogonal representation.
+By varying the noise $\epsilon$ in the input propensity $\hat{\pi}$ during pre-training, the loss function $\mathcal{L}(\theta)$ is minimized only if the network learns to be insensitive to local perturbations in $\hat{\pi}$ (mimicking the zero-derivative condition $\partial \psi / \partial \pi = 0$) while still using the global information in $\hat{\pi}$ for reweighting. This suggests that "Double Robustness" can be an emergent property of a properly trained Foundation Model [9].
+
+# Appendix B: Computing Resources
+
+The project will leverage the GPU resources available at the Vector Institute (e.g., A100/H100 clusters) for training the PA-CausalPFN. The inference experiments (DoubleML baselines) can be run on standard workstations or the University of Hamburg's clusters, facilitating a distributed workflow.
+
+# Appendix C: Timeline Visualization
+
+| Phase | Month 1 | Month 2 | Month 3 | Month 4 | Month 5 |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Setup & Replication** | ████ | | | | |
+| **PA-CausalPFN Dev** | | ████ | ██ | | |
+| **Large Scale Training** | | | ████ | | |
+| **Evaluation & Benchmarks** | | | | ████ | |
+| **Writing & Publication** | | | | | ████ |
+
+---
+
+# References
+
+1.  How Causal Inference Analysis works—ArcGIS Pro | Documentation, Zugriff am Januar 6, 2026, [https://pro.arcgis.com/en/pro-app/latest/tool-reference/spatial-statistics/how-causal-inference-analysis-works.htm](https://pro.arcgis.com/en/pro-app/latest/tool-reference/spatial-statistics/how-causal-inference-analysis-works.htm)
+2.  A Tutorial on Doubly Robust Learning for Causal Inference - arXiv, Zugriff am Januar 6, 2026, [https://arxiv.org/html/2406.00853v1](https://arxiv.org/html/2406.00853v1)
+3.  FOUNDATION MODELS FOR CAUSAL INFERENCE ... - OpenReview, Zugriff am Januar 6, 2026, [https://openreview.net/pdf?id=d2L1ndOKjq](https://openreview.net/pdf?id=d2L1ndOKjq)
+4.  Foundation Models for Causal Inference via Prior-Data Fitted Networks - arXiv, Zugriff am Januar 6, 2026, [https://arxiv.org/pdf/2506.10914](https://arxiv.org/pdf/2506.10914)
+5.  CausalPFN: Amortized Causal Effect Estimation via In-Context Learning - arXiv, Zugriff am Januar 6, 2026, [https://arxiv.org/html/2506.07918v2](https://arxiv.org/html/2506.07918v2)
+6.  Python: Causal Machine Learning with TabPFN - DoubleML, Zugriff am Januar 6, 2026, [https://docs.doubleml.org/stable/examples/learners/py_tabpfn.html](https://docs.doubleml.org/stable/examples/learners/py_tabpfn.html)
+7.  Sufficient Dimension Reduction for Feasible and Robust Estimation of Average Causal Effect, Zugriff am Januar 6, 2026, [https://www3.stat.sinica.edu.tw/statistica/oldpdf/A31n211.pdf](https://www3.stat.sinica.edu.tw/statistica/oldpdf/A31n211.pdf)
+8.  DoubleMLDeep: Estimation of Causal Effects with Multimodal Data - IDEAS/RePEc, Zugriff am Januar 6, 2026, [https://ideas.repec.org/p/arx/papers/2402.01785.html](https://ideas.repec.org/p/arx/papers/2402.01785.html)
+9.  Constrained Learning for Causal Inference and Semiparametric Statistics - ChatPaper, Zugriff am Januar 6, 2026, [https://chatpaper.com/paper/21059](https://chatpaper.com/paper/21059)
+10. Efficiency-improved doubly robust estimation with non-confounding predictive covariates - Project Euclid, Zugriff am Januar 6, 2026, [https://projecteuclid.org/journals/electronic-journal-of-statistics/volume-19/issue-2/Efficiency-improved-doubly-robust-estimation-with-non-confounding-predictive-covariates/10.1214/25-EJS2424.pdf](https://projecteuclid.org/journals/electronic-journal-of-statistics/volume-19/issue-2/Efficiency-improved-doubly-robust-estimation-with-non-confounding-predictive-covariates/10.1214/25-EJS2424.pdf)
+11. DoubleML Deep : Estimation of Causal Effects with Multimodal Data - arXiv, Zugriff am Januar 6, 2026, [https://arxiv.org/html/2402.01785v1](https://arxiv.org/html/2402.01785v1)
+12. Jan Teichert-Kluge - Cemmap, Zugriff am Januar 6, 2026, [https://cemmap.ac.uk/person/jan-teichert-kluge/](https://cemmap.ac.uk/person/jan-teichert-kluge/)
+13. Participation in the Machine Learning Summer School - University of Hamburg Business School, Zugriff am Januar 6, 2026, [https://www.bwl.uni-hamburg.de/en/ueber-die-fakultaet/aktuelles/2025/0917-machine-learning-summer-school.html](https://www.bwl.uni-hamburg.de/en/ueber-die-fakultaet/aktuelles/2025/0917-machine-learning-summer-school.html)
+14. Jan Teichert-Kluge JanTeichertKluge - GitHub, Zugriff am Januar 6, 2026, [https://github.com/JanTeichertKluge](https://github.com/JanTeichertKluge)
+15. Jan Teichert-Kluge :: PyConDE & PyData Berlin 2024 - pretalx, Zugriff am Januar 6, 2026, [https://pretalx.com/pyconde-pydata-2024/speaker/HMFBCS/](https://pretalx.com/pyconde-pydata-2024/speaker/HMFBCS/)
+16. (PDF) TabPFN-2.5: Advancing the State of the Art in Tabular Foundation Models, Zugriff am Januar 6, 2026, [https://www.researchgate.net/publication/397555905_TabPFN-25_Advancing_the_State_of_the_Art_in_Tabular_Foundation_Models](https://www.researchgate.net/publication/397555905_TabPFN-25_Advancing_the_State_of_the_Art_in_Tabular_Foundation_Models)
+17. TabPFN: A Transformer That Solves Small Tabular Classification Problems in a Second, Zugriff am Januar 6, 2026, [https://neurips.cc/virtual/2022/58545](https://neurips.cc/virtual/2022/58545)
+18. Debiased Machine Learning of Set-Identified Linear Models: 1 Introduction and Motivation, Zugriff am Januar 6, 2026, [https://www.scribd.com/document/906488606/1712-10024v6](https://www.scribd.com/document/906488606/1712-10024v6)
+19. Improved doubly robust estimation in learning optimal individualized treatment rules - PMC, Zugriff am Januar 6, 2026, [https://pmc.ncbi.nlm.nih.gov/articles/PMC8132732/](https://pmc.ncbi.nlm.nih.gov/articles/PMC8132732/)
+20. An encoding generative modeling approach to dimension reduction and covariate adjustment in causal inference with observational studies | PNAS, Zugriff am Januar 6, 2026, [https://www.pnas.org/doi/10.1073/pnas.2322376121](https://www.pnas.org/doi/10.1073/pnas.2322376121)
+21. 11 - Propensity Score — Causal Inference for the Brave and True - Matheus Facure, Zugriff am Januar 6, 2026, [https://matheusfacure.github.io/python-causality-handbook/11-Propensity-Score.html](https://matheusfacure.github.io/python-causality-handbook/11-Propensity-Score.html)
+22. Using Propensity Scores for Causal Inference: Pitfalls and Tips - PMC - PubMed Central, Zugriff am Januar 6, 2026, [https://pmc.ncbi.nlm.nih.gov/articles/PMC8275441/](https://pmc.ncbi.nlm.nih.gov/articles/PMC8275441/)
+23. Augmented Inverse Probability Weighting and the Double Robustness Property, Zugriff am Januar 6, 2026, [https://epub.ub.uni-muenchen.de/77081/1/0272989x211027181.pdf](https://epub.ub.uni-muenchen.de/77081/1/0272989x211027181.pdf)
+24. TabPFN-2.5: Advancing the State of the Art in Tabular Foundation Models - Googleapis.com, Zugriff am Januar 6, 2026, [https://storage.googleapis.com/prior-labs-tabpfn-public/reports/TabPFN_2_5_tech_report.pdf](https://storage.googleapis.com/prior-labs-tabpfn-public/reports/TabPFN_2_5_tech_report.pdf)
+25. The role of the c-statistic in variable selection for propensity score models - PubMed Central, Zugriff am Januar 6, 2026, [https://pmc.ncbi.nlm.nih.gov/articles/PMC3081361/](https://pmc.ncbi.nlm.nih.gov/articles/PMC3081361/)
+26. Targeted Deep Architectures: A TMLE-Based Framework for Robust Causal Inference in Neural Networks - ChatPaper, Zugriff am Januar 6, 2026, [https://chatpaper.com/paper/164579](https://chatpaper.com/paper/164579)
+27. CAUSAL GRAPH TRANSFORMER FOR TREATMENT EF- FECT ESTIMATION UNDER UNKNOWN INTERFERENCE - ICLR Proceedings, Zugriff am Januar 6, 2026, [https://proceedings.iclr.cc/paper_files/paper/2025/file/f7397355f68fa42e5d4739c2eb9b4cf6-Paper-Conference.pdf](https://proceedings.iclr.cc/paper_files/paper/2025/file/f7397355f68fa42e5d4739c2eb9b4cf6-Paper-Conference.pdf)
+28. CAUSCIBENCH: EVALUATING LLM CAUSAL REASON- ING FOR SCIENTIFIC RESEARCH - Zhijing Jin, Zugriff am Januar 6, 2026, [https://zhijing-jin.com/files/papers/2025_CauSciBench.pdf](https://zhijing-jin.com/files/papers/2025_CauSciBench.pdf)
+29. Covariate balancing propensity score - Kosuke Imai, Zugriff am Januar 6, 2026, [https://imai.fas.harvard.edu/research/files/CBPS.pdf](https://imai.fas.harvard.edu/research/files/CBPS.pdf)
+30. Reading Between the Lines: Deconfounding Causal Estimates using Text Embeddings and Deep Learning - arXiv, Zugriff am Januar 6, 2026, [https://arxiv.org/html/2601.01511v1](https://arxiv.org/html/2601.01511v1)
+31. FOUNDATION MODELS FOR CAUSAL INFERENCE VIA PRIOR-DATA FITTED NETWORKS - OpenReview, Zugriff am Januar 6, 2026, [https://openreview.net/pdf/49c9b6d0a26c286c8b818eba955f7905152b08de.pdf](https://openreview.net/pdf/49c9b6d0a26c286c8b818eba955f7905152b08de.pdf)
+32. On Machine Learning Methods for Propensity Score Matching and Weighting in Educational Data Mining Applications - Analytic Studies & Institutional Research - San Diego State University, Zugriff am Januar 6, 2026, [https://asir.sdsu.edu/Documents/SMGDocs/TNF_18_454004_C018_docbook_new_indd.pdf](https://asir.sdsu.edu/Documents/SMGDocs/TNF_18_454004_C018_docbook_new_indd.pdf)
+33. Score-Preserving Targeted Maximum Likelihood Estimation - arXiv, Zugriff am Januar 6, 2026, [https://arxiv.org/pdf/2502.00200](https://arxiv.org/pdf/2502.00200)

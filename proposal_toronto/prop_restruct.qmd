@@ -1,0 +1,143 @@
+---
+title: "Bridging Semiparametric Orthogonality and In-Context Bayesian Inference via Propensity-Augmented Prior-Data Fitted Networks"
+subtitle: "Enhancing Causal Foundation Models through Explicit Nuisance Parameter Tokenization"
+author: "Jan Teichert-Kluge"
+date: "January 6, 2026"
+format:
+  pdf:
+    documentclass: article
+    number-sections: false
+    geometry:
+      - margin=1in
+---
+
+**Applicant:** Jan Teichert-Kluge, University of Hamburg  
+**Host:** Prof. Rahul G. Krishnan, University of Toronto / Vector Institute  
+**Duration:** 6 Months  
+**Keywords:** Causal Inference, Foundation Models, Prior-Data Fitted Networks, Double Machine Learning, Propensity Scores, In-Context Learning
+
+# ---
+
+**1. Executive Summary**
+
+This research prospectus delineates a proposal for a visiting research stay at the University of Toronto, designed to foster a high-impact collaboration between the applicant (representing the "Hamburg School" of semiparametric statistics) and the host group (representing the "Toronto School" of deep generative modeling). The project aims to synthesize two currently distinct paradigms in causal inference: the asymptotic guarantees of **Double Machine Learning (DML)** and the flexible, amortized inference of **Prior-Data Fitted Networks (PFNs)**.
+
+The central hypothesis is that the robustness and sample efficiency of Causal Foundation Models (such as CausalFM) can be significantly enhanced by explicitly integrating estimated nuisance parameters—specifically the propensity score—into the model’s input context. While current PFN architectures implicitly learn treatment assignment mechanisms from raw covariates, this "implicit" approach suffers in regimes of high-dimensional confounding or weak overlap.
+
+By augmenting input tokens with explicitly estimated propensity scores (derived via DML-compliant estimators) and modifying the transformer's attention mechanism, we aim to induce **"Neural Double Robustness."** This hybrid architecture, the **Propensity-Augmented Causal PFN (PA-CausalPFN)**, is designed to leverage the statistical efficiency of orthogonal scores while retaining the versatility of Bayesian in-context learning.
+
+# ---
+
+**2. Introduction: The Convergence of Two Paradigms**
+
+The discipline of causal inference is witnessing a bifurcation. On one side, econometrics has refined semiparametric methods like DML that offer $\sqrt{n}$-consistency by identifying and orthogonalizing "nuisance parameters" (auxiliary functions like the propensity score). On the other, machine learning is pioneering **Foundation Models** that "learn to learn" causal mechanisms by pre-training transformers on millions of synthetic structural causal models (SCMs).
+
+## **2.1 The Research Problem**
+
+Current Causal-PFNs demonstrate remarkable empirical performance but face theoretical hurdles. Standard PFN architectures ingest raw covariates $X$, treatment $A$, and outcome $Y$. The transformer must implicitly reconstruct the treatment assignment mechanism $P(A|X)$ solely from the context window to correct for selection bias. This poses three challenges:
+
+1. **Attentional Efficiency:** In high-dimensional settings ($d > 100$), the transformer’s attention mechanism may struggle to identify the sparse set of confounders required for the "balancing score."  
+2. **Lack of Robustness:** If the test data distribution shifts outside the support of the training prior (e.g., sharper selection mechanisms than seen during pre-training), the model lacks a fallback mechanism.  
+3. **Black Box Confounding:** Unlike DML, which explicitly isolates the propensity estimation, standard PFNs entangle nuisance estimation with effect estimation, forfeiting the benefits of **Neyman Orthogonality**.
+
+## **2.2 The Proposed Solution**
+
+We propose the **Propensity-Augmented Causal PFN (PA-CausalPFN)**. The core concept is to calculate the propensity score using robust external estimators (as in DML) and feed this score as a "privileged token" into the Causal PFN. We hypothesize that this explicit injection will guide the transformer's attention, enabling an operation analogous to **"In-Context Inverse Probability Weighting."**
+
+# ---
+
+**3. Theoretical Framework**
+
+## **3.1 Nuisance Parameters and Orthogonality**
+
+We operate within the Neyman-Rubin causal model. The target estimand is the Average Treatment Effect (ATE), $\tau$. Identification relies on two nuisance parameters: the outcome regression $\mu(a, x) = E[Y|A=a, X=x]$ and the propensity score $\pi(x) = P(A=1 \mid X=x)$.
+
+DML utilizes an orthogonal score function $\psi$, such that the Gateaux derivative with respect to the nuisance parameters vanishes at the true values. For ATE, the efficient influence function is:
+
+$$\psi(Z; \tau, \mu, \pi) = \mu(1, X) - \mu(0, X) + \frac{A(Y - \mu(1, X))}{\pi(X)} - \frac{(1-A)(Y - \mu(0, X))}{1-\pi(X)} - \tau$$  
+The propensity score $\pi(X)$ acts mechanically to debias the estimate.
+
+## **3.2 The Bayesian PFN Approach**
+
+PFNs approximate the posterior predictive distribution $P(\tau \mid D_{obs})$ using a transformer $\phi$ trained on a prior distribution over SCMs ($\Pi_{SCM}$):
+
+$$P(\tau \mid D_{obs}) \approx \phi(D_{obs}; \theta)$$  
+**The Synthesis:** We aim to modify $\phi$ such that it takes the estimated propensity $\hat{\pi}$ as input. If trained correctly, $\phi$ effectively learns a mapping that approximates the orthogonal score $\psi$ rather than the naive regression surface, utilizing $\hat{\pi}$ to reweight the internal attention weights.
+
+# ---
+
+**4. Methodology: PA-CausalPFN Architecture**
+
+## **4.1 Step 1: Explicit Nuisance Estimation**
+
+Before the transformer ingestion, we employ an external estimator (e.g., Lasso, XGBoost, or a TabPFN-Classifier) to compute cross-fitted propensity scores $\hat{\pi}_i$. This performs effective dimension reduction of the confounding space from $\mathbb{R}^d \to \mathbb{R}^1$.
+
+## **4.2 Step 2: Augmented Tokenization**
+
+We propose a **Composite Embedding Layer**. The standard token represents $(X_i, A_i, Y_i)$. We augment this to include $\hat{\pi}_i$. To ensure the transformer can resolve high-frequency changes in probability (critical near 0 and 1), we utilize **Fourier Feature Encodings** for the scalar propensity:
+
+$$h_{\pi} = \text{MLP}(\text{Concat}[\cos(2\pi \mathbf{B} \hat{\pi}_i), \sin(2\pi \mathbf{B} \hat{\pi}_i)])$$  
+The final token $T_i$ is the fusion of the covariate embedding $h_x$ and the propensity embedding $h_{\pi}$.
+
+## **4.3 Step 3: Propensity-Biased Attention**
+
+To enforce the logic of "matching," we introduce a structural bias to the attention mechanism. We modify the attention scores to penalize attending to units with vastly different propensity scores:
+
+$$\text{Attn}_{PA}(i, j) = \text{softmax}\left( \frac{Q_i K_j^T}{\sqrt{d}} - \lambda \cdot |\text{logit}(\hat{\pi}_i) - \text{logit}(\hat{\pi}_j)| \right)$$  
+Where $\lambda$ is a learnable parameter. This forces the model to prioritize "comparable" units in the context window when synthesizing the counterfactual.
+
+## **4.4 Step 4: The "Noisy Propensity" Prior**
+
+To ensure robustness, we cannot train on ground-truth propensities. We must simulate estimation error. During pre-training, inputs $\hat{\pi}$ are generated by perturbing the true $\pi^*$ from the synthetic SCM:
+
+$$\text{logit}(\hat{\pi}) = \text{logit}(\pi^*) + \mathcal{N}(0, \sigma_{est}^2)$$  
+$\sigma_{est}$ is sampled per batch. This trains the PFN to rely on $\hat{\pi}$ when it is high-quality (low noise) and fall back to implicit learning from $X$ when it is noisy, achieving **Neural Double Robustness**.
+
+# ---
+
+**5. Work Plan and Timeline**
+
+The research stay is structured into four phases over 6 months.
+
+* **Phase 1: Infrastructure & Replication (Weeks 1-6)**  
+  * Replicate CausalFM baselines on ACIC and IHDP benchmarks.  
+  * Construct the DoubleML pipeline to generate $\hat{\pi}$ inputs for these datasets.  
+  * *Deliverable:* Unified DataLoader feeding $(X, A, Y, \hat{\pi})$.  
+* **Phase 2: Architecture Development (Weeks 7-14)**  
+  * Implement Fourier embeddings for propensity scalars.  
+  * Implement the Propensity-Biased Attention mechanism in PyTorch.  
+  * Design the "Noisy Propensity" generator for the synthetic data pipeline.  
+* **Phase 3: Large-Scale Pre-training (Weeks 15-20)**  
+  * Train PA-CausalPFN on the Vector Institute’s GPU cluster.  
+  * Monitor validation loss specifically on "hard overlap" synthetic sets.  
+* **Phase 4: Evaluation & Dissemination (Weeks 21-24)**  
+  * Benchmark against Vanilla CausalFM, Dragonnet, and standard DoubleML.  
+  * Draft paper targeting NeurIPS 2026.  
+  * *Title:* "Neural Double Robustness: Augmenting Causal Foundation Models with Explicit Nuisance Parameters."
+
+# ---
+
+**6. Experimental Evaluation**
+
+We will evaluate the approach on three tiers of difficulty:
+
+1. **IHDP (Infant Health and Development Program):** Standard semi-synthetic benchmark.  
+2. **ACIC 2016/2018:** Features high-dimensional confounding and heterogeneity.  
+3. **The "Torture" Suite:** Custom synthetic datasets designed to break implicit models, featuring:  
+   * High sparsity ($d=1000$, 5 relevant confounders).  
+   * Near-violations of positivity ($P(A|X)$ close to 0/1).  
+   * Misspecified priors (DGP structures not seen in PFN training).
+
+**Metrics:** Precision in Estimation of Heterogeneous Effect (PEHE), Average Absolute Bias, and Coverage of Credible Intervals.
+
+# ---
+
+**7. Broader Impact**
+
+This project bridges the gap between the "black box" power of deep learning and the safety requirements of econometrics. By creating a Foundation Model that "understands" nuisance parameters, we provide a blueprint for **Neuro-Symbolic Causal Inference**. This benefits practitioners in healthcare and policy who require the speed of automated inference with the reliability of double robustness.
+
+### ---
+
+**Next Step for the User**
+
+I have structured this prospectus to be technically rigorous and highly specific to the strengths of both yourself and the host. **Would you like me to generate a draft of the "Cover Letter" to Prof. Krishnan that accompanies this prospectus, highlighting your specific work on DoubleMLDeep as the proof-of-competence?**
