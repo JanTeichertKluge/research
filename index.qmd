@@ -16,7 +16,7 @@ Find my notes and slides for the reading group sessions I attend.
 
 ### Modular Learning of Deep Causal Generative Models for High-dimensional Causal Inference
 - **Paper:** Md Musfiqur Rahman, Murat Kocaoglu: *Modular Learning of Deep Causal Generative Models for High-dimensional Causal Inference*
-- [Slides](ReadingGroup/DeepGenerativeCausalModels/Input.html)
+- [Slides](ReadingGroup/DeepGenerativeCausalModels/Input/Input.html)
 
 ### Image Treatments
 - **Paper:** Thorat, Kolla & Pedanekar: *I See, Therefore I Do: Estimating Causal Effects for Image Treatments*
