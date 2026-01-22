@@ -1,0 +1,673 @@
+---
+title: "Reading Group"
+subtitle: "Bruno Mlodozeniec, David Krueger, Richard E. Turner: \n Probabilistic Modelling is Sufficient for Causal Inference"
+---
+
+
+## Outline
+
+1. **Introduction & Motivation**
+2. **The Core Debate: Pearl vs. Gelman**
+3. **Interventional Inference**
+   - The Aspirin Example
+   - Modelling with Bayesian Networks
+4. **Counterfactual Inference**
+5. **Structural Causal Models (SCMs)**
+6. **Benefits of the Probabilistic Approach**
+7. **Discussion & Takeaways**
+
+
+## Paper Overview
+
+::: {.highlight-box}
+**Position Paper** presented at ICML 2025 (42nd International Conference on Machine Learning)
+:::
+
+- **Authors**: Bruno Mlodozeniec, David Krueger, Richard E. Turner
+- **arXiv**: [2512.23408](https://arxiv.org/abs/2512.23408)
+- **Main Claim**: You can answer *any* causal inference question within the realm of probabilistic modelling and inference, **without** causal-specific tools or notation
+
+::: {.fragment}
+::: {.key-insight}
+**"Always write down the probability of everything."** — Steve Gull (MacKay, 2003)
+:::
+:::
+
+
+## Motivation: Why This Paper?
+
+**Confusion in the ML community** about tools needed for causal inference:
+
+- Prevalent claims that you need *bespoke causal frameworks* (do-notation, SCMs)
+- Many papers state: "causal questions cannot be answered with statistical tools alone"
+
+::: {.fragment}
+**Examples from the literature:**
+
+> "None of those questions can be answered with statistical tools alone, but require methods from causality..." — Pawlowski et al. (2020)
+
+> "We need to enrich our language with a do-operator" — Pearl (2019)
+:::
+
+
+## The Pearl-Gelman Disagreement
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**Judea Pearl's View:**
+
+> "There is no way to answer causal questions without snapping out of statistical vocabulary"
+
+- Emphasizes the *Ladder of Causation*
+- Advocates for do-calculus
+- Sees causal inference as *distinct* from statistics
+:::
+
+::: {.column width="50%"}
+**Andrew Gelman's View:**
+
+> "I find it baffling that Pearl and his colleagues keep taking statistical problems and, to my mind, complicating them by wrapping them in a causal structure"
+
+- Views causal tools as potentially unnecessary complexity
+- Prefers traditional statistical/Bayesian approaches
+:::
+
+::::
+
+::: {.fragment}
+::: {.key-insight}
+**The Paper's Position**: The disagreement is *primarily semantic* — revolving around the meaning of "statistical"
+:::
+:::
+
+
+## What the Paper Claims (and Doesn't)
+
+::: {.highlight-box}
+**Claims:**
+
+- Causal toolbox is **not necessary** for causal inference
+- Standard probabilistic modelling is **sufficient**
+:::
+
+::: {.warning-box}
+**Does NOT Claim:**
+
+- Causal tools are without utility
+- Pearl's framework should be abandoned
+- A new framework is being proposed
+:::
+
+::: {.fragment}
+The goal is to **clarify** how causal problems can be tackled within probabilistic modelling
+:::
+
+
+## The Core Principle
+
+::: {.key-insight style="font-size: 120%;"}
+**Always write down the joint probability over all the settings you are interested in.**
+:::
+
+This means:
+
+1. **Observed setting**: The world as we observe it
+2. **Interventional setting**: What happens if we *do* something
+3. **Counterfactual setting**: What *would have happened* if...
+
+::: {.fragment}
+All can be modelled by specifying a **joint distribution** over all relevant variables and settings!
+:::
+
+
+## Interventions
+
+
+## Example: Aspirin and Headaches
+
+**Setting**: Study aspirin's effect on headache duration
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**Variables:**
+
+- $Z$ — Initial headache severity
+- $T$ — Aspirin dosage
+- $Y$ — Headache duration
+:::
+
+::: {.column width="50%"}
+**DAG for Observational Data:**
+
+```{mermaid}
+%%| fig-width: 4
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#e3f2fd', 'primaryTextColor': '#000000', 'primaryBorderColor': '#1565c0', 'lineColor': '#a8afeb', 'secondaryColor': '#fff3e0', 'tertiaryColor': '#ffffff'}}}%%
+flowchart TD
+    Z((Z)) --> T((T))
+    Z --> Y((Y))
+    T --> Y
+    style Z fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#000
+    style T fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#000
+    style Y fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#000
+```
+:::
+
+::::
+
+::: {.fragment}
+**Model specification** (log-normal):
+$$
+\begin{aligned}
+Z &\sim \log\mathcal{N}(\mu_Z, \sigma_Z^2) \\
+T &= Z^a \varepsilon_T \quad \text{where } \varepsilon_T \sim \log\mathcal{N}(0, \sigma_T^2) \\
+Y &= Z^b T^c \varepsilon_Y \quad \text{where } \varepsilon_Y \sim \log\mathcal{N}(0, \sigma_Y^2)
+\end{aligned}
+$$
+:::
+
+
+## The Causal Question
+
+::: {.definition-box}
+**Interventional Question**: What is the expected effect of *intervening* to assign someone a given dose of aspirin $t^*$ on their headache duration?
+:::
+
+**The Naïve (Wrong) Approach:**
+
+Simply compute $\mathbb{E}[Y | T = t^*]$ from observational data
+
+::: {.fragment}
+::: {.warning-box}
+**Problem**: Simpson's Paradox!
+
+Even when $c > 0$ (aspirin helps), we might observe that people who take more aspirin have *longer* headaches on average — because they had more severe headaches to begin with!
+:::
+:::
+
+
+## Simpson's Paradox Illustrated
+
+**Conditional expectation** (when $c = 0$, aspirin has no effect):
+
+$$
+\mathbb{E}[Y | T] = \exp\left(\frac{ab\sigma_Z^2}{\sigma_Z^2 + \sigma_Y^2}(T - a\mu_z) + \text{const.}\right)
+$$
+
+::: {.fragment}
+- When $a, b > 0$: Expected headache duration **increases** with aspirin dose
+- Even though aspirin has **no effect** on headache duration!
+:::
+
+::: {.fragment}
+::: {.key-insight}
+The longer headache in those who took more aspirin is due to **confounding** (more severe initial headache), not adverse effects of aspirin.
+:::
+:::
+
+
+## The Probabilistic Solution: Twin Model
+
+**Key Idea**: Define a *joint model* over both observed and interventional settings
+
+:::: {.columns}
+
+::: {.column width="50%"}
+```{mermaid}
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#e3f2fd', 'primaryTextColor': '#000000', 'primaryBorderColor': '#1565c0', 'lineColor': '#555555'}}}%%
+flowchart TD
+    subgraph obs["Observed World"]
+        Zi((Zᵢ)) --> Ti((Tᵢ))
+        Zi --> Yi((Yᵢ))
+        Ti --> Yi
+    end
+    subgraph int["Intervened World"]
+        Zs((Z*)) --> Ys((Y*))
+        Ts((T*)) --> Ys
+    end
+    Theta((Θ)) --> obs
+    Theta --> int
+    style obs fill:#f5f5f5,stroke:#999,stroke-width:1px,color:#000
+    style int fill:#f5f5f5,stroke:#999,stroke-width:1px,color:#000
+    style Zi fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#000
+    style Ti fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#000
+    style Yi fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#000
+    style Zs fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#000
+    style Ts fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#000
+    style Ys fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#000
+    style Theta fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#000
+```
+:::
+
+::: {.column width="50%"}
+**Key Assumptions:**
+
+1. Parameters $\boldsymbol{\Theta}$ are **shared** between worlds
+2. $T^*$ is **independent** of $Z^*$ (we intervene!)
+3. Mechanism $p_\theta(y|t,z)$ stays the same
+
+$$q_\theta(t) = \delta(t^* - t)$$
+$$q_\theta(y|t,z) = p_\theta(y|t,z)$$
+:::
+
+::::
+
+
+## The Joint Distribution
+
+The complete joint over both settings:
+
+$$
+\begin{aligned}
+p(z^*, t^*, y^*, \boldsymbol{\theta}, \mathcal{D}) = &\underbrace{p_\theta(z^*) q(t^*) p_\theta(y^*|z^*, t^*)}_{\text{Interventional world}} \\
+&\times \underbrace{\prod_{i=1}^{N} p_\theta(z_i) p_\theta(t_i|z_i) p_\theta(y_i|z_i, t_i)}_{\text{Observed world}} \times p(\boldsymbol{\theta})
+\end{aligned}
+$$
+
+::: {.fragment}
+**Computing the causal effect:**
+
+$$
+\mathbb{E}[Y^* | \mathcal{D}] = \int \underbrace{\iint y^* q_\theta(y^*|z^*, t^*) q_\theta(z^*) \, dz^* \, dy^*}_{\text{Expectation in intervened world}} \underbrace{p(\boldsymbol{\theta}|\mathcal{D}) \, d\boldsymbol{\theta}}_{\text{Posterior from data}}
+$$
+:::
+
+
+## Result: True Causal Effect
+
+For the log-normal aspirin model:
+
+$$
+\mathbb{E}[Y^* | \boldsymbol{\theta}] = (t^*)^{-c} \exp\left(b\mu_Z + \frac{b^2\sigma_Z^2 + \sigma_Y^2}{2}\right)
+$$
+
+::: {.fragment}
+::: {.key-insight}
+**Key Insight:**
+
+- Effect only depends on parameter $c$
+- When $c > 0$: Higher dose $\Rightarrow$ shorter headache
+- **No confounding** — we correctly identified the causal effect!
+:::
+:::
+
+
+## Classical Approach: do-Notation
+
+The intervention operation on a Bayesian Network:
+
+::: {.definition-box}
+**Definition (Intervention in BNs)**: An intervention on node $j$ with new parents $\mathbf{PA}_j^*$ and new conditional $g^*(x_j|\mathbf{x}_{\mathbf{PA}_j^*})$ yields:
+
+$$
+q(\mathbf{x}) = g^*(x_j|\mathbf{x}_{\mathbf{PA}_j^*}) \prod_{i \in \{1,\ldots,d\} \setminus \{j\}} p(x_i|\mathbf{x}_{\mathbf{PA}_i^{\mathcal{G}}})
+$$
+:::
+
+::: {.fragment}
+**do-notation shorthand:**
+
+$$p(\mathbf{x} | do(X_k = c)) = p_{do(X_k := \delta(\cdot - c))}(\mathbf{x})$$
+
+Confounding: effect of $T$ on $Y$ is confounded when $p(y|t) \neq p(y|do(T=t))$
+:::
+
+
+## Relationship: Probabilistic vs. Causal Framework
+
+| Aspect | Twin Model (Probabilistic) | Causal BN + do-calculus |
+|--------|---------------------------|-------------------------|
+| **Notation** | Standard probability | Specialized ($do$, $\perp\!\!\!\perp$) |
+| **Transparency** | Explicit joint model | Graph + rules |
+| **Flexibility** | Any model structure | Graphical models only |
+| **Learning curve** | Lower | Higher |
+
+::: {.fragment}
+::: {.key-insight}
+Both approaches are **mathematically equivalent** — the causal framework provides *syntactic sugar* for specifying the same joint!
+:::
+:::
+
+
+## Counterfactuals
+
+
+## Counterfactual Question
+
+::: {.definition-box}
+**Counterfactual Inference**: What *would have happened* to a specific individual if they had received a different treatment?
+:::
+
+**Example:**
+
+> A friend took dose $t$ of aspirin and her headache lasted $y$ hours. Had she taken a *larger* dose $t^*$, would her headache have gone away sooner?
+
+::: {.fragment}
+**Key Difference from Interventions:**
+
+- Interventions: population-level effects
+- Counterfactuals: individual-level, **sharing** variables between worlds
+:::
+
+
+## Counterfactual Model
+
+```{mermaid}
+%%| fig-width: 7
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#e3f2fd', 'primaryTextColor': '#000000', 'primaryBorderColor': '#1565c0', 'lineColor': '#555555'}}}%%
+flowchart TD
+    subgraph obs["Observed World"]
+        Z((Z)) --> T((T))
+        Z --> Y((Y))
+        T --> Y
+    end
+    subgraph cf["Counterfactual World"]
+        Z --> Ys((Y*))
+        Ts((T*)) --> Ys
+    end
+    Theta((Θ)) --> obs
+    Theta --> cf
+    style obs fill:#f5f5f5,stroke:#999,stroke-width:1px,color:#000
+    style cf fill:#f5f5f5,stroke:#999,stroke-width:1px,color:#000
+    style Z fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#000
+    style T fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#000
+    style Y fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#000
+    style Ts fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#000
+    style Ys fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#000
+    style Theta fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#000
+```
+
+**Key**: Headache severity $Z$ is **shared** between worlds!
+
+
+## Counterfactual Inference
+
+**Target**: $p(y^* | t, y, \mathcal{D})$
+
+$$
+p(y^* | t, y, \mathcal{D}) = \mathbb{E}_{p(\boldsymbol{\theta}|\mathcal{D}, t, y)} \left[ \int p_\theta(y^* | t^*, z) p_\theta(z | t, y) \, dz \right]
+$$
+
+::: {.fragment}
+**Interpretation:**
+
+1. **Infer** the latent headache severity $z$ from observed $(t, y)$
+2. **Predict** counterfactual outcome $y^*$ given $z$ and new treatment $t^*$
+3. **Average** over parameter uncertainty
+:::
+
+
+## Which Latent Variables to Share?
+
+::: {.warning-box}
+**Important Consideration**: Should we share *all* sources of randomness?
+:::
+
+**Example**: The noise $\varepsilon_Y$ in $Y = Z^b T^c \varepsilon_Y$
+
+- Could represent **person-specific health attributes** (weight, age, BMI) → Share!
+- Could represent **environmental factors** or manufacturing tolerances → Don't share!
+
+::: {.fragment}
+::: {.key-insight}
+Whether to share noise variables depends on **what they represent** and the specific counterfactual question!
+:::
+:::
+
+
+## Structural Causal Models (SCMs)
+
+::: {.definition-box}
+**Definition (SCM)**: A structural causal model $\mathfrak{C}$ on variables $\mathbf{X}$ consists of:
+
+1. A directed acyclic graph $\mathcal{G}$ on $\mathbf{X}$
+2. Structural assignments: $X_j := f_j(\mathbf{X}_{\mathbf{PA}_j}, N_j)$
+3. Distribution $p_\mathbf{N}$ over independent noise variables $\{N_1, \ldots, N_d\}$
+:::
+
+::: {.fragment}
+**Counterfactuals in SCMs:**
+
+Given observation $\mathbf{X} = \mathbf{x}$, the counterfactual SCM uses:
+
+$$p_{\mathbf{N}^*}(\mathbf{n}) = p_\mathbf{N}(\mathbf{n} | \mathbf{X} = \mathbf{x})$$
+
+(Posterior over noise becomes prior for counterfactual)
+:::
+
+
+## SCMs vs. Probabilistic Approach
+
+**SCMs require sharing ALL noise variables:**
+
+> "Formally, SCMs contain strictly more information than their corresponding graph and law" — Peters et al. (2017)
+
+::: {.fragment}
+**But this can be overly restrictive:**
+
+- What if some noise represents modelling error, not real stochasticity?
+- What if we only want to share *some* sources of randomness?
+
+::: {.key-insight}
+**SCMs are sufficient but not necessary** for counterfactual inference. The probabilistic framework is more **flexible**.
+:::
+:::
+
+
+## Benefits of the Probabilistic Framework
+
+
+## Why Probabilistic Modelling?
+
+**1. Flexibility:**
+
+- Handle settings beyond graphical models (e.g., probabilistic programming)
+- "Causal graphs cannot easily express many real-world phenomena" — Park et al. (2023)
+
+**2. Natural handling of multiple data sources:**
+
+- Combine interventional and observational data naturally
+
+**3. No prescribed inference order:**
+
+- SCMs require "abduction, action, prediction" steps
+- Probabilistic approach: condition on whatever you like!
+
+
+## Lowering the Barrier to Entry
+
+**The probabilistic framework:**
+
+- Accessible to ML community already familiar with probabilistic modelling
+- No need to learn specialized causal notation ($do$-calculus, etc.)
+- Assumptions are **explicit** in the joint model
+
+::: {.fragment}
+::: {.quote-box}
+"Understanding that causal tools can be seen as syntactic shorthands for specifying joint distributions is, in our view, productive towards [research] endeavours."
+:::
+:::
+
+
+## The "Ladder of Causation"
+
+Pearl's three-level hierarchy:
+
+| Level | Type | Question |
+|-------|------|----------|
+| 1 | Association | $P(Y|X)$ — What if I see? |
+| 2 | Intervention | $P(Y|do(X))$ — What if I do? |
+| 3 | Counterfactual | $P(Y_{x'}|X=x, Y=y)$ — What if I had done? |
+
+::: {.fragment}
+::: {.key-insight}
+**The Paper's View**: All three levels can be addressed within probabilistic modelling by writing down the appropriate joint distribution!
+:::
+:::
+
+
+## Resolving the Debate
+
+::: {.highlight-box}
+**The Core Issue**: The term "statistical" is often used too narrowly
+:::
+
+- Pearl uses "statistical" to mean only "associational" or "observational"
+- This restricted definition is the basis for claims that statistics is insufficient
+
+::: {.fragment}
+**But statistics has always dealt with:**
+
+- Non-static settings (domain shift, off-policy RL)
+- Subjective assumptions
+- Inference beyond the observed distribution
+:::
+
+
+# Conclusion {background-color="#265a93"}
+
+
+## Key Takeaways
+
+1. **Causal inference ⊆ Probabilistic modelling**
+   - No need for bespoke causal frameworks
+
+2. **The recipe:**
+   - Write down the joint over ALL settings of interest
+   - Use standard probability theory for inference
+
+3. **Causal tools are syntactic sugar:**
+   - do-notation, SCMs, do-calculus are *convenient* but not *necessary*
+   - They emerge from probabilistic modelling
+
+4. **The debate is semantic:**
+   - Disagreement stems from narrow definitions of "statistics"
+
+
+## The "One Key Takeaway"
+
+::: {.key-insight style="font-size: 130%; text-align: center;"}
+**Always write down the joint probability over all the settings you are interested in.**
+:::
+
+::: {.fragment}
+This simple principle:
+
+- Makes assumptions **explicit**
+- Enables **flexible** causal reasoning  
+- **Unifies** interventional and counterfactual inference
+- **Lowers barriers** for the ML community
+:::
+
+
+## Discussion Points
+
+1. **Practical Implications:**
+   - Should we teach causal inference differently?
+   - When are causal-specific tools still valuable?
+
+2. **Limitations:**
+   - Identifiability concerns still apply
+   - Model specification is still challenging
+   - Hidden confounders remain problematic
+
+3. **Future Directions:**
+   - Integration with probabilistic programming
+   - Deep learning and causal inference
+   - Causal representation learning
+
+
+::: {style="font-size: 70%;"}
+
+- Mlodozeniec, B., Krueger, D., & Turner, R. E. (2025). *Probabilistic Modelling is Sufficient for Causal Inference*. ICML 2025.
+- Pearl, J. (2009). *Causality: Models, Reasoning and Inference*. Cambridge University Press.
+- Peters, J., Janzing, D., & Schölkopf, B. (2017). *Elements of Causal Inference*. MIT Press.
+- MacKay, D. J. (2003). *Information Theory, Inference and Learning Algorithms*. Cambridge University Press.
+- Gelman, A. (2019). Review of "The Book of Why" by Pearl and Mackenzie. *Statistical Modeling Blog*.
+
+:::
+
+
+## Thank You! {.center}
+
+::: {style="text-align: center;"}
+**Questions & Discussion**
+
+---
+
+Jan Teichert-Kluge
+
+Institute of Statistics, University of Hamburg
+
+[https://www.bwl.uni-hamburg.de/statistik/team.html](https://www.bwl.uni-hamburg.de/statistik/team.html)
+:::
+
+
+# Appendix {.appendix}
+
+
+## Appendix: Log-normal Distribution
+
+::: {.definition-box}
+**Definition (Log-normal)**: A random variable $X$ is log-normal with parameters $(\mu, \sigma^2)$ if:
+
+$$X \sim \log\mathcal{N}(\mu, \sigma^2) \iff \log X \sim \mathcal{N}(\mu, \sigma^2)$$
+:::
+
+**Properties:**
+
+- Product of log-normals is log-normal: $X_1 X_2 \sim \log\mathcal{N}(\mu_1 + \mu_2, \sigma_1^2 + \sigma_2^2)$
+- Power of log-normal is log-normal: $X^c \sim \log\mathcal{N}(c\mu, c^2\sigma^2)$
+- Expected value: $\mathbb{E}[X] = \exp(\mu + \sigma^2/2)$
+
+
+## Appendix: Bayesian Networks
+
+::: {.definition-box}
+**Definition (BN)**: Random variables $\mathbf{X} = (X_1, \ldots, X_d)$ form a Bayesian Network with respect to DAG $\mathcal{G}$ if:
+
+$$X_i \perp\!\!\!\perp \mathbf{X}_{\mathbf{ND}_i^{\mathcal{G}}} | \mathbf{X}_{\mathbf{PA}_i^{\mathcal{G}}}$$
+
+where $\mathbf{ND}_i$ are non-descendants and $\mathbf{PA}_i$ are parents.
+:::
+
+**Factorization:**
+
+$$p(x_1, \ldots, x_d) = \prod_{i=1}^{d} p(x_i | \mathbf{x}_{\mathbf{PA}_i^{\mathcal{G}}})$$
+
+
+## Appendix: do-Calculus Rules
+
+For a Causal Graphical Model with graph $\mathcal{G}$ and disjoint subsets $\mathbf{X}, \mathbf{Y}, \mathbf{Z}, \mathbf{W}$:
+
+1. **Insertion/deletion of observations:**
+   $$p(\mathbf{y}|\mathbf{z}, \mathbf{w}, do(\mathbf{X}=\mathbf{x})) = p(\mathbf{y}|\mathbf{w}, do(\mathbf{X}=\mathbf{x}))$$
+   if $\mathbf{Y} \perp\!\!\!\perp \mathbf{Z} | \mathbf{X}, \mathbf{W}$ in $\mathcal{G}_{\bar{\mathbf{X}}}$
+
+2. **Action/observation exchange:**
+   $$p(\mathbf{y}|\mathbf{w}, do(\mathbf{X}:=\mathbf{x}, \mathbf{Z}=\mathbf{z})) = p(\mathbf{y}|\mathbf{z}, \mathbf{w}, do(\mathbf{X}:=\mathbf{x}))$$
+   if $\mathbf{Y} \perp\!\!\!\perp \mathbf{Z} | \mathbf{X}, \mathbf{W}$ in $\mathcal{G}_{\bar{\mathbf{X}}\underline{\mathbf{Z}}}$
+
+3. **Insertion/deletion of actions:**
+   $$p(\mathbf{y}|\mathbf{w}, do(\mathbf{X}:=\mathbf{x}, \mathbf{Z}=\mathbf{z})) = p(\mathbf{y}|\mathbf{w}, do(\mathbf{X}:=\mathbf{x}))$$
+   if $\mathbf{Y} \perp\!\!\!\perp \mathbf{Z} | \mathbf{X}, \mathbf{W}$ in $\mathcal{G}_{\bar{\mathbf{X}}\underline{\mathbf{Z}(\mathbf{W})}}$
+
+
+## Appendix: Identifiability
+
+::: {.definition-box}
+**Definition**: An interventional conditional probability (the "causal effect") is **identifiable** if it can be expressed in terms of probability functions of the *observed* variables only.
+:::
+
+**Bayesian Perspective:**
+
+- Identifiability is not a *requirement* for inference
+- Even with non-identifiability, Bayesian learning can still occur
+- The posterior can differ from the prior, reflecting updated beliefs
+
+::: {.fragment}
+::: {.warning-box}
+But: Epistemic uncertainty cannot be fully eliminated without identifiability (even with infinite data)
+:::
+:::

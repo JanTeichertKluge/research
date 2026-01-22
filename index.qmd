@@ -1,11 +1,27 @@
-# Statistical Significance, Impact, and Relevance
+# Reading Group
 
-On this page (go to [**tinyurl.com/endogeneity**](https://tinyurl.com/endogeneity)) you will find documents on the subject of endogeneity. This presentation is part of the PhD course Statistical Significance, Impact, and Relevance. The presentation is build in [Quarto](https://quarto.org/), an open-source publishing system that enables the creation of dynamic, reproducible presentations by seamlessly integrating markdown, code, and outputs. Unlike PowerPoint, Quarto allows for automated content updates and version control through code, while offering greater flexibility and customization compared to Beamer’s LaTeX-based approach. This makes Quarto especially ideal for data-driven presentations that require collaboration and maintainability.
+Find my notes and slides for the reading group sessions I attend.
+
+## 2026
+
+### Long-Term Causal Inference (January 2026)
+- **Paper:** Lal, Imbens & Hull: *Long-Term Causal Inference with Many Noisy Proxies*
+- [Slides](ReadingGroup/Long_Term_Causal_Inference/longterm_causal.html)
+
+## 2025
+
+### Image Treatments (March 2025)
+- **Paper:** Thorat, Kolla & Pedanekar: *I See, Therefore I Do: Estimating Causal Effects for Image Treatments*
+- [Slides](ReadingGroup/ImageTreatments/presentation.html)
+
+### Probabilistic Modelling for Causal Inference
+- **Paper:** Mlodozeniec, Krueger & Turner: *Probabilistic Modelling is Sufficient for Causal Inference*
+- [Slides](ReadingGroup/Probabilistic_Modelling_Causal_Inference/propmod_for_causal.html)
+
+## 2024
+
+### DoubleMLDeep (February 2024)
+- **Topic:** Estimation of Causal Effects with Multimodal Data
+- [Slides](ReadingGroup/RG_20_02_24/presentation.html)
 
 
-- [**You can view the interactive `html` presentation directly in your browser here**](https://janteichertkluge.github.io/research/Stat_Sig/endogeneity.html#/)
-
-- [**Or you can download a rendered version as `pdf` file**](https://janteichertkluge.github.io/research/Stat_Sig\Endogeneity_v04.pdf)
-
-
-I recommend viewing it as HTML, as the interactive elements do not work in the PDF version.
