@@ -1,5 +1,5 @@
 ---
-title: "Reading Group, 21/01/2026"
+title: "Reading Group, 28/01/2026"
 subtitle: "Apoorva Lal, Guido Imbens & Peter Hull: \n Long-Term Causal Inference with Many Noisy Proxies"
 ---
 

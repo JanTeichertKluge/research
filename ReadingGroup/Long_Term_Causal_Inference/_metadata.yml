@@ -5,11 +5,11 @@ execute:
 
 format:
   revealjs:
-    pagetitle: "Reading Group, 21/01/2026"
+    pagetitle: "Reading Group, 28/01/2026"
     subtitle: "Long-Term Causal Inference with Many Noisy Proxies"
     highlight-style: breezedark
     slide-number: true
-    smaller: true
+    smaller: false
     scrollable: true
     code-copy: true
     code-link: true
