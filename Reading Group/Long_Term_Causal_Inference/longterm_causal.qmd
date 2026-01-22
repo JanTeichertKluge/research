@@ -1,0 +1,533 @@
+---
+title: "Reading Group, 21/01/2026"
+subtitle: "Apoorva Lal, Guido Imbens & Peter Hull: \n Long-Term Causal Inference with Many Noisy Proxies"
+---
+
+## Outline
+
+- Introduction & Motivation
+- Problem Setup & Causal Model
+- The Identification Challenge
+- Theoretical Analysis: Ridge Surrogate Index
+- Bias-Variance Tradeoff
+- Numerical Experiments
+- Empirical Application: California GAIN
+- Discussion & Conclusions
+
+
+## Introduction & Motivation
+
+- **The Long-Term Problem in Digital Platforms**
+  - Randomized Controlled Trials (RCTs) can cleanly identify **short-term impacts**
+  - But: Experiments are often too short to capture **long-term outcomes** of ultimate interest
+    - Customer retention, lifetime value, future engagement
+
+- **The Abundance of Proxies**
+  - Modern digital platforms observe *many* short-term metrics:
+    - Clicks, page views, add-to-cart events, session durations, ...
+  - Question: How to use these to estimate long-term treatment effects?
+
+- **Classic Surrogate Methods**
+  - Assume a single/few proxies that **fully mediate** long-run effects
+  - Often implausible in practice!
+
+
+## Introduction & Motivation
+
+- **This Paper's Key Insight**
+
+::: {.highlight-box}
+The many available short-run outcomes are **noisy measures** of some underlying set of **latent surrogates** which are never observed.
+:::
+
+- **Proposed Solution**
+  - Formalize as a latent variable problem
+  - Use **regularized regression** (Ridge, Lasso, PLS) to construct a surrogate index
+  - Theoretical analysis shows: Bias of Ridge regression **decreases** as more proxies are added
+
+- **Contributions**
+  1. Formalization as latent variable regression with measurement error
+  2. Closed-form bias expressions for Ridge regression
+  3. Numerical simulations comparing estimators
+  4. Empirical application to California GAIN experiment
+
+
+## Problem Setup: The Causal Model
+
+**Notation:**
+
+- $W$ : Binary treatment (e.g., new recommendation algorithm)
+- $S \in \mathbb{R}^p$ : Unobserved $p$-dimensional surrogate/state
+- $P \in \mathbb{R}^k$ : Observed $k$-dimensional vector of noisy proxies
+- $Y$ : Scalar long-term outcome
+
+**Core Relationships:**
+
+1. **First Stage (Treatment → Surrogate):**
+$$S(w) = \gamma w + \epsilon_S$$
+
+2. **Proxy Generation (Surrogate → Proxies):**
+$$P(w) = L \cdot S(w) + E$$
+   where $L \in \mathbb{R}^{k \times p}$ is a loading matrix, $E$ is noise
+
+3. **Second Stage (Surrogate → Outcome):**
+$$Y(w) = S(w)' \beta + \eta$$
+
+
+## The Causal Graph
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+```{mermaid}
+%%| fig-width: 6
+flowchart LR
+    W((W)) -->|γ| S((S))
+    S -->|L| P((P))
+    S -->|β| Y((Y))
+    εS[ε_S] --> S
+    E[E] --> P
+    η[η] --> Y
+    
+    style S fill:#ccc,stroke:#333
+```
+
+:::
+
+::: {.column width="50%"}
+
+**Key Features:**
+
+- $S$ is **unobserved** (gray node)
+- Treatment $W$ only affects $Y$ through $S$ (surrogacy)
+- Proxies $P$ are **noisy measures** of $S$
+- Number of proxies $k$ can be much larger than number of surrogates $p$
+
+**Target Estimand:**
+$$\tau^* = \mathbb{E}[Y(1) - Y(0)] = \gamma' \beta$$
+
+:::
+
+::::
+
+
+## Economic Interpretation
+
+::: {.highlight-box}
+**Random Utility Framework**
+:::
+
+- Consumer $i$ has preference state $S_i \in \mathbb{R}^p$ (e.g., quality perception, price sensitivity, brand affinity)
+- Treatment shifts preferences: $S_i = \bar{S} + \gamma W_i + \tilde{\epsilon}_{S,i}$
+- Observed behaviors are choice outcomes:
+$$P_i = L \cdot S_i + E_i$$
+  - $L$ captures how preferences manifest in behaviors
+  - $E_i$: idiosyncratic variation (measurement error, contextual factors)
+
+- Long-term value aggregates consumer state:
+$$Y_i = S_i' \beta + \eta_i$$
+
+
+## Data Structure
+
+**Two Separate Datasets:**
+
+| Dataset | Size | Observations | Purpose |
+|---------|------|--------------|---------|
+| **Experimental** $\mathcal{D}_E$ | $N_e$ | $(W_i, P_i)$ | Estimate treatment effects on proxies: $\tau_P = \mathbb{E}[P|W=1] - \mathbb{E}[P|W=0]$ |
+| **Observational** $\mathcal{D}_O$ | $N_o > N_e$ | $(P_i, Y_i)$ | Estimate relationship between proxies and outcome |
+
+::: {.key-insight}
+The experimental data gives us treatment effects on proxies, but we never observe $W$ and $Y$ jointly!
+:::
+
+
+## The Feasible Estimator
+
+**Two-Stage Approach:**
+
+1. **Stage 1:** Estimate treatment effect on proxies from $\mathcal{D}_E$:
+$$\hat{\tau}_P = \bar{P}_{W=1} - \bar{P}_{W=0}$$
+
+2. **Stage 2:** Regress $Y$ on $P$ in $\mathcal{D}_O$ to get coefficients $\hat{\alpha}$:
+$$\hat{\alpha}_\lambda = \left(\sum_i P_i P_i' + \lambda I_k\right)^{-1} \sum_i P_i Y_i$$
+
+3. **Combine:** The long-term treatment effect estimator:
+$$\hat{\tau}_\lambda = \hat{\tau}_P' \hat{\alpha}_\lambda = \sum_{j=1}^{k} \hat{\tau}_j \hat{\alpha}_{\lambda,j}$$
+
+
+## The Identification Challenge
+
+**Without Measurement Error ($E = 0$):**
+
+- Proxies $P = L \cdot S$ satisfy the surrogacy condition
+- OLS regression of $Y$ on $P$ identifies $(L')^+ \beta$
+- $\tau_P$ identifies $L \gamma$
+- Hence: $(L\gamma)'(L')^+ \beta = \gamma' \beta = \tau^*$ ✓
+
+::: {.warning-box}
+**With Measurement Error:**
+The feasible estimator is **biased** due to attenuation!
+:::
+
+**Central Questions:**
+
+1. How large is the attenuation bias when proxies are noisy?
+2. Does having **more proxies** $k$ reduce this bias?
+3. How should we estimate $\alpha$ when $P$ is high-dimensional and noisy?
+
+
+## Intuition: Scalar Surrogate with Two Proxies
+
+**Simple Model:**
+$$S = \tau_S W + \epsilon_S, \quad P_1 = S + \epsilon_1, \quad P_2 = S + \epsilon_2$$
+$$Y = \beta S + \eta$$
+
+**Regression of $Y$ on $(P_1, P_2)$ gives:**
+
+$$\alpha_1 = \beta \frac{\sigma_S^2 \sigma_2^2}{\sigma_S^2 \sigma_1^2 + \sigma_S^2 \sigma_2^2 + \sigma_1^2 \sigma_2^2}$$
+
+**Key Insights:**
+
+1. $\frac{\alpha_1}{\alpha_2} = \frac{\sigma_2^2}{\sigma_1^2}$ — Proxy with less noise gets larger weight
+2. $\alpha_1 + \alpha_2 < \beta$ — Total effect is **attenuated**
+
+$$\text{plim}(\hat{\tau}_P' \hat{\alpha}) = \tau_S (\alpha_1 + \alpha_2) < \tau_S \beta = \tau^*$$
+
+
+## Many Proxies Reduce Bias!
+
+**Extend to $k$ noisy proxies:**
+$$P_j = S + \epsilon_j, \quad j = 1, \ldots, k$$
+
+with i.i.d. measurement errors $\text{Var}(\epsilon_j) = \sigma_E^2$
+
+**Result:** The sum of regression coefficients is:
+
+$$\sum_{j=1}^{k} \alpha_j = \beta \cdot \frac{k \sigma_S^2}{k \sigma_S^2 + \sigma_E^2}$$
+
+::: {.key-insight}
+**As $k \to \infty$:**
+$$\lim_{k \to \infty} \sum_{j=1}^{k} \alpha_j = \beta$$
+With many proxies, we can **average out** the measurement error!
+:::
+
+
+## Ridge Regression for High-Dimensional Setting
+
+**The Ridge Estimator:**
+$$\hat{\alpha}_\lambda = \left(\sum_i P_i P_i' + \lambda I_k\right)^{-1} \sum_i P_i Y_i$$
+
+**Why Ridge?**
+
+- Proxies are highly collinear (all measure same underlying $S$)
+- OLS is unstable in high dimensions
+- Ridge shrinks coefficients systematically
+
+**Final Estimator:**
+$$\hat{\tau}_\lambda = \hat{\tau}_P' \hat{\alpha}_\lambda$$
+
+
+## Asymptotic Bias of Ridge
+
+**Under homoskedasticity** ($\Sigma_S = \sigma_S^2 I_p$, $\Sigma_E = \sigma_E^2 I_k$):
+
+**General Form:**
+$$\text{Bias}_\lambda = \gamma' \left[ L' (L \Sigma_S L' + \Sigma_E + \lambda I_k)^{-1} L \Sigma_S - I_p \right] \beta$$
+
+**With Balanced Loadings** ($L'L = c \cdot I_p$, where $c = k/p$):
+
+::: {.equation-box}
+$$\text{Bias}_\lambda = -\left(\frac{\sigma_E^2 + \lambda}{c \sigma_S^2 + \sigma_E^2 + \lambda}\right) \tau^*$$
+:::
+
+**Interpretation:**
+
+- Always **attenuated** towards zero
+- Bias proportional to true effect $\tau^*$
+- Larger $c$ (more proxies per surrogate) → smaller bias
+- Higher $\lambda$ → larger bias
+
+
+## Bias-Variance Tradeoff
+
+**Asymptotic Mean Squared Error (AMSE):**
+
+$$\text{AMSE}(\hat{\tau}_\lambda) = \underbrace{\left(\frac{\sigma_E^2 + \lambda}{c \sigma_S^2 + \sigma_E^2 + \lambda}\right)^2 (\tau^*)^2}_{\text{Squared Bias}} + \underbrace{\frac{\sigma_\eta^2 \cdot c \cdot \|\gamma\|^2}{n} \cdot \frac{c \sigma_S^2 + \sigma_E^2}{(c \sigma_S^2 + \sigma_E^2 + \lambda)^2}}_{\text{Variance}}$$
+
+**The Tradeoff:**
+
+| $\lambda$ | Bias | Variance |
+|-----------|------|----------|
+| ↑ Increase | ↑ Increases | ↓ Decreases |
+| ↓ Decrease | ↓ Decreases | ↑ Increases |
+
+**Optimal Regularization:**
+$$\lambda^* = \frac{\sigma_\eta^2 \|\gamma\|^2 (c \sigma_S^2 + \sigma_E^2)}{n (\tau^*)^2 \sigma_S^2} - \sigma_E^2$$
+
+$\Rightarrow$ Justifies using **cross-validation** in practice
+
+
+## Variance Estimation & Inference
+
+**Delta-Method Decomposition:**
+$$\widehat{\text{Var}}(\hat{\tau}_\lambda) \approx \hat{\alpha}_\lambda^\top \widehat{\text{Var}}(\hat{\tau}_P) \hat{\alpha}_\lambda + \hat{\tau}_P^\top \widehat{\text{Var}}(\hat{\alpha}_\lambda) \hat{\tau}_P$$
+
+**First-Stage Variance (Experimental):**
+$$\widehat{\text{Var}}(\hat{\tau}_P) = \frac{\hat{\Sigma}_{P|W=1}}{n_1} + \frac{\hat{\Sigma}_{P|W=0}}{n_0}$$
+
+**Second-Stage Variance (Observational Ridge):**
+$$\widehat{\text{Var}}(\hat{\alpha}_\lambda) = A_\lambda \left(X^\top \text{diag}(\hat{e}_1^2, \ldots, \hat{e}_{n_O}^2) X\right) A_\lambda$$
+
+where $A_\lambda = (X^\top X + \lambda I)^{-1}$
+
+**Confidence Intervals:** $\hat{\tau}_\lambda \pm z_{1-\alpha/2} \cdot \widehat{\text{SE}}(\hat{\tau}_\lambda)$
+
+
+## Numerical Experiments: Setup
+
+**Data Generating Process:**
+
+- $n = 5000$ observations
+- $p = 5$ true surrogates
+- $k = 30$ observed proxies (6 per surrogate)
+- $S \sim N(0, \Sigma_S) + \tau_S W$ with $\tau_S = 0.5$
+- $\beta = [1, 1/2, 1/3, 1/4, 1/5]'$ (decaying importance)
+- $P = S \cdot L + E$ with compound symmetry noise
+
+**Methods Compared:**
+
+1. **Oracle:** Direct regression $Y \sim W$ (infeasible)
+2. **OLS Screening (L0):** Select top 10 proxies by $|\alpha_j|$
+3. **Lasso (L1):** Cross-validated sparse regression
+4. **Ridge (L2):** Cross-validated regularized regression
+5. **PLS:** Partial Least Squares dimensionality reduction
+
+
+## Numerical Results: Scalar Surrogate
+
+![Estimation Performance: Scalar Surrogate](https://arxiv.org/html/2601.06359v1/figs/treatment_effect_proxy_accuracy1.png){width="80%"}
+
+::: {.key-insight}
+All methods improve with more proxies. Ridge and PLS perform best, approaching the oracle as $k$ increases.
+:::
+
+
+## Numerical Results: Vector Surrogate
+
+![Estimation Performance: 5-Vector Surrogate](https://arxiv.org/html/2601.06359v1/figs/treatment_effect_proxy_accuracy5.png){width="80%"}
+
+::: {.warning-box}
+OLS Screening **deteriorates** with more proxies due to model selection errors in high dimensions!
+:::
+
+
+## Numerical Results: Increasing Surrogates
+
+![Estimation Performance: Varying Surrogates](https://arxiv.org/html/2601.06359v1/figs/treatment_effect_dimension_accuracy.png){width="80%"}
+
+As $p$ grows with fixed proxies per surrogate, all methods face persistent bias — but Ridge still performs best.
+
+
+## Why Does OLS Screening Fail?
+
+::: {.columns}
+
+::: {.column width="50%"}
+**The Problem:**
+
+- As $k$ increases, more proxies → more chances for **spurious correlations**
+- OLS greedily selects proxies with largest (potentially spurious) coefficients
+- Model selection mistakes introduce bias
+
+**Mathematical Intuition:**
+
+- In high dimensions, some noise terms will correlate with $Y$ by chance
+- OLS has no mechanism to filter these out
+
+:::
+
+::: {.column width="50%"}
+**Why Regularization Helps:**
+
+- Ridge shrinks **all** coefficients towards zero
+- Effectively averages across many signals
+- Filters out noise, recovers reliable surrogate measure
+- No binary in/out decisions that can go wrong
+
+:::
+
+::::
+
+
+## Empirical Application: California GAIN
+
+**Background:**
+
+- California GAIN (Greater Avenues for Independence) experiment
+- Job assistance program for welfare recipients (1980s)
+- Data: Employment, earnings, aid receipt over 36 quarters (9 years)
+
+**Setup:**
+
+- **Long-term outcome:** Employment rate in last year
+- **Proxies:** Employment, earnings, aid receipt in earlier quarters
+
+**Question:** Can we use early outcomes to predict long-term effects?
+
+
+## GAIN Results: Ridge Estimator
+
+![Ridge Surrogate Index Results](https://arxiv.org/html/2601.06359v1/figs/ridge_gain.png){width="85%"}
+
+
+## GAIN Results: Key Findings
+
+::: {.columns}
+
+::: {.column width="50%"}
+**Ridge Surrogate Index:**
+
+- Gets **closer to true estimate** with more periods (16 → 32 quarters)
+- Improves with more measurement types (employment → employment + earnings + aid)
+- Confidence intervals include true effect
+
+:::
+
+::: {.column width="50%"}
+**OLS Screening:**
+
+- Does **not improve** with additional surrogates
+- Stays biased even with more data
+- Confirms simulation findings
+
+:::
+
+::::
+
+::: {.key-insight}
+The Ridge estimator successfully leverages multiple noisy proxies to approach the true long-term treatment effect!
+:::
+
+
+## Discussion: Method Comparison
+
+| Method | Mechanism | Pros | Cons |
+|--------|-----------|------|------|
+| **Ridge** | $L_2$ shrinkage | Closed-form bias analysis, stable | Keeps all predictors |
+| **Lasso** | $L_1$ shrinkage | Sparse solutions | Selection can be unstable |
+| **PLS** | Dimensionality reduction | Targets covariance with $Y$ | Less interpretable |
+| **OLS Screening** | Hard selection | Simple | Fails in high dimensions |
+
+**Paper's Focus on Ridge:**
+
+- Provides clearest theoretical insight into bias-variance tradeoff
+- Analytical tractability allows closed-form expressions
+- All regularized methods outperform naive screening
+
+
+## Conclusions
+
+1. **The Problem:** Estimating long-term treatment effects with many noisy short-term proxies
+
+2. **The Solution:** Formalize as latent variable regression; use regularized methods
+
+3. **Key Theoretical Result:**
+$$\text{Bias}_\lambda = -\left(\frac{\sigma_E^2 + \lambda}{c \sigma_S^2 + \sigma_E^2 + \lambda}\right) \tau^*$$
+   - Bias decreases as $c = k/p$ (proxies per surrogate) increases
+
+4. **Practical Implications:**
+   - Use Ridge/Lasso/PLS instead of ad-hoc proxy selection
+   - More proxies = better (with regularization)
+   - Cross-validation for tuning $\lambda$
+
+5. **Interactive Tool:** [linearsurrogateindex.streamlit.app](https://linearsurrogateindex.streamlit.app/)
+
+
+## Future Directions & Open Questions
+
+- **Non-linear extensions?**
+  - Deep learning for surrogate index construction
+  - Kernel methods
+
+- **Heterogeneous treatment effects?**
+  - CATE estimation with many proxies
+
+- **Optimal proxy selection?**
+  - Which proxies to collect given cost constraints?
+
+- **Relaxing surrogacy assumption?**
+  - What if $W$ affects $Y$ beyond $S$?
+
+
+## References
+
+::: {style="font-size: 60%;"}
+
+- Lal, A., Imbens, G., & Hull, P. (2026). Long-Term Causal Inference with Many Noisy Proxies. arXiv:2601.06359
+
+- Athey, S., Chetty, R., Imbens, G., & Kang, H. (2019). The surrogate index: Combining short-term proxies to estimate long-term treatment effects more rapidly. NBER Working Paper.
+
+- Hotz, V. J., Imbens, G. W., & Klerman, J. A. (2006). Evaluating the differential effects of alternative welfare-to-work training components: A reanalysis of the California GAIN program. Journal of Labor Economics.
+
+- Hastie, T., Tibshirani, R., & Friedman, J. (2009). The Elements of Statistical Learning.
+
+:::
+
+
+## Thank You!
+
+**Questions & Discussion**
+
+::: {.author-container}
+::: {.author}
+**Jan Teichert-Kluge**
+
+Institute of Statistics, University of Hamburg
+
+[www.bwl.uni-hamburg.de/statistik/team.html](https://www.bwl.uni-hamburg.de/statistik/team.html)
+:::
+:::
+
+
+# Appendix {.appendix}
+
+
+## Appendix: Derivation of Asymptotic Bias
+
+Starting from the general bias expression:
+
+$$\text{Bias}_\lambda = \gamma' \left[ L' (L \Sigma_S L' + \Sigma_E + \lambda I_k)^{-1} L \Sigma_S - I_p \right] \beta$$
+
+Under homoskedasticity ($\Sigma_S = \sigma_S^2 I_p$, $\Sigma_E = \sigma_E^2 I_k$) and using SVD $L = U D V'$:
+
+Let $A = \sigma_S^2 U D^2 U' + (\sigma_E^2 + \lambda) I_k$
+
+Using block structure: $I_k = UU' + U_\perp U_\perp'$
+
+$$A^{-1} = U(\sigma_S^2 D^2 + (\sigma_E^2 + \lambda) I_p)^{-1} U' + \frac{1}{\sigma_E^2 + \lambda} U_\perp U_\perp'$$
+
+
+## Appendix: Spectral Bias Decomposition
+
+With SVD $L = UDV'$ and rotated coordinates $\tilde{\gamma} = V'\gamma$, $\tilde{\beta} = V'\beta$:
+
+$$\tau_\lambda = \sum_{j=1}^{p} \frac{\sigma_S^2 d_j^2}{\sigma_S^2 d_j^2 + \sigma_E^2 + \lambda} \tilde{\gamma}_j \tilde{\beta}_j$$
+
+**Interpretation:**
+
+- Each latent direction $j$ has shrinkage factor $\kappa_j(\lambda) = \frac{\sigma_S^2 d_j^2}{\sigma_S^2 d_j^2 + \sigma_E^2 + \lambda}$
+- Directions with small $d_j^2$ (weakly measured) are attenuated more
+- Adding proxies that increase smallest $d_j^2$ helps most
+
+
+## Appendix: Variance Derivation
+
+Asymptotic variance of $\hat{\tau}_\lambda$:
+
+$$\text{Var}_{asy}(\hat{\tau}_\lambda) = \frac{1}{n} \tau_P' \text{AVar}(\sqrt{n}(\hat{\alpha}_\lambda - \alpha_\lambda)) \tau_P$$
+
+Using sandwich formula and balanced loadings:
+
+$$\text{Var}_{asy}(\hat{\tau}_\lambda) = \frac{\sigma_\eta^2}{n} \cdot c \cdot \|\gamma\|^2 \cdot \frac{c \sigma_S^2 + \sigma_E^2}{(c \sigma_S^2 + \sigma_E^2 + \lambda)^2}$$

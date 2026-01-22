@@ -1,0 +1,26 @@
+execute:
+  eval: true
+  echo: true
+  include: true
+
+format:
+  revealjs:
+    pagetitle: "Reading Group, 21/01/2026"
+    subtitle: "Long-Term Causal Inference with Many Noisy Proxies"
+    highlight-style: breezedark
+    slide-number: true
+    smaller: false
+    scrollable: true
+    code-copy: true
+    code-link: true
+    code-fold: true
+    footer: "Jan Teichert-Kluge, Institute of Statistics"
+    theme: [default, ../../shared_files/doubleml_theme.scss]
+    chalkboard:
+      boardmarker-width: 5
+      theme: "chalkboard"
+    css: styles.css
+    filters: [slidenumber_filter.lua]
+    lightbox: true
+
+from: markdown+emoji
