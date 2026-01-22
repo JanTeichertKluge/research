@@ -9,7 +9,7 @@ format:
     subtitle: "Long-Term Causal Inference with Many Noisy Proxies"
     highlight-style: breezedark
     slide-number: true
-    smaller: false
+    smaller: true
     scrollable: true
     code-copy: true
     code-link: true

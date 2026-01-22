@@ -6,13 +6,14 @@ subtitle: "Apoorva Lal, Guido Imbens & Peter Hull: \n Long-Term Causal Inference
 ## Outline
 
 - Introduction & Motivation
+- **Background: Surrogate Models & Surrogate Index**
 - Problem Setup & Causal Model
 - The Identification Challenge
 - Theoretical Analysis: Ridge Surrogate Index
 - Bias-Variance Tradeoff
 - Numerical Experiments
 - Empirical Application: California GAIN
-- Discussion & Conclusions
+- **Connection to DML & Discussion**
 
 
 ## Introduction & Motivation
@@ -50,6 +51,94 @@ The many available short-run outcomes are **noisy measures** of some underlying 
   2. Closed-form bias expressions for Ridge regression
   3. Numerical simulations comparing estimators
   4. Empirical application to California GAIN experiment
+
+
+## What is a Surrogate? (Medical Origins)
+
+::: {.highlight-box}
+**Definition (Prentice, 1989):**
+A surrogate endpoint is a biomarker that can substitute for a clinical endpoint — it must fully capture the treatment's effect on the outcome of interest.
+:::
+
+**Classic Example: HIV/AIDS Trials**
+
+- True endpoint: Survival / disease progression (takes years)
+- Surrogate: CD4 cell count (measurable in weeks)
+- If treatment only affects survival *through* CD4 count → valid surrogate
+
+**The Surrogacy Criterion:**
+$$Y \perp\!\!\!\perp W \mid S$$
+
+Treatment $W$ affects outcome $Y$ **only through** the surrogate $S$.
+
+::: {.warning-box}
+**Problem:** This is a strong assumption! Often violated in practice.
+:::
+
+
+## The Surrogate Index Approach
+
+**Key Papers:**
+
+- Athey, Chetty, Imbens & Kang (2019): "The Surrogate Index"
+- Chen & Ritzwoller (2023): Semiparametric estimation
+- Kallus & Mao (2020): From observational surrogates
+
+**The Idea:**
+
+Instead of a single surrogate, construct a **surrogate index** — a weighted combination of multiple short-term outcomes:
+
+$$\tilde{S} = \sum_{j=1}^{k} \alpha_j P_j$$
+
+**Why "Index"?**
+
+- Similar to a "propensity score" or "prognostic score"
+- Reduces dimensionality: $k$ proxies → 1 index
+- The index should predict the long-term outcome $Y$
+
+
+## Surrogate Index: The Two-Sample Setup
+
+**Why Two Samples?**
+
+- Experiments are expensive and time-limited
+- Long-term outcomes take years to observe
+- But: Observational data with $(P, Y)$ may be abundant
+
+**The Classic Surrogate Index Estimator:**
+
+1. **Observational data** $(P_i, Y_i)$: Regress $Y$ on $P$ to get $\hat{\alpha}$
+   $$\hat{\alpha} = \arg\min_\alpha \sum_i (Y_i - P_i' \alpha)^2$$
+
+2. **Experimental data** $(W_i, P_i)$: Estimate $\hat{\tau}_P = \bar{P}_{W=1} - \bar{P}_{W=0}$
+
+3. **Combine:**
+   $$\hat{\tau}_{\text{long-term}} = \hat{\tau}_P' \hat{\alpha}$$
+
+::: {.key-insight}
+This is valid if the **surrogacy criterion** holds: $Y \perp\!\!\!\perp W \mid P$
+:::
+
+
+## The Problem This Paper Addresses
+
+**Classic Surrogate Index assumes:**
+
+- We observe "true" surrogates $S$ that fully mediate effects
+- Or: The observed proxies $P$ themselves satisfy surrogacy
+
+**Reality in Digital Platforms:**
+
+- We observe *many* short-term metrics (clicks, views, add-to-carts, ...)
+- These are **noisy measures** of underlying user state
+- No single metric is a "true" surrogate
+- $k$ (observed proxies) $\gg$ $p$ (latent surrogates)
+
+**This Paper's Contribution:**
+
+::: {.highlight-box}
+Formalize the setting where observed proxies are **noisy measurements** of latent surrogates, and show how **regularized regression** can leverage many noisy proxies to reduce bias.
+:::
 
 
 ## Problem Setup: The Causal Model
@@ -411,6 +500,74 @@ The Ridge estimator successfully leverages multiple noisy proxies to approach th
 :::
 
 
+## Connection to Double Machine Learning
+
+**What DML Does:**
+
+- Handles high-dimensional nuisance parameters via cross-fitting
+- Uses Neyman orthogonality to achieve $\sqrt{n}$-consistency
+- Targets: $\theta = \mathbb{E}[Y(1) - Y(0)]$ with observed $(W, X, Y)$
+
+**How This Paper Differs:**
+
+| Aspect | DML | Surrogate Index |
+|--------|-----|----------------|
+| **Data** | $(W_i, X_i, Y_i)$ joint | Two samples: $(W, P)$ and $(P, Y)$ |
+| **Nuisance** | $\mathbb{E}[Y|X]$, $\mathbb{E}[W|X]$ | $\mathbb{E}[Y|P]$ |
+| **Challenge** | Selection bias | Never observe $(W, Y)$ jointly |
+| **Regularization** | For nuisance estimation | Core of identification strategy |
+
+::: {.key-insight}
+In DML, regularization is a tool for nuisance estimation. Here, regularization is **fundamental** to averaging out measurement error in proxies.
+:::
+
+
+## Why Not Just Apply DML?
+
+**The Fundamental Problem:**
+
+In DML, we need observations $(W_i, X_i, Y_i)$ to estimate:
+$$\theta = \mathbb{E}\left[\frac{W - e(X)}{e(X)(1-e(X))}(Y - \mu(X))\right]$$
+
+**In Long-Term Settings:**
+
+- Experiment runs for weeks/months
+- Long-term outcome $Y$ observed years later
+- By the time $Y$ is observed, the experiment is long over
+- **We never see $(W_i, Y_i)$ in the same dataset!**
+
+**The Surrogate Approach:**
+
+- Uses observational data $(P, Y)$ to learn the $P \to Y$ relationship
+- Applies this to experimental $(W, P)$ data
+- Key assumption: Surrogacy (or noisy surrogacy in this paper)
+
+
+## Measurement Error Perspective
+
+**For DML Practitioners — A Familiar Frame:**
+
+Think of this as an **errors-in-variables** problem:
+
+- We want to regress $Y$ on "true" surrogate $S$
+- But we only observe noisy proxies $P = LS + E$
+- Classic attenuation bias: coefficients shrink toward zero
+
+**The Key Insight (related to factor models):**
+
+$$P = L \cdot S + E \quad \text{where } k > p$$
+
+- $L \in \mathbb{R}^{k \times p}$: factor loadings
+- $S \in \mathbb{R}^p$: latent factors (true surrogates)
+- $E \in \mathbb{R}^k$: idiosyncratic noise
+
+**With many proxies ($k \to \infty$):**
+
+- We can "average out" the measurement error
+- Regularization (Ridge) provides stable averaging
+- Bias shrinks as $c = k/p$ increases
+
+
 ## Discussion: Method Comparison
 
 | Method | Mechanism | Pros | Cons |
@@ -445,6 +602,28 @@ $$\text{Bias}_\lambda = -\left(\frac{\sigma_E^2 + \lambda}{c \sigma_S^2 + \sigma
 5. **Interactive Tool:** [linearsurrogateindex.streamlit.app](https://linearsurrogateindex.streamlit.app/)
 
 
+## What About Orthogonalization?
+
+**A Natural Question for DML Practitioners:**
+
+Could we construct a **Neyman-orthogonal** moment for the surrogate index?
+
+**The Challenge:**
+
+- Standard orthogonalization requires $(W, Y)$ in same sample
+- Here: nuisance $\alpha$ estimated on different sample than $\tau_P$
+- Independence of samples already provides some robustness
+
+**Recent Related Work:**
+
+- Chen & Ritzwoller (2023): Semiparametric surrogate index with debiasing
+- Athey et al. (2019): Focus on valid inference rather than orthogonalization
+
+::: {.highlight-box}
+**Open Question:** Can DML-style orthogonalization improve upon the simple plug-in estimator $\hat{\tau} = \hat{\tau}_P' \hat{\alpha}$?
+:::
+
+
 ## Future Directions & Open Questions
 
 - **Non-linear extensions?**
@@ -453,24 +632,38 @@ $$\text{Bias}_\lambda = -\left(\frac{\sigma_E^2 + \lambda}{c \sigma_S^2 + \sigma
 
 - **Heterogeneous treatment effects?**
   - CATE estimation with many proxies
+  - Connection to R-learner / DR-learner?
 
 - **Optimal proxy selection?**
   - Which proxies to collect given cost constraints?
 
 - **Relaxing surrogacy assumption?**
   - What if $W$ affects $Y$ beyond $S$?
+  - Partial identification bounds?
+
+- **DML Integration?**
+  - Orthogonal moments for two-sample settings
+  - Cross-fitting across experimental/observational data
 
 
 ## References
 
-::: {style="font-size: 60%;"}
+::: {style="font-size: 55%;"}
+
+**This Paper:**
 
 - Lal, A., Imbens, G., & Hull, P. (2026). Long-Term Causal Inference with Many Noisy Proxies. arXiv:2601.06359
 
-- Athey, S., Chetty, R., Imbens, G., & Kang, H. (2019). The surrogate index: Combining short-term proxies to estimate long-term treatment effects more rapidly. NBER Working Paper.
+**Surrogate Literature:**
 
-- Hotz, V. J., Imbens, G. W., & Klerman, J. A. (2006). Evaluating the differential effects of alternative welfare-to-work training components: A reanalysis of the California GAIN program. Journal of Labor Economics.
+- Prentice, R. L. (1989). Surrogate endpoints in clinical trials. Statistics in Medicine.
+- Athey, S., Chetty, R., Imbens, G., & Kang, H. (2019). The surrogate index. NBER Working Paper.
+- Chen, J. & Ritzwoller, D. (2023). Semiparametric estimation of long-term treatment effects. Journal of Econometrics.
+- Kallus, N. & Mao, X. (2020). On the role of surrogates in the efficient estimation of treatment effects. arXiv.
 
+**Application & Methods:**
+
+- Hotz, V. J., Imbens, G. W., & Klerman, J. A. (2006). California GAIN program. Journal of Labor Economics.
 - Hastie, T., Tibshirani, R., & Friedman, J. (2009). The Elements of Statistical Learning.
 
 :::

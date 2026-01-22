@@ -214,13 +214,14 @@
 <h2>Outline</h2>
 <ul>
 <li>Introduction &amp; Motivation</li>
+<li><strong>Background: Surrogate Models &amp; Surrogate Index</strong></li>
 <li>Problem Setup &amp; Causal Model</li>
 <li>The Identification Challenge</li>
 <li>Theoretical Analysis: Ridge Surrogate Index</li>
 <li>Bias-Variance Tradeoff</li>
 <li>Numerical Experiments</li>
 <li>Empirical Application: California GAIN</li>
-<li>Discussion &amp; Conclusions</li>
+<li><strong>Connection to DML &amp; Discussion</strong></li>
 </ul>
 </section>
 <section id="introduction-motivation" class="slide level2">
@@ -272,6 +273,78 @@
 <li>Empirical application to California GAIN experiment</li>
 </ol></li>
 </ul>
+</section>
+<section id="what-is-a-surrogate-medical-origins" class="slide level2">
+<h2>What is a Surrogate? (Medical Origins)</h2>
+<div class="highlight-box">
+<p><strong>Definition (Prentice, 1989):</strong> A surrogate endpoint is a biomarker that can substitute for a clinical endpoint — it must fully capture the treatment’s effect on the outcome of interest.</p>
+</div>
+<p><strong>Classic Example: HIV/AIDS Trials</strong></p>
+<ul>
+<li>True endpoint: Survival / disease progression (takes years)</li>
+<li>Surrogate: CD4 cell count (measurable in weeks)</li>
+<li>If treatment only affects survival <em>through</em> CD4 count → valid surrogate</li>
+</ul>
+<p><strong>The Surrogacy Criterion:</strong> <span class="math display">\[Y \perp\!\!\!\perp W \mid S\]</span></p>
+<p>Treatment <span class="math inline">\(W\)</span> affects outcome <span class="math inline">\(Y\)</span> <strong>only through</strong> the surrogate <span class="math inline">\(S\)</span>.</p>
+<div class="warning-box">
+<p><strong>Problem:</strong> This is a strong assumption! Often violated in practice.</p>
+</div>
+</section>
+<section id="the-surrogate-index-approach" class="slide level2">
+<h2>The Surrogate Index Approach</h2>
+<p><strong>Key Papers:</strong></p>
+<ul>
+<li>Athey, Chetty, Imbens &amp; Kang (2019): “The Surrogate Index”</li>
+<li>Chen &amp; Ritzwoller (2023): Semiparametric estimation</li>
+<li>Kallus &amp; Mao (2020): From observational surrogates</li>
+</ul>
+<p><strong>The Idea:</strong></p>
+<p>Instead of a single surrogate, construct a <strong>surrogate index</strong> — a weighted combination of multiple short-term outcomes:</p>
+<p><span class="math display">\[\tilde{S} = \sum_{j=1}^{k} \alpha_j P_j\]</span></p>
+<p><strong>Why “Index”?</strong></p>
+<ul>
+<li>Similar to a “propensity score” or “prognostic score”</li>
+<li>Reduces dimensionality: <span class="math inline">\(k\)</span> proxies → 1 index</li>
+<li>The index should predict the long-term outcome <span class="math inline">\(Y\)</span></li>
+</ul>
+</section>
+<section id="surrogate-index-the-two-sample-setup" class="slide level2 scrollable">
+<h2>Surrogate Index: The Two-Sample Setup</h2>
+<p><strong>Why Two Samples?</strong></p>
+<ul>
+<li>Experiments are expensive and time-limited</li>
+<li>Long-term outcomes take years to observe</li>
+<li>But: Observational data with <span class="math inline">\((P, Y)\)</span> may be abundant</li>
+</ul>
+<p><strong>The Classic Surrogate Index Estimator:</strong></p>
+<ol type="1">
+<li><p><strong>Observational data</strong> <span class="math inline">\((P_i, Y_i)\)</span>: Regress <span class="math inline">\(Y\)</span> on <span class="math inline">\(P\)</span> to get <span class="math inline">\(\hat{\alpha}\)</span> <span class="math display">\[\hat{\alpha} = \arg\min_\alpha \sum_i (Y_i - P_i' \alpha)^2\]</span></p></li>
+<li><p><strong>Experimental data</strong> <span class="math inline">\((W_i, P_i)\)</span>: Estimate <span class="math inline">\(\hat{\tau}_P = \bar{P}_{W=1} - \bar{P}_{W=0}\)</span></p></li>
+<li><p><strong>Combine:</strong> <span class="math display">\[\hat{\tau}_{\text{long-term}} = \hat{\tau}_P' \hat{\alpha}\]</span></p></li>
+</ol>
+<div class="key-insight">
+<p>This is valid if the <strong>surrogacy criterion</strong> holds: <span class="math inline">\(Y \perp\!\!\!\perp W \mid P\)</span></p>
+</div>
+</section>
+<section id="the-problem-this-paper-addresses" class="slide level2">
+<h2>The Problem This Paper Addresses</h2>
+<p><strong>Classic Surrogate Index assumes:</strong></p>
+<ul>
+<li>We observe “true” surrogates <span class="math inline">\(S\)</span> that fully mediate effects</li>
+<li>Or: The observed proxies <span class="math inline">\(P\)</span> themselves satisfy surrogacy</li>
+</ul>
+<p><strong>Reality in Digital Platforms:</strong></p>
+<ul>
+<li>We observe <em>many</em> short-term metrics (clicks, views, add-to-carts, …)</li>
+<li>These are <strong>noisy measures</strong> of underlying user state</li>
+<li>No single metric is a “true” surrogate</li>
+<li><span class="math inline">\(k\)</span> (observed proxies) <span class="math inline">\(\gg\)</span> <span class="math inline">\(p\)</span> (latent surrogates)</li>
+</ul>
+<p><strong>This Paper’s Contribution:</strong></p>
+<div class="highlight-box">
+<p>Formalize the setting where observed proxies are <strong>noisy measurements</strong> of latent surrogates, and show how <strong>regularized regression</strong> can leverage many noisy proxies to reduce bias.</p>
+</div>
 </section>
 <section id="problem-setup-the-causal-model" class="slide level2 scrollable">
 <h2>Problem Setup: The Causal Model</h2>
@@ -628,6 +701,96 @@
 <p>The Ridge estimator successfully leverages multiple noisy proxies to approach the true long-term treatment effect!</p>
 </div>
 </section>
+<section id="connection-to-double-machine-learning" class="slide level2">
+<h2>Connection to Double Machine Learning</h2>
+<p><strong>What DML Does:</strong></p>
+<ul>
+<li>Handles high-dimensional nuisance parameters via cross-fitting</li>
+<li>Uses Neyman orthogonality to achieve <span class="math inline">\(\sqrt{n}\)</span>-consistency</li>
+<li>Targets: <span class="math inline">\(\theta = \mathbb{E}[Y(1) - Y(0)]\)</span> with observed <span class="math inline">\((W, X, Y)\)</span></li>
+</ul>
+<p><strong>How This Paper Differs:</strong></p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 27%">
+<col style="width: 17%">
+<col style="width: 55%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Aspect</th>
+<th>DML</th>
+<th>Surrogate Index</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Data</strong></td>
+<td><span class="math inline">\((W_i, X_i, Y_i)\)</span> joint</td>
+<td>Two samples: <span class="math inline">\((W, P)\)</span> and <span class="math inline">\((P, Y)\)</span></td>
+</tr>
+<tr class="even">
+<td><strong>Nuisance</strong></td>
+<td><span class="math inline">\(\mathbb{E}[Y|X]\)</span>, <span class="math inline">\(\mathbb{E}[W|X]\)</span></td>
+<td><span class="math inline">\(\mathbb{E}[Y|P]\)</span></td>
+</tr>
+<tr class="odd">
+<td><strong>Challenge</strong></td>
+<td>Selection bias</td>
+<td>Never observe <span class="math inline">\((W, Y)\)</span> jointly</td>
+</tr>
+<tr class="even">
+<td><strong>Regularization</strong></td>
+<td>For nuisance estimation</td>
+<td>Core of identification strategy</td>
+</tr>
+</tbody>
+</table>
+<div class="key-insight">
+<p>In DML, regularization is a tool for nuisance estimation. Here, regularization is <strong>fundamental</strong> to averaging out measurement error in proxies.</p>
+</div>
+</section>
+<section id="why-not-just-apply-dml" class="slide level2">
+<h2>Why Not Just Apply DML?</h2>
+<p><strong>The Fundamental Problem:</strong></p>
+<p>In DML, we need observations <span class="math inline">\((W_i, X_i, Y_i)\)</span> to estimate: <span class="math display">\[\theta = \mathbb{E}\left[\frac{W - e(X)}{e(X)(1-e(X))}(Y - \mu(X))\right]\]</span></p>
+<p><strong>In Long-Term Settings:</strong></p>
+<ul>
+<li>Experiment runs for weeks/months</li>
+<li>Long-term outcome <span class="math inline">\(Y\)</span> observed years later</li>
+<li>By the time <span class="math inline">\(Y\)</span> is observed, the experiment is long over</li>
+<li><strong>We never see <span class="math inline">\((W_i, Y_i)\)</span> in the same dataset!</strong></li>
+</ul>
+<p><strong>The Surrogate Approach:</strong></p>
+<ul>
+<li>Uses observational data <span class="math inline">\((P, Y)\)</span> to learn the <span class="math inline">\(P \to Y\)</span> relationship</li>
+<li>Applies this to experimental <span class="math inline">\((W, P)\)</span> data</li>
+<li>Key assumption: Surrogacy (or noisy surrogacy in this paper)</li>
+</ul>
+</section>
+<section id="measurement-error-perspective" class="slide level2">
+<h2>Measurement Error Perspective</h2>
+<p><strong>For DML Practitioners — A Familiar Frame:</strong></p>
+<p>Think of this as an <strong>errors-in-variables</strong> problem:</p>
+<ul>
+<li>We want to regress <span class="math inline">\(Y\)</span> on “true” surrogate <span class="math inline">\(S\)</span></li>
+<li>But we only observe noisy proxies <span class="math inline">\(P = LS + E\)</span></li>
+<li>Classic attenuation bias: coefficients shrink toward zero</li>
+</ul>
+<p><strong>The Key Insight (related to factor models):</strong></p>
+<p><span class="math display">\[P = L \cdot S + E \quad \text{where } k &gt; p\]</span></p>
+<ul>
+<li><span class="math inline">\(L \in \mathbb{R}^{k \times p}\)</span>: factor loadings</li>
+<li><span class="math inline">\(S \in \mathbb{R}^p\)</span>: latent factors (true surrogates)</li>
+<li><span class="math inline">\(E \in \mathbb{R}^k\)</span>: idiosyncratic noise</li>
+</ul>
+<p><strong>With many proxies (<span class="math inline">\(k \to \infty\)</span>):</strong></p>
+<ul>
+<li>We can “average out” the measurement error</li>
+<li>Regularization (Ridge) provides stable averaging</li>
+<li>Bias shrinks as <span class="math inline">\(c = k/p\)</span> increases</li>
+</ul>
+</section>
 <section id="discussion-method-comparison" class="slide level2">
 <h2>Discussion: Method Comparison</h2>
 <table class="caption-top">
@@ -697,6 +860,25 @@
 <li><p><strong>Interactive Tool:</strong> <a href="https://linearsurrogateindex.streamlit.app/">linearsurrogateindex.streamlit.app</a></p></li>
 </ol>
 </section>
+<section id="what-about-orthogonalization" class="slide level2">
+<h2>What About Orthogonalization?</h2>
+<p><strong>A Natural Question for DML Practitioners:</strong></p>
+<p>Could we construct a <strong>Neyman-orthogonal</strong> moment for the surrogate index?</p>
+<p><strong>The Challenge:</strong></p>
+<ul>
+<li>Standard orthogonalization requires <span class="math inline">\((W, Y)\)</span> in same sample</li>
+<li>Here: nuisance <span class="math inline">\(\alpha\)</span> estimated on different sample than <span class="math inline">\(\tau_P\)</span></li>
+<li>Independence of samples already provides some robustness</li>
+</ul>
+<p><strong>Recent Related Work:</strong></p>
+<ul>
+<li>Chen &amp; Ritzwoller (2023): Semiparametric surrogate index with debiasing</li>
+<li>Athey et al.&nbsp;(2019): Focus on valid inference rather than orthogonalization</li>
+</ul>
+<div class="highlight-box">
+<p><strong>Open Question:</strong> Can DML-style orthogonalization improve upon the simple plug-in estimator <span class="math inline">\(\hat{\tau} = \hat{\tau}_P' \hat{\alpha}\)</span>?</p>
+</div>
+</section>
 <section id="future-directions-open-questions" class="slide level2">
 <h2>Future Directions &amp; Open Questions</h2>
 <ul>
@@ -708,6 +890,7 @@
 <li><strong>Heterogeneous treatment effects?</strong>
 <ul>
 <li>CATE estimation with many proxies</li>
+<li>Connection to R-learner / DR-learner?</li>
 </ul></li>
 <li><strong>Optimal proxy selection?</strong>
 <ul>
@@ -716,17 +899,33 @@
 <li><strong>Relaxing surrogacy assumption?</strong>
 <ul>
 <li>What if <span class="math inline">\(W\)</span> affects <span class="math inline">\(Y\)</span> beyond <span class="math inline">\(S\)</span>?</li>
+<li>Partial identification bounds?</li>
+</ul></li>
+<li><strong>DML Integration?</strong>
+<ul>
+<li>Orthogonal moments for two-sample settings</li>
+<li>Cross-fitting across experimental/observational data</li>
 </ul></li>
 </ul>
 </section>
 <section id="references" class="slide level2">
 <h2>References</h2>
-<div style="font-size: 60%;">
+<div style="font-size: 55%;">
+<p><strong>This Paper:</strong></p>
 <ul>
-<li><p>Lal, A., Imbens, G., &amp; Hull, P. (2026). Long-Term Causal Inference with Many Noisy Proxies. arXiv:2601.06359</p></li>
-<li><p>Athey, S., Chetty, R., Imbens, G., &amp; Kang, H. (2019). The surrogate index: Combining short-term proxies to estimate long-term treatment effects more rapidly. NBER Working Paper.</p></li>
-<li><p>Hotz, V. J., Imbens, G. W., &amp; Klerman, J. A. (2006). Evaluating the differential effects of alternative welfare-to-work training components: A reanalysis of the California GAIN program. Journal of Labor Economics.</p></li>
-<li><p>Hastie, T., Tibshirani, R., &amp; Friedman, J. (2009). The Elements of Statistical Learning.</p></li>
+<li>Lal, A., Imbens, G., &amp; Hull, P. (2026). Long-Term Causal Inference with Many Noisy Proxies. arXiv:2601.06359</li>
+</ul>
+<p><strong>Surrogate Literature:</strong></p>
+<ul>
+<li>Prentice, R. L. (1989). Surrogate endpoints in clinical trials. Statistics in Medicine.</li>
+<li>Athey, S., Chetty, R., Imbens, G., &amp; Kang, H. (2019). The surrogate index. NBER Working Paper.</li>
+<li>Chen, J. &amp; Ritzwoller, D. (2023). Semiparametric estimation of long-term treatment effects. Journal of Econometrics.</li>
+<li>Kallus, N. &amp; Mao, X. (2020). On the role of surrogates in the efficient estimation of treatment effects. arXiv.</li>
+</ul>
+<p><strong>Application &amp; Methods:</strong></p>
+<ul>
+<li>Hotz, V. J., Imbens, G. W., &amp; Klerman, J. A. (2006). California GAIN program. Journal of Labor Economics.</li>
+<li>Hastie, T., Tibshirani, R., &amp; Friedman, J. (2009). The Elements of Statistical Learning.</li>
 </ul>
 </div>
 </section>
@@ -812,7 +1011,7 @@
 'jumpToSlide': true,
 'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"8\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
 'chalkboard': {"buttons":true,"boardmarkerWidth":5,"theme":"chalkboard"},
-'smaller': false,
+'smaller': true,
  
         // Display controls in the bottom right corner
         controls: false,
