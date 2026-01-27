@@ -6,14 +6,14 @@ subtitle: "Apoorva Lal, Guido Imbens & Peter Hull: \n Long-Term Causal Inference
 ## Outline
 
 - Introduction & Motivation
-- **Background: Surrogate Models & Surrogate Index**
+- Background: Surrogate Models & Surrogate Index
 - Problem Setup & Causal Model
 - The Identification Challenge
 - Theoretical Analysis: Ridge Surrogate Index
 - Bias-Variance Tradeoff
 - Numerical Experiments
 - Empirical Application: California GAIN
-- **Connection to DML & Discussion**
+- Connection to DML & Discussion
 
 
 ## Introduction & Motivation
