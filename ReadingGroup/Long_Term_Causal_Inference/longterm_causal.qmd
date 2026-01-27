@@ -126,6 +126,20 @@ This is valid if the **surrogacy criterion** holds: $Y \perp\!\!\!\perp W \mid P
 
 ## The Problem This Paper Addresses
 
+:::: {.columns}
+::: {.column width="50%"}
+![Classic Surrogate DAG](ps.png){width="100%"}
+
+**This Paper's Contribution:**
+
+::: {.highlight-box}
+Formalize the setting where observed proxies are **noisy measurements** of latent surrogates, and show how **regularized regression** can leverage many noisy proxies to reduce bias.
+:::
+
+:::
+
+::: {.column width="50%"}
+
 **Classic Surrogate Index assumes:**
 
 - We observe "true" surrogates $S$ that fully mediate effects
@@ -138,12 +152,9 @@ This is valid if the **surrogacy criterion** holds: $Y \perp\!\!\!\perp W \mid P
 - No single metric is a "true" surrogate
 - $k$ (observed proxies) $\gg$ $p$ (latent surrogates)
 
-**This Paper's Contribution:**
-
-::: {.highlight-box}
-Formalize the setting where observed proxies are **noisy measurements** of latent surrogates, and show how **regularized regression** can leverage many noisy proxies to reduce bias.
 :::
 
+::::
 
 ## Problem Setup: The Causal Model
 

@@ -268,6 +268,19 @@
 </section>
 <section id="the-problem-this-paper-addresses" class="slide level2">
 <h2>The Problem This Paper Addresses</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><a href="ps.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Classic Surrogate DAG"><img data-src="ps.png" style="width:100.0%" alt="Classic Surrogate DAG"></a></p>
+<figcaption>Classic Surrogate DAG</figcaption>
+</figure>
+</div>
+<p><strong>This Paper’s Contribution:</strong></p>
+<div class="highlight-box">
+<p>Formalize the setting where observed proxies are <strong>noisy measurements</strong> of latent surrogates, and show how <strong>regularized regression</strong> can leverage many noisy proxies to reduce bias.</p>
+</div>
+</div><div class="column" style="width:50%;">
 <p><strong>Classic Surrogate Index assumes:</strong></p>
 <ul>
 <li>We observe “true” surrogates <span class="math inline">\(S\)</span> that fully mediate effects</li>
@@ -280,10 +293,7 @@
 <li>No single metric is a “true” surrogate</li>
 <li><span class="math inline">\(k\)</span> (observed proxies) <span class="math inline">\(\gg\)</span> <span class="math inline">\(p\)</span> (latent surrogates)</li>
 </ul>
-<p><strong>This Paper’s Contribution:</strong></p>
-<div class="highlight-box">
-<p>Formalize the setting where observed proxies are <strong>noisy measurements</strong> of latent surrogates, and show how <strong>regularized regression</strong> can leverage many noisy proxies to reduce bias.</p>
-</div>
+</div></div>
 </section>
 <section id="problem-setup-the-causal-model" class="slide level2 scrollable">
 <h2>Problem Setup: The Causal Model</h2>
@@ -307,7 +317,7 @@
 <div class="column" style="width:50%;">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><a href="dag.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Causal Graph"><img data-src="dag.png" style="width:100.0%" alt="Causal Graph"></a></p>
+<p><a href="dag.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="Causal Graph"><img data-src="dag.png" style="width:100.0%" alt="Causal Graph"></a></p>
 <figcaption>Causal Graph</figcaption>
 </figure>
 </div>
@@ -513,7 +523,7 @@
 <h2>Numerical Results: Scalar Surrogate</h2>
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><a href="https://arxiv.org/html/2601.06359v1/figs/treatment_effect_proxy_accuracy1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="Estimation Performance: Scalar Surrogate"><img data-src="https://arxiv.org/html/2601.06359v1/figs/treatment_effect_proxy_accuracy1.png" style="width:80.0%" alt="Estimation Performance: Scalar Surrogate"></a></p>
+<p><a href="https://arxiv.org/html/2601.06359v1/figs/treatment_effect_proxy_accuracy1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" title="Estimation Performance: Scalar Surrogate"><img data-src="https://arxiv.org/html/2601.06359v1/figs/treatment_effect_proxy_accuracy1.png" style="width:80.0%" alt="Estimation Performance: Scalar Surrogate"></a></p>
 <figcaption>Estimation Performance: Scalar Surrogate</figcaption>
 </figure>
 </div>
@@ -525,7 +535,7 @@
 <h2>Numerical Results: Vector Surrogate</h2>
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><a href="https://arxiv.org/html/2601.06359v1/figs/treatment_effect_proxy_accuracy5.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" title="Estimation Performance: 5-Vector Surrogate"><img data-src="https://arxiv.org/html/2601.06359v1/figs/treatment_effect_proxy_accuracy5.png" style="width:80.0%" alt="Estimation Performance: 5-Vector Surrogate"></a></p>
+<p><a href="https://arxiv.org/html/2601.06359v1/figs/treatment_effect_proxy_accuracy5.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5" title="Estimation Performance: 5-Vector Surrogate"><img data-src="https://arxiv.org/html/2601.06359v1/figs/treatment_effect_proxy_accuracy5.png" style="width:80.0%" alt="Estimation Performance: 5-Vector Surrogate"></a></p>
 <figcaption>Estimation Performance: 5-Vector Surrogate</figcaption>
 </figure>
 </div>
@@ -537,7 +547,7 @@
 <h2>Numerical Results: Increasing Surrogates</h2>
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><a href="https://arxiv.org/html/2601.06359v1/figs/treatment_effect_dimension_accuracy.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5" title="Estimation Performance: Varying Surrogates"><img data-src="https://arxiv.org/html/2601.06359v1/figs/treatment_effect_dimension_accuracy.png" style="width:80.0%" alt="Estimation Performance: Varying Surrogates"></a></p>
+<p><a href="https://arxiv.org/html/2601.06359v1/figs/treatment_effect_dimension_accuracy.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6" title="Estimation Performance: Varying Surrogates"><img data-src="https://arxiv.org/html/2601.06359v1/figs/treatment_effect_dimension_accuracy.png" style="width:80.0%" alt="Estimation Performance: Varying Surrogates"></a></p>
 <figcaption>Estimation Performance: Varying Surrogates</figcaption>
 </figure>
 </div>
@@ -587,7 +597,7 @@
 <h2>GAIN Results: Ridge Estimator</h2>
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><a href="https://arxiv.org/html/2601.06359v1/figs/ridge_gain.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6" title="Ridge Surrogate Index Results"><img data-src="https://arxiv.org/html/2601.06359v1/figs/ridge_gain.png" style="width:85.0%" alt="Ridge Surrogate Index Results"></a></p>
+<p><a href="https://arxiv.org/html/2601.06359v1/figs/ridge_gain.png" class="lightbox" data-gallery="quarto-lightbox-gallery-7" title="Ridge Surrogate Index Results"><img data-src="https://arxiv.org/html/2601.06359v1/figs/ridge_gain.png" style="width:85.0%" alt="Ridge Surrogate Index Results"></a></p>
 <figcaption>Ridge Surrogate Index Results</figcaption>
 </figure>
 </div>
