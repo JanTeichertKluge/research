@@ -7,6 +7,8 @@ format:
   revealjs:
     pagetitle: "Reading Group, 28/01/2026"
     subtitle: "Long-Term Causal Inference with Many Noisy Proxies"
+    title-slide-background: fancy_start.png
+    title-slide-background-size: cover
     highlight-style: breezedark
     slide-number: true
     smaller: false

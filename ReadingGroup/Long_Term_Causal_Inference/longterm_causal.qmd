@@ -18,6 +18,10 @@ subtitle: "Apoorva Lal, Guido Imbens & Peter Hull: \n Long-Term Causal Inference
 
 ## Introduction & Motivation
 
+![Overview](fancy_start.png)
+
+## Introduction & Motivation
+
 - **The Long-Term Problem in Digital Platforms**
   - Randomized Controlled Trials (RCTs) can cleanly identify **short-term impacts**
   - But: Experiments are often too short to capture **long-term outcomes** of ultimate interest
@@ -57,7 +61,7 @@ The many available short-run outcomes are **noisy measures** of some underlying 
 
 ::: {.highlight-box}
 **Definition (Prentice, 1989):**
-A surrogate endpoint is a biomarker that can substitute for a clinical endpoint — it must fully capture the treatment's effect on the outcome of interest.
+A surrogate endpoint is a biomarker that can substitute for a clinical endpoint: it must fully capture the treatment's effect on the outcome of interest.
 :::
 
 **Classic Example: HIV/AIDS Trials**
@@ -86,7 +90,7 @@ Treatment $W$ affects outcome $Y$ **only through** the surrogate $S$.
 
 **The Idea:**
 
-Instead of a single surrogate, construct a **surrogate index** — a weighted combination of multiple short-term outcomes:
+Instead of a single surrogate, construct a **surrogate index**: a weighted combination of multiple short-term outcomes:
 
 $$\tilde{S} = \sum_{j=1}^{k} \alpha_j P_j$$
 
@@ -169,18 +173,7 @@ $$Y(w) = S(w)' \beta + \eta$$
 
 ::: {.column width="50%"}
 
-```{mermaid}
-%%| fig-width: 6
-flowchart LR
-    W((W)) -->|γ| S((S))
-    S -->|L| P((P))
-    S -->|β| Y((Y))
-    εS[ε_S] --> S
-    E[E] --> P
-    η[η] --> Y
-    
-    style S fill:#ccc,stroke:#333
-```
+![Causal Graph](dag.png){width="100%"}
 
 :::
 
@@ -279,8 +272,8 @@ $$\alpha_1 = \beta \frac{\sigma_S^2 \sigma_2^2}{\sigma_S^2 \sigma_1^2 + \sigma_S
 
 **Key Insights:**
 
-1. $\frac{\alpha_1}{\alpha_2} = \frac{\sigma_2^2}{\sigma_1^2}$ — Proxy with less noise gets larger weight
-2. $\alpha_1 + \alpha_2 < \beta$ — Total effect is **attenuated**
+1. $\frac{\alpha_1}{\alpha_2} = \frac{\sigma_2^2}{\sigma_1^2}$: Proxy with less noise gets larger weight
+2. $\alpha_1 + \alpha_2 < \beta$: Total effect is **attenuated**
 
 $$\text{plim}(\hat{\tau}_P' \hat{\alpha}) = \tau_S (\alpha_1 + \alpha_2) < \tau_S \beta = \tau^*$$
 
@@ -416,7 +409,7 @@ OLS Screening **deteriorates** with more proxies due to model selection errors i
 
 ![Estimation Performance: Varying Surrogates](https://arxiv.org/html/2601.06359v1/figs/treatment_effect_dimension_accuracy.png){width="80%"}
 
-As $p$ grows with fixed proxies per surrogate, all methods face persistent bias — but Ridge still performs best.
+As $p$ grows with fixed proxies per surrogate, all methods face persistent bias: but Ridge still performs best.
 
 
 ## Why Does OLS Screening Fail?
@@ -545,7 +538,7 @@ $$\theta = \mathbb{E}\left[\frac{W - e(X)}{e(X)(1-e(X))}(Y - \mu(X))\right]$$
 
 ## Measurement Error Perspective
 
-**For DML Practitioners — A Familiar Frame:**
+**For DML Practitioners: A Familiar Frame:**
 
 Think of this as an **errors-in-variables** problem:
 
