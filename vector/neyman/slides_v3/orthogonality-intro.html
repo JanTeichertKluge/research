@@ -1402,9 +1402,6 @@ Write a task as $\xi=(\xi_X,\xi_D,\xi_Y)$ with $P_\xi=P_{X;\xi_X}\otimes P_{D\mi
 <section id="references" class="slide level2 scrollable smaller">
 <h2>References</h2>
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
-<div id="ref-antonelli2022causal" class="csl-entry" role="listitem">
-Antonelli, Joseph, Georgia Papadogeorgou, and Francesca Dominici. 2022. <span>“Causal Inference in High Dimensions: A Marriage Between <span>B</span>ayesian Modeling and Good Frequentist Properties.”</span> <em>Biometrics</em> 78 (1): 100–114. <a href="https://doi.org/10.1111/biom.13417">https://doi.org/10.1111/biom.13417</a>.
-</div>
 <div id="ref-bach2024doubleml" class="csl-entry" role="listitem">
 Bach, Philipp, Malte S. Kurz, Victor Chernozhukov, Martin Spindler, and Sven Klaassen. 2024. <span>“<span>DoubleML</span>: An Object-Oriented Implementation of Double Machine Learning in <span>R</span>.”</span> <em>Journal of Statistical Software</em> 108 (3). <a href="https://doi.org/10.18637/jss.v108.i03">https://doi.org/10.18637/jss.v108.i03</a>.
 </div>
@@ -1588,9 +1585,6 @@ Ray, Kolyan, and Aad van der Vaart. 2020. <span>“Semiparametric <span>B</span>
 <div id="ref-riesz1907espece" class="csl-entry" role="listitem">
 Riesz, Frigyes. 1907. <span>“Sur Une Esp<span>è</span>ce de g<span>é</span>om<span>é</span>trie Analytique Des Syst<span>è</span>mes de Fonctions Sommables.”</span> <em>Comptes Rendus de l’Acad<span>é</span>mie Des Sciences</em> 144: 1409–11.
 </div>
-<div id="ref-ritov2014coda" class="csl-entry" role="listitem">
-Ritov, Ya’acov, Peter J. Bickel, Anthony C. Gamst, and Bas J. K. Kleijn. 2014. <span>“The <span>B</span>ayesian Analysis of Complex, High-Dimensional Models: Can It Be <span>CODA</span>?”</span> <em>Statistical Science</em> 29 (4): 619–39. <a href="https://doi.org/10.1214/14-STS483">https://doi.org/10.1214/14-STS483</a>.
-</div>
 <div id="ref-robertson2025dopfn" class="csl-entry" role="listitem">
 Robertson, Jake, Arik Reuter, Siyuan Guo, Noah Hollmann, Frank Hutter, and Bernhard Schölkopf. 2025. <span>“<span>Do-PFN</span>: In-Context Learning for Causal Effect Estimation.”</span> In <em>Advances in Neural Information Processing Systems (NeurIPS)</em>.
 </div>
@@ -1765,108 +1759,31 @@ r_N&#39;&amp;=\sup_{\eta\in\mathcal T_N}\big(\mathbb{E}_P\|\psi(W;\theta_0,\eta)
 \]</span> The estimator is first-order insensitive in the direction <span class="math inline">\(h\)</span> exactly when its implicit weights balance <span class="math inline">\(h\)</span> in expectation, and over a class <span class="math inline">\(\mathcal H\)</span> exactly when they act in expectation as the Riesz representer on <span class="math inline">\(\mathcal H\)</span>.</p>
 <p><span class="label">Proposed result.</span> For a corrected plug-in estimator <span class="math inline">\(\hat\theta=n^{-1}\sum_i[\nu(W_i;\hat g)+\hat a(Z_i)\{Y_i-\hat g(Z_i)\}]\)</span> with a linear smoother <span class="math inline">\(\hat g=\hat SY&#39;\)</span> and correction weights <span class="math inline">\(\hat a\)</span> fitted on an independent sample, <span class="math inline">\(\partial_\delta b_n(0;h)=\mathbb{E}\langle\alpha_0-\hat a,\,\hat Sh-h\rangle\)</span>, where <span class="math inline">\(\hat Sh\)</span> is the smoother applied to <span class="math inline">\(h\)</span>. The sensitivity of the AIPW estimator is therefore bounded by the product of the two errors, and that of the plug-in estimator, with <span class="math inline">\(\hat a=0\)</span>, is of first order in the error of the smoother.</p>
 <p>When <span class="math inline">\(\nu\)</span> does not depend on <span class="math inline">\(P\)</span>, as for the ATE, the sample imbalance <span class="math inline">\(\hat\Delta(h)=n^{-1}\sum_iw_ih(Z_i)-n^{-1}\sum_i\nu(W_i;h)\)</span> can be computed without <span class="math inline">\(g_0\)</span> or <span class="math inline">\(\alpha_0\)</span>, for instance in the direction of an estimated treatment regression <span class="math inline">\(\hat m(X)\)</span>.</p>
-</section>
-<section id="proposed-results-for-in-context-learners" class="slide level2 smaller dense">
-<h2>Proposed results for in-context learners</h2>
-<ul>
-<li><span class="label">Bayes rule of the label correction.</span> Since the Bayesian bootstrap weights have mean <span class="math inline">\(1/n\)</span>, the posterior mean under the label correction equals the Bayes rule for the one-step label <span class="math inline">\(n^{-1}\sum_i[\tau_\xi(X_i)+\alpha_\xi(Z_i)\{Y_i-g_\xi(Z_i)\}]\)</span> of <span class="citation" data-cites="zhang2026fluctuate">Z. Zhang (<a href="#/references" role="doc-biblioref" onclick>2026</a>)</span>, with <span class="math inline">\(\tau_\xi=g_\xi(1,\cdot)-g_\xi(0,\cdot)\)</span>. This Bayes rule is the posterior average of the AIPW estimator, which <span class="citation" data-cites="antonelli2022causal">Antonelli, Papadogeorgou, and Dominici (<a href="#/references" role="doc-biblioref" onclick>2022</a>)</span> propose. Under independent mechanisms it equals the AIPW estimator at the posterior means <span class="math inline">\(\hat\tau_\Pi\)</span>, <span class="math inline">\(\hat g_\Pi\)</span> and <span class="math inline">\(\hat\alpha_\Pi\)</span> of <span class="math inline">\(\tau_\xi\)</span>, <span class="math inline">\(g_\xi\)</span> and <span class="math inline">\(\alpha_\xi\)</span>, and when <span class="math inline">\(\xi_D\)</span> and <span class="math inline">\((\xi_X,\xi_Y)\)</span> are dependent under <span class="math inline">\(\Pi\)</span> it differs from it by <span class="math inline">\(-n^{-1}\sum_i\operatorname{Cov}_\Pi\{\alpha_\xi(Z_i),g_\xi(Z_i)\mid\mathcal D_n\}\)</span>. The nuisances are evaluated on the rows to which they were fitted, so the empirical process term has to be controlled without sample splitting <span class="citation" data-cites="chen2022debiased">(<a href="#/references" role="doc-biblioref" onclick>Chen, Syrgkanis, and Austern 2022</a>)</span>, and <span class="citation" data-cites="melnychuk2026debiased">Melnychuk, Javurek, and Feuerriegel (<a href="#/references" role="doc-biblioref" onclick>2026</a>)</span> assume a stochastic equicontinuity condition that makes it negligible.</li>
-<li><span class="label">Finite-sample analysis of the prior correction.</span> In the Gaussian partially linear model <span class="math inline">\(D=X\gamma+V\)</span>, <span class="math inline">\(Y=\theta D+X\beta+\varepsilon\)</span> with known <span class="math inline">\(\gamma\)</span>, take a flat prior on <span class="math inline">\(\theta\)</span> and <span class="math inline">\(\beta=\tilde\beta+\kappa\gamma\)</span> with a Gaussian prior on <span class="math inline">\(\tilde\beta\)</span> and a flat prior on <span class="math inline">\(\kappa\)</span>, which under the flat prior on <span class="math inline">\(\theta\)</span> is the correction of the outcome regression along <span class="math inline">\(\alpha_\xi\)</span> <span class="citation" data-cites="linero2021ignorability linero2024ignorability">(<a href="#/references" role="doc-biblioref" onclick>Linero 2021</a>, <a href="#/references" role="doc-biblioref" onclick>2024</a>)</span>. The posterior mean of <span class="math inline">\(\theta\)</span> is then unbiased given <span class="math inline">\(X\)</span> for every <span class="math inline">\(\beta\)</span> whenever this conditional mean exists. The correction is specific to one functional <span class="citation" data-cites="ritov2014coda">(<a href="#/references" role="doc-biblioref" onclick>Ritov et al. 2014</a>, Thm. 4.3)</span>.</li>
-<li><span class="label">Cross-fitting in context.</span> Predicting fold <span class="math inline">\(I_k\)</span> as a query set with the other folds as context gives an exact cross-fit with <span class="math inline">\(K\)</span> forward passes when query rows do not influence the representations of the context rows.</li>
-<li><span class="label">Score layers.</span> <span class="citation" data-cites="wang2026amortized">Y. Wang, Secrest, and Tchakoute (<a href="#/references" role="doc-biblioref" onclick>2026</a>)</span> train a propensity head jointly with CausalPFN and apply AIPW and TMLE outside the network. An AIPW layer inside the network on nuisance heads that predict <span class="math inline">\(g\)</span> and <span class="math inline">\(\alpha\)</span> attains the Bayes rule with <span class="math inline">\(\hat\alpha\equiv0\)</span> under an end-to-end loss on <span class="math inline">\(\theta_\xi\)</span>, so its heads need not output the nuisances. The orthogonal structure is kept when the heads are trained on their nuisance targets and the gradient of the loss on <span class="math inline">\(\theta_\xi\)</span> is stopped at the heads.</li>
-<li><span class="label">Riesz representers in context.</span> A learner trained on the exact <span class="math inline">\(\alpha_\xi\)</span> or with the Riesz loss outputs <span class="math inline">\(\hat\alpha\)</span> for any linear functional without inverting a propensity score, which extends the propensity head of <span class="citation" data-cites="wang2026amortized">Y. Wang, Secrest, and Tchakoute (<a href="#/references" role="doc-biblioref" onclick>2026</a>)</span>.</li>
-</ul>
-</section>
-<section id="simulation-in-a-gaussian-partially-linear-model" class="slide level2 smaller dense">
-<h2>Simulation in a Gaussian partially linear model</h2>
-<p>In a simulation of posterior means, computed in closed form or by Gibbs sampling, let <span class="math inline">\(D=X\gamma+V\)</span> and <span class="math inline">\(Y=\theta D+X\beta+\varepsilon\)</span> with standard Gaussian noise, <span class="math inline">\(p=100\)</span> covariates, <span class="math inline">\(\theta_0=1\)</span> and <span class="math inline">\(\beta=\gamma=u_1\)</span> for a unit vector <span class="math inline">\(u_1\)</span>, so the outcome and the treatment depend on the same covariate direction. The prior with independent mechanisms puts a flat prior on <span class="math inline">\(\theta\)</span> and independent priors <span class="math inline">\(\beta\sim N(0,I/p)\)</span> and <span class="math inline">\(\gamma\sim N(0,I/p)\)</span>, and its posterior mean is <span class="math inline">\(\hat\theta_{\mathrm I}=D^\top\mathsf M_\lambda Y/D^\top\mathsf M_\lambda D\)</span> with <span class="math inline">\(\mathsf M_\lambda=I-X(X^\top X+\lambda I)^{-1}X^\top\)</span> and <span class="math inline">\(\lambda=p\)</span>. The conditional bias <span class="math inline">\(D^\top\mathsf M_\lambda X\beta/D^\top\mathsf M_\lambda D\)</span> of <span class="math inline">\(\hat\theta_{\mathrm I}\)</span> <span class="citation" data-cites="hahn2018regularization">(<a href="#/references" role="doc-biblioref" onclick>P. R. Hahn et al. 2018</a>, eq. 2.3)</span> is the imbalance <span class="math inline">\(n^{-1}\sum_iw_i(X\beta)_i-\langle\alpha_0,X\beta\rangle\)</span> of its implicit weights on <span class="math inline">\(X\beta\)</span>, since <span class="math inline">\(\langle\alpha_0,X\beta\rangle=0\)</span>. Under the corrected prior, <span class="math inline">\(\beta\)</span> is replaced by <span class="math inline">\(\beta+\kappa\gamma\)</span> with <span class="math inline">\(\kappa\sim N(0,10^2)\)</span> and <span class="math inline">\(\gamma\)</span> unknown. Since <span class="math inline">\(\alpha_\xi=D-X\gamma\)</span> under unit noise variance and the prior on <span class="math inline">\(\theta\)</span> is flat, this is the correction of the outcome regression along <span class="math inline">\(\alpha_\xi\)</span>.</p>
-<table class="caption-top" style="width:100%;">
-<colgroup>
-<col style="width: 40%">
-<col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 10%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">Estimator</th>
-<th style="text-align: right;"><span class="math inline">\(n=200\)</span></th>
-<th style="text-align: right;"></th>
-<th style="text-align: right;"><span class="math inline">\(n=800\)</span></th>
-<th style="text-align: right;"></th>
-<th style="text-align: right;"><span class="math inline">\(n=3200\)</span></th>
-<th style="text-align: right;"></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: right;">bias/sd</td>
-<td style="text-align: right;">cover</td>
-<td style="text-align: right;">bias/sd</td>
-<td style="text-align: right;">cover</td>
-<td style="text-align: right;">bias/sd</td>
-<td style="text-align: right;">cover</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">least squares</td>
-<td style="text-align: right;">−0.00</td>
-<td style="text-align: right;">97.6</td>
-<td style="text-align: right;">−0.06</td>
-<td style="text-align: right;">94.2</td>
-<td style="text-align: right;">+0.03</td>
-<td style="text-align: right;">95.8</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">posterior mean, independent mechanisms</td>
-<td style="text-align: right;">+4.81</td>
-<td style="text-align: right;">0.4</td>
-<td style="text-align: right;">+3.17</td>
-<td style="text-align: right;">12.2</td>
-<td style="text-align: right;">+1.72</td>
-<td style="text-align: right;">60.4</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">one-step correction of the posterior mean</td>
-<td style="text-align: right;">+2.81</td>
-<td style="text-align: right;">8.6</td>
-<td style="text-align: right;">+0.64</td>
-<td style="text-align: right;">84.2</td>
-<td style="text-align: right;">+0.13</td>
-<td style="text-align: right;">93.4</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">DML, cross-fitted ridge</td>
-<td style="text-align: right;">+1.43</td>
-<td style="text-align: right;">50.0</td>
-<td style="text-align: right;">+0.15</td>
-<td style="text-align: right;">92.2</td>
-<td style="text-align: right;">+0.06</td>
-<td style="text-align: right;">93.2</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">posterior mean with covariate <span class="math inline">\(X\hat\gamma\)</span></td>
-<td style="text-align: right;">+0.02</td>
-<td style="text-align: right;">96.4</td>
-<td style="text-align: right;">−0.06</td>
-<td style="text-align: right;">94.2</td>
-<td style="text-align: right;">+0.03</td>
-<td style="text-align: right;">95.8</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">posterior mean, corrected prior</td>
-<td style="text-align: right;">+0.99</td>
-<td style="text-align: right;">89.0</td>
-<td style="text-align: right;">+0.22</td>
-<td style="text-align: right;">93.0</td>
-<td style="text-align: right;">+0.08</td>
-<td style="text-align: right;">93.5</td>
-</tr>
-</tbody>
-</table>
-<p><span class="source">Bias in units of the sampling standard deviation and coverage (%) of nominal 95% intervals, 500 replications and 200 for the corrected prior. At truths with <span class="math inline">\(\beta\)</span> orthogonal to <span class="math inline">\(\gamma\)</span> and at truths drawn from the prior, the posterior mean under independent mechanisms covers between 94.8% and 96.6% and has the smallest root mean squared error of the estimators compared.</span></p>
+<!-- ## Proposed results for in-context learners {.smaller .dense}
+
+- [Bayes rule of the label correction.]{.label} Since the Bayesian bootstrap weights have mean $1/n$, the posterior mean under the label correction equals the Bayes rule for the one-step label $n^{-1}\sum_i[\tau_\xi(X_i)+\alpha_\xi(Z_i)\{Y_i-g_\xi(Z_i)\}]$ of @zhang2026fluctuate, with $\tau_\xi=g_\xi(1,\cdot)-g_\xi(0,\cdot)$. This Bayes rule is the posterior average of the AIPW estimator, which @antonelli2022causal propose. Under independent mechanisms it equals the AIPW estimator at the posterior means $\hat\tau_\Pi$, $\hat g_\Pi$ and $\hat\alpha_\Pi$ of $\tau_\xi$, $g_\xi$ and $\alpha_\xi$, and when $\xi_D$ and $(\xi_X,\xi_Y)$ are dependent under $\Pi$ it differs from it by $-n^{-1}\sum_i\operatorname{Cov}_\Pi\{\alpha_\xi(Z_i),g_\xi(Z_i)\mid\mathcal D_n\}$. The nuisances are evaluated on the rows to which they were fitted, so the empirical process term has to be controlled without sample splitting [@chen2022debiased], and @melnychuk2026debiased assume a stochastic equicontinuity condition that makes it negligible.
+- [Finite-sample analysis of the prior correction.]{.label} In the Gaussian partially linear model $D=X\gamma+V$, $Y=\theta D+X\beta+\varepsilon$ with known $\gamma$, take a flat prior on $\theta$ and $\beta=\tilde\beta+\kappa\gamma$ with a Gaussian prior on $\tilde\beta$ and a flat prior on $\kappa$, which under the flat prior on $\theta$ is the correction of the outcome regression along $\alpha_\xi$ [@linero2021ignorability; @linero2024ignorability]. The posterior mean of $\theta$ is then unbiased given $X$ for every $\beta$ whenever this conditional mean exists. The correction is specific to one functional [@ritov2014coda, Thm. 4.3].
+- [Cross-fitting in context.]{.label} Predicting fold $I_k$ as a query set with the other folds as context gives an exact cross-fit with $K$ forward passes when query rows do not influence the representations of the context rows.
+- [Score layers.]{.label} @wang2026amortized train a propensity head jointly with CausalPFN and apply AIPW and TMLE outside the network. An AIPW layer inside the network on nuisance heads that predict $g$ and $\alpha$ attains the Bayes rule with $\hat\alpha\equiv0$ under an end-to-end loss on $\theta_\xi$, so its heads need not output the nuisances. The orthogonal structure is kept when the heads are trained on their nuisance targets and the gradient of the loss on $\theta_\xi$ is stopped at the heads.
+- [Riesz representers in context.]{.label} A learner trained on the exact $\alpha_\xi$ or with the Riesz loss outputs $\hat\alpha$ for any linear functional without inverting a propensity score, which extends the propensity head of @wang2026amortized.
+
+## Simulation in a Gaussian partially linear model {.smaller .dense}
+
+In a simulation of posterior means, computed in closed form or by Gibbs sampling, let $D=X\gamma+V$ and $Y=\theta D+X\beta+\varepsilon$ with standard Gaussian noise, $p=100$ covariates, $\theta_0=1$ and $\beta=\gamma=u_1$ for a unit vector $u_1$, so the outcome and the treatment depend on the same covariate direction. The prior with independent mechanisms puts a flat prior on $\theta$ and independent priors $\beta\sim N(0,I/p)$ and $\gamma\sim N(0,I/p)$, and its posterior mean is $\hat\theta_{\mathrm I}=D^\top\mathsf M_\lambda Y/D^\top\mathsf M_\lambda D$ with $\mathsf M_\lambda=I-X(X^\top X+\lambda I)^{-1}X^\top$ and $\lambda=p$. The conditional bias $D^\top\mathsf M_\lambda X\beta/D^\top\mathsf M_\lambda D$ of $\hat\theta_{\mathrm I}$ [@hahn2018regularization, eq. 2.3] is the imbalance $n^{-1}\sum_iw_i(X\beta)_i-\langle\alpha_0,X\beta\rangle$ of its implicit weights on $X\beta$, since $\langle\alpha_0,X\beta\rangle=0$. Under the corrected prior, $\beta$ is replaced by $\beta+\kappa\gamma$ with $\kappa\sim N(0,10^2)$ and $\gamma$ unknown. Since $\alpha_\xi=D-X\gamma$ under unit noise variance and the prior on $\theta$ is flat, this is the correction of the outcome regression along $\alpha_\xi$.
+
+| Estimator | $n=200$ | | $n=800$ | | $n=3200$ | |
+|:--|--:|--:|--:|--:|--:|--:|
+| | bias/sd | cover | bias/sd | cover | bias/sd | cover |
+| least squares | −0.00 | 97.6 | −0.06 | 94.2 | +0.03 | 95.8 |
+| posterior mean, independent mechanisms | +4.81 | 0.4 | +3.17 | 12.2 | +1.72 | 60.4 |
+| one-step correction of the posterior mean | +2.81 | 8.6 | +0.64 | 84.2 | +0.13 | 93.4 |
+| DML, cross-fitted ridge | +1.43 | 50.0 | +0.15 | 92.2 | +0.06 | 93.2 |
+| posterior mean with covariate $X\hat\gamma$ | +0.02 | 96.4 | −0.06 | 94.2 | +0.03 | 95.8 |
+| posterior mean, corrected prior | +0.99 | 89.0 | +0.22 | 93.0 | +0.08 | 93.5 |
+
+: {tbl-colwidths="[40,10,10,10,10,10,10]"}
+
+[Bias in units of the sampling standard deviation and coverage (%) of nominal 95% intervals, 500 replications and 200 for the corrected prior. At truths with $\beta$ orthogonal to $\gamma$ and at truths drawn from the prior, the posterior mean under independent mechanisms covers between 94.8% and 96.6% and has the smallest root mean squared error of the estimators compared.]{.source} -->
 </section>
 <section id="work-plan-first-evidence-and-risks" class="slide level2 smaller dense">
 <h2>Work plan, first evidence and risks</h2>

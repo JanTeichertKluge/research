@@ -371,7 +371,7 @@ The estimator is first-order insensitive in the direction $h$ exactly when its i
 
 When $\nu$ does not depend on $P$, as for the ATE, the sample imbalance $\hat\Delta(h)=n^{-1}\sum_iw_ih(Z_i)-n^{-1}\sum_i\nu(W_i;h)$ can be computed without $g_0$ or $\alpha_0$, for instance in the direction of an estimated treatment regression $\hat m(X)$.
 
-## Proposed results for in-context learners {.smaller .dense}
+<!-- ## Proposed results for in-context learners {.smaller .dense}
 
 - [Bayes rule of the label correction.]{.label} Since the Bayesian bootstrap weights have mean $1/n$, the posterior mean under the label correction equals the Bayes rule for the one-step label $n^{-1}\sum_i[\tau_\xi(X_i)+\alpha_\xi(Z_i)\{Y_i-g_\xi(Z_i)\}]$ of @zhang2026fluctuate, with $\tau_\xi=g_\xi(1,\cdot)-g_\xi(0,\cdot)$. This Bayes rule is the posterior average of the AIPW estimator, which @antonelli2022causal propose. Under independent mechanisms it equals the AIPW estimator at the posterior means $\hat\tau_\Pi$, $\hat g_\Pi$ and $\hat\alpha_\Pi$ of $\tau_\xi$, $g_\xi$ and $\alpha_\xi$, and when $\xi_D$ and $(\xi_X,\xi_Y)$ are dependent under $\Pi$ it differs from it by $-n^{-1}\sum_i\operatorname{Cov}_\Pi\{\alpha_\xi(Z_i),g_\xi(Z_i)\mid\mathcal D_n\}$. The nuisances are evaluated on the rows to which they were fitted, so the empirical process term has to be controlled without sample splitting [@chen2022debiased], and @melnychuk2026debiased assume a stochastic equicontinuity condition that makes it negligible.
 - [Finite-sample analysis of the prior correction.]{.label} In the Gaussian partially linear model $D=X\gamma+V$, $Y=\theta D+X\beta+\varepsilon$ with known $\gamma$, take a flat prior on $\theta$ and $\beta=\tilde\beta+\kappa\gamma$ with a Gaussian prior on $\tilde\beta$ and a flat prior on $\kappa$, which under the flat prior on $\theta$ is the correction of the outcome regression along $\alpha_\xi$ [@linero2021ignorability; @linero2024ignorability]. The posterior mean of $\theta$ is then unbiased given $X$ for every $\beta$ whenever this conditional mean exists. The correction is specific to one functional [@ritov2014coda, Thm. 4.3].
@@ -395,7 +395,7 @@ In a simulation of posterior means, computed in closed form or by Gibbs sampling
 
 : {tbl-colwidths="[40,10,10,10,10,10,10]"}
 
-[Bias in units of the sampling standard deviation and coverage (%) of nominal 95% intervals, 500 replications and 200 for the corrected prior. At truths with $\beta$ orthogonal to $\gamma$ and at truths drawn from the prior, the posterior mean under independent mechanisms covers between 94.8% and 96.6% and has the smallest root mean squared error of the estimators compared.]{.source}
+[Bias in units of the sampling standard deviation and coverage (%) of nominal 95% intervals, 500 replications and 200 for the corrected prior. At truths with $\beta$ orthogonal to $\gamma$ and at truths drawn from the prior, the posterior mean under independent mechanisms covers between 94.8% and 96.6% and has the smallest root mean squared error of the estimators compared.]{.source} -->
 
 ## Work plan, first evidence and risks {.smaller .dense}
 
