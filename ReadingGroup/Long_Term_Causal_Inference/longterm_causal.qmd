@@ -1,20 +1,24 @@
 ---
-title: "Reading Group, 21/01/2026"
+title: "Reading Group, 28/01/2026"
 subtitle: "Apoorva Lal, Guido Imbens & Peter Hull: \n Long-Term Causal Inference with Many Noisy Proxies"
 ---
 
 ## Outline
 
 - Introduction & Motivation
-- **Background: Surrogate Models & Surrogate Index**
+- Background: Surrogate Models & Surrogate Index
 - Problem Setup & Causal Model
 - The Identification Challenge
 - Theoretical Analysis: Ridge Surrogate Index
 - Bias-Variance Tradeoff
 - Numerical Experiments
 - Empirical Application: California GAIN
-- **Connection to DML & Discussion**
+- Connection to DML & Discussion
 
+
+## Introduction & Motivation
+
+![Overview](fancy_start.png)
 
 ## Introduction & Motivation
 
@@ -57,7 +61,7 @@ The many available short-run outcomes are **noisy measures** of some underlying 
 
 ::: {.highlight-box}
 **Definition (Prentice, 1989):**
-A surrogate endpoint is a biomarker that can substitute for a clinical endpoint — it must fully capture the treatment's effect on the outcome of interest.
+A surrogate endpoint is a biomarker that can substitute for a clinical endpoint: it must fully capture the treatment's effect on the outcome of interest.
 :::
 
 **Classic Example: HIV/AIDS Trials**
@@ -86,7 +90,7 @@ Treatment $W$ affects outcome $Y$ **only through** the surrogate $S$.
 
 **The Idea:**
 
-Instead of a single surrogate, construct a **surrogate index** — a weighted combination of multiple short-term outcomes:
+Instead of a single surrogate, construct a **surrogate index**: a weighted combination of multiple short-term outcomes:
 
 $$\tilde{S} = \sum_{j=1}^{k} \alpha_j P_j$$
 
@@ -122,6 +126,20 @@ This is valid if the **surrogacy criterion** holds: $Y \perp\!\!\!\perp W \mid P
 
 ## The Problem This Paper Addresses
 
+:::: {.columns}
+::: {.column width="50%"}
+![Classic Surrogate DAG](ps.png){width="100%"}
+
+**This Paper's Contribution:**
+
+::: {.highlight-box}
+Formalize the setting where observed proxies are **noisy measurements** of latent surrogates, and show how **regularized regression** can leverage many noisy proxies to reduce bias.
+:::
+
+:::
+
+::: {.column width="50%"}
+
 **Classic Surrogate Index assumes:**
 
 - We observe "true" surrogates $S$ that fully mediate effects
@@ -134,12 +152,9 @@ This is valid if the **surrogacy criterion** holds: $Y \perp\!\!\!\perp W \mid P
 - No single metric is a "true" surrogate
 - $k$ (observed proxies) $\gg$ $p$ (latent surrogates)
 
-**This Paper's Contribution:**
-
-::: {.highlight-box}
-Formalize the setting where observed proxies are **noisy measurements** of latent surrogates, and show how **regularized regression** can leverage many noisy proxies to reduce bias.
 :::
 
+::::
 
 ## Problem Setup: The Causal Model
 
@@ -169,18 +184,7 @@ $$Y(w) = S(w)' \beta + \eta$$
 
 ::: {.column width="50%"}
 
-```{mermaid}
-%%| fig-width: 6
-flowchart LR
-    W((W)) -->|γ| S((S))
-    S -->|L| P((P))
-    S -->|β| Y((Y))
-    εS[ε_S] --> S
-    E[E] --> P
-    η[η] --> Y
-    
-    style S fill:#ccc,stroke:#333
-```
+![Causal Graph](dag.png){width="100%"}
 
 :::
 
@@ -279,8 +283,8 @@ $$\alpha_1 = \beta \frac{\sigma_S^2 \sigma_2^2}{\sigma_S^2 \sigma_1^2 + \sigma_S
 
 **Key Insights:**
 
-1. $\frac{\alpha_1}{\alpha_2} = \frac{\sigma_2^2}{\sigma_1^2}$ — Proxy with less noise gets larger weight
-2. $\alpha_1 + \alpha_2 < \beta$ — Total effect is **attenuated**
+1. $\frac{\alpha_1}{\alpha_2} = \frac{\sigma_2^2}{\sigma_1^2}$: Proxy with less noise gets larger weight
+2. $\alpha_1 + \alpha_2 < \beta$: Total effect is **attenuated**
 
 $$\text{plim}(\hat{\tau}_P' \hat{\alpha}) = \tau_S (\alpha_1 + \alpha_2) < \tau_S \beta = \tau^*$$
 
@@ -416,7 +420,7 @@ OLS Screening **deteriorates** with more proxies due to model selection errors i
 
 ![Estimation Performance: Varying Surrogates](https://arxiv.org/html/2601.06359v1/figs/treatment_effect_dimension_accuracy.png){width="80%"}
 
-As $p$ grows with fixed proxies per surrogate, all methods face persistent bias — but Ridge still performs best.
+As $p$ grows with fixed proxies per surrogate, all methods face persistent bias: but Ridge still performs best.
 
 
 ## Why Does OLS Screening Fail?
@@ -545,7 +549,7 @@ $$\theta = \mathbb{E}\left[\frac{W - e(X)}{e(X)(1-e(X))}(Y - \mu(X))\right]$$
 
 ## Measurement Error Perspective
 
-**For DML Practitioners — A Familiar Frame:**
+**For DML Practitioners: A Familiar Frame:**
 
 Think of this as an **errors-in-variables** problem:
 
