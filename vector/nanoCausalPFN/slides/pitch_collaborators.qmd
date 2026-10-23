@@ -1,0 +1,124 @@
+---
+title: "nanoCausalPFN"
+subtitle: "Treatment effects from a pretrained transformer, with an AIPW layer"
+author: "Jan Teichert-Kluge"
+date: 2026-10-12
+format:
+  revealjs:
+    theme: simple
+    slide-number: true
+    html-math-method: mathjax
+    embed-resources: true
+---
+
+## Setting {.smaller}
+
+- We observe an outcome $Y$, a binary treatment $D \in \{0, 1\}$ and covariates $X$.
+- The two nuisance functions are the outcome regression and the propensity score.
+  $$g_0(d, x) = \mathbb{E}[Y \mid D = d, X = x], \qquad m_0(x) = \mathbb{P}(D = 1 \mid X = x)$$
+- We assume that there is no unmeasured confounding and that $0 < m_0(x) < 1$ (overlap). Then the average
+  treatment effect (ATE) is
+  $$\theta_0 = \mathbb{E}\big[g_0(1, X) - g_0(0, X)\big].$$
+- In double machine learning (DML), we fit $g_0$ and $m_0$ with machine learning models and combine them in the
+  augmented inverse probability weighting (AIPW) score. With DML we get valid confidence intervals, but we must fit
+  new models for every new dataset.
+
+## Prior-data fitted networks {.smaller}
+
+- A prior-data fitted network (PFN) is a transformer that is trained on millions of synthetic tables from a
+  simulator. We call the distribution of these tables the prior.
+- For a new table, the PFN uses the table as context and predicts in one forward pass, without any change of its
+  weights.
+- TabPFN and TabICL are PFNs for prediction. Causal PFNs such as CausalPFN, CausalFM and Do-PFN are trained on
+  simulated causal data.
+- A causal PFN predicts the conditional average treatment effect (CATE) of each row, and the mean of these
+  predictions is the plug-in estimate of the ATE. Its accuracy depends on how well the prior matches the data. Of
+  these three models, only CausalPFN gives an interval, and it is a posterior interval under its prior.
+
+## Our idea {.smaller}
+
+- Our network predicts the CATE like a causal PFN, and it also predicts $g_0$, $m_0$ and the Riesz representer
+  $$\alpha_0(d, x) = \frac{d}{m_0(x)} - \frac{1 - d}{1 - m_0(x)}.$$
+- A score layer without parameters computes the AIPW estimate from these predictions.
+  $$\hat\theta = \frac{1}{n} \sum_{i=1}^{n} \Big[\hat g(1, X_i) - \hat g(0, X_i)
+    + \hat\alpha(D_i, X_i)\,\big(Y_i - \hat g(D_i, X_i)\big)\Big]$$
+- The bias of $\hat\theta$ is bounded by the product of the errors of $\hat g$ and $\hat\alpha$. We therefore
+  expect the AIPW estimate to degrade less than the plug-in estimate when only the outcome regression or only the
+  propensity score is unlike those in the training prior.
+- From the same terms, the score layer also gives a standard error and a 95% confidence interval.
+
+## Training with the true nuisance functions {.smaller}
+
+- For every synthetic table, we know the true $g_0$, $m_0$ and $\alpha_0$ and the true effects from the simulator.
+- The network has one output head for each nuisance function, and we train each head on the true values. For
+  example, the propensity head learns $m_0(X_i)$ and not the observed treatment $D_i$.
+- We compare four training variants.
+
+| Variant | Loss | ATE in the loss |
+| --- | --- | --- |
+| V0 | effect only | plug-in |
+| V1 | effect and heads | plug-in |
+| V2 | effect and heads | AIPW, through the score layer |
+| V3 | as V1, but the head weight falls to 0 by half of training | plug-in |
+
+After training, V1, V2 and V3 give both estimates, and V0 gives the plug-in estimate.
+
+## Cross-fitting in a PFN
+
+- In the AIPW score, the predictions $\hat g$ and $\hat\alpha$ for row $i$ must not use $(D_i, Y_i)$. In DML, we
+  ensure this by cross-fitting, where we fit the models on all folds but one and predict the remaining fold.
+- In a PFN, we divide the rows into $K$ folds and predict each fold with the other folds as context.
+- A predicted row enters the network with its covariates only, and it attends only to the context rows, so its
+  prediction does not use its own treatment and outcome.
+- Cross-fitting therefore takes $K$ forward passes of the trained network.
+
+## Architecture
+
+```{mermaid}
+%%| fig-width: 10
+%%{init: {"flowchart": {"htmlLabels": false, "nodeSpacing": 30, "rankSpacing": 40}, "themeVariables": {"fontSize": "20px"}}}%%
+flowchart LR
+  T["Table<br/>rows (X, D, Y)"] --> B["Backbone, K passes<br/>nanoTabPFN or nanoTabICL"]
+  B --> H["Nuisance heads<br/>g(0, ·), g(1, ·), m, α"]
+  H --> L["Score layer<br/>AIPW, no parameters"]
+  L --> A["AIPW estimate<br/>and standard error"]
+  B --> C["CATE decoder"]
+  C --> P["Plug-in estimate<br/>mean of the CATEs"]
+```
+
+The backbone and the heads run once for each fold, with the other folds as context. In training, the true nuisance
+functions are the targets of the heads, and the true effects are the targets of the CATE decoder and of the ATE.
+
+## Two backbones {.smaller}
+
+- The backbone is the transformer that turns the table into one embedding per row. We use nanoTabPFN and
+  nanoTabICL, two small versions of TabPFN and TabICL.
+- nanoTabPFN embeds each value of the table separately, and each block has attention between the columns of a row
+  and between the rows of a column.
+- nanoTabICL first embeds each column, then compresses each row into one embedding, and then attends across rows,
+  so it needs less memory on large tables.
+- Both backbones have about 4.9 million parameters, and we train them with the same seeds on the same synthetic
+  tables. We accept a claim only if it holds for both backbones.
+
+## Hypotheses
+
+- **H1, training rate.** With the nuisance heads, the network needs fewer synthetic tables and less GPU time to
+  reach a given error of the ATE estimate.
+- **H2, behavior outside the training prior.** When the test data do not come from the training prior, the error
+  of the AIPW estimate grows less than the error of the plug-in estimate.
+- **H3, inference.** Outside the training prior, the intervals of the score layer keep their coverage better than
+  posterior intervals.
+
+## Plan {.smaller}
+
+We pre-register all confirmatory analyses, and we fix the code and the decision rules before the first confirmatory
+run.
+
+1. We train every variant with both backbones and 10 seeds on small tables (50 to 250 rows, 1 to 5 covariates). We
+   test the networks on data that differ from the training prior in effect heterogeneity, effect size, overlap or
+   confounding.
+2. We then train on a broader prior and on larger tables, with up to 2,000 rows and 30 covariates. With nanoTabICL,
+   we also train networks of several sizes and run ablation studies.
+3. Finally, we compare our network with other methods on IHDP, ACIC 2016, Jobs and LaLonde. The other methods are
+   DML, causal forests, AIPW with TabPFN or TabICL as nuisance learners, and the causal PFNs CausalPFN, CausalFM and
+   Do-PFN.
