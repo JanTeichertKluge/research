@@ -2,8 +2,10 @@
 title: "Neyman Orthogonality"
 subtitle: "Definitions, generalisations and estimators without a score"
 author: "Jan Teichert-Kluge"
-date: 2026-10-22
-date-format: "MMMM YYYY"
+title-slide-attributes:
+  data-background-image: images/logos.png
+  data-background-size: 30%
+  data-background-position: 50% 92%
 bibliography: references.bib
 format:
   revealjs:
@@ -51,7 +53,7 @@ $$
 $$
 where $\psi_{\mathrm{DR}}$ is the augmented inverse probability weighting (AIPW) score of any linear functional [@robins1994estimation; @chernozhukov2022automatic, eq. 2.4], and $\psi_{\mathrm{IV}}$ and $\psi_{\mathrm{PO}}$ are the scores of the partially linear model with $\ell_0(X)=\mathbb{E}[Y\mid X]=\theta_0m_0(X)+f_0(X)$ [@chernozhukov2018dml, eqs. 4.3–4.4].
 
-A conditional moment restriction $\mathbb{E}[\rho(W;\theta_0,\eta_0)\mid Z]=0$ implies $\mathbb{E}[A(Z)\,\rho(W;\theta_0,\eta_0)]=0$ for every instrument $A(Z)$ [@chamberlain1987asymptotic]. The sensitivity of the moment condition to the nuisance and the efficiency of the estimator depend on the instrument.
+<!-- A conditional moment restriction $\mathbb{E}[\rho(W;\theta_0,\eta_0)\mid Z]=0$ implies $\mathbb{E}[A(Z)\,\rho(W;\theta_0,\eta_0)]=0$ for every instrument $A(Z)$ [@chamberlain1987asymptotic]. The sensitivity of the moment condition to the nuisance and the efficiency of the estimator depend on the instrument. -->
 
 For the double machine learning (DML) estimator, we partition the sample into folds $I_1,\dots,I_K$, compute $\hat\eta_k$ from the observations outside $I_k$, and solve [@chernozhukov2018dml, Def. 3.2]
 $$
@@ -72,16 +74,17 @@ $$
 T_3=\partial_rM\big(\theta_0,\eta_0+r(\hat\eta_k-\eta_0)\big)\big|_{r=0}+\int_0^1(1-r)\,\partial_r^2M\big(\theta_0,\eta_0+r(\hat\eta_k-\eta_0)\big)\,\mathrm{d}r .
 $$
 
-| Term | Order | Made negligible by |
+| Term | Property | Made negligible by |
 |:--|:--|:--|
-| $T_1$ | $O_P(n^{-1/2})$ and asymptotically normal | central limit theorem, which for the ATE requires overlap |
+| $T_1$ | asymptotically normal | central limit theorem, which for the ATE requires overlap |
 | $T_2$ | centred average of $n/K$ terms given $\hat\eta_k$ | cross-fitting with consistent $\hat\eta_k$, or stability of the nuisance estimator |
 | $T_3$, first part | linear in $\hat\eta_k-\eta_0$ | Neyman orthogonality of the score |
 | $T_3$, second part | quadratic in $\hat\eta_k-\eta_0$ | rates of convergence of $\hat\eta_k$ |
 
 : {tbl-colwidths="[16,36,48]"}
 
-For the plug-in score $\nu(W;g)-\theta$, $T_3=\langle\alpha_0,\hat g_k-g_0\rangle$ exactly. Nonparametric estimators of $g_0$ converge more slowly than $n^{-1/2}$, so $\sqrt n(\hat\theta-\theta_0)$ diverges unless this term is $o_P(n^{-1/2})$.
+<!-- For the plug-in score $\nu(W;g)-\theta$, $T_3=\langle\alpha_0,\hat g_k-g_0\rangle$ exactly.
+*Nonparametric estimators of $g_0$ converge more slowly than $n^{-1/2}$, so $\sqrt n(\hat\theta-\theta_0)$ diverges unless this term is $o_P(n^{-1/2})$.  -->
 
 ## Definition {.smaller}
 
@@ -96,7 +99,7 @@ $$
 $$
 
 - The derivative is taken at the truth with the target held at $\theta_0$. It is the derivative of the moment map, which equals $\mathbb{E}_P\partial_\eta\psi$ only when differentiation under the integral is allowed.
-- The set $\mathcal T_N$ contains the nuisance estimates with high probability, where $N$ is the sample size, and a smaller set imposes a weaker condition. The condition therefore depends on the law $P$ and on the set $\mathcal T_N$ as well as on the score.
+- The set $\mathcal T_N$ contains the nuisance estimates, where $N$ is the sample size, and a smaller set imposes a weaker condition. The condition therefore depends on the law $P$ and on the set $\mathcal T_N$ as well as on the score.
 - The score obeys the $\lambda_N$ near-orthogonality condition if $\|\mathrm D_0[\eta-\eta_0]\|\le\lambda_N=o(N^{-1/2})$ for all $\eta\in\mathcal T_N$ [@chernozhukov2018dml, Def. 2.2], which arises when the parameter that orthogonalises the score is defined by a regularised problem.
 
 ## Moment maps along a nuisance direction
@@ -143,8 +146,8 @@ Since $\ell_0=\theta_0m_0+f_0$ contains $m_0$, an error in $m$ also enters throu
 [Properties]{.label}
 
 - The nuisance error enters the bias term $T_3$ only through second-order terms, which are $o_P(n^{-1/2})$ when $\|\hat\eta_k-\eta_0\|=o_P(n^{-1/4})$ in $L^2(P)$, or, for scores with the mixed bias property, when $\|\hat g-g_0\|\,\|\hat\alpha-\alpha_0\|=o_P(n^{-1/2})$, so any learner with these rates can estimate the nuisance.
-- With cross-fitting and these rates, the DML estimator is asymptotically linear with influence function $-J_0^{-1}\psi_0$ without Donsker conditions on the nuisance class, and Wald intervals with a plug-in variance estimator are valid uniformly over models in which the rates hold uniformly [@chernozhukov2018dml, Thm. 3.1, Thm. 3.2 and Cor. 3.1].
-- If an orthogonal score identifies the target along a nonparametric model, $-J_0^{-1}\psi_0$ is the efficient influence function (EIF), the influence function of an efficient estimator, and the DML estimator attains the efficiency bound (Appendix).
+- With cross-fitting and these rates, the DML estimator is asymptotically linear with influence function $-J_0^{-1}\psi_0$, and Wald intervals with a plug-in variance estimator are valid uniformly over models in which the rates hold uniformly [@chernozhukov2018dml, Thm. 3.1, Thm. 3.2 and Cor. 3.1].
+<!-- - If an orthogonal score identifies the target along a nonparametric model, $-J_0^{-1}\psi_0$ is the efficient influence function (EIF), the influence function of an efficient estimator, and the DML estimator attains the efficiency bound (Appendix). -->
 - Under the mixed bias property the bias formula holds for every nuisance pair, so nuisance errors from any source enter through one inner product.
 :::
 ::: {.column width="48%"}
@@ -153,7 +156,7 @@ Since $\ell_0=\theta_0m_0+f_0$ contains $m_0$, an error in $m$ also enters throu
 - Orthogonality removes only the first-order part of $T_3$, and nuisance errors that do not shrink with $n$ violate the rate conditions.
 - Overlap is needed for $\alpha_0\in L^2(P_Z)$ and for a bounded $\hat\alpha$, and trimming changes the estimand.
 - Identification of a causal target requires assumptions about the process that generates the data, which do not depend on the score.
-- Among the orthogonal scores the EIF has the smallest variance, and $\psi_{\mathrm{PO}}$ is efficient when $\operatorname{Var}(\varepsilon\mid D,X)$ is constant.
+<!-- - Among the orthogonal scores the EIF has the smallest variance, and $\psi_{\mathrm{PO}}$ is efficient when $\operatorname{Var}(\varepsilon\mid D,X)$ is constant. -->
 - The definition applies to estimators that solve an estimating equation.
 :::
 ::::
@@ -224,7 +227,7 @@ Neyman orthogonality is defined for scores, and causal PFNs that return the effe
 - With either correction and a stochastically equicontinuous posterior, the posterior of the idealised network concentrates at the rate $n^{-1/2}$ plus the remainder (Thm. 2). When the remainder is $o_P(n^{-1/2})$, a Bernstein–von Mises theorem with the efficient variance holds under regularity conditions (Thm. 3). When the mean square of the remainder is bounded uniformly over a class of laws supported by the prior, the worst-case risk of the posterior mean over this class is of order $n^{-1}$ plus this bound, the minimax rate when a matching lower bound holds (Thm. 4).
 - In ATE experiments, the training prior draws the propensity score independently of the outcome regressions, and an evaluation prior has more observed confounding. Under the evaluation prior, the authors report that both corrected networks often have a smaller $L^2$ risk than the network without a correction for $n\ge1024$ with 5 covariates and $n\ge2048$ with 10, and the total variation distance of all networks to the efficient normal approximation grows with $n$ (Sec. 5).
 
-# Orthogonality for estimators without a score
+<!-- # Orthogonality for estimators without a score
 
 ## Estimators without a score {.smaller}
 
@@ -237,8 +240,9 @@ The following estimators map the data set $\mathcal D_n=(W_1,\dots,W_n)$ to an e
 
 [Lemma.]{.label} Over all measurable maps $F$, the squared pretraining loss $\mathbb{E}_{\xi,\mathcal D_n}[\{F(\mathcal D_n)-\theta_\xi\}^2]$ is minimised, uniquely up to almost sure equality, by the posterior mean $\hat\theta_\Pi(\mathcal D_n)=\mathbb{E}_\Pi[\theta_\xi\mid\mathcal D_n]$ [@muller2022pfn; @foong2020metalearning].
 
-A trained network computes $\hat\theta_\chi=\hat\theta_\Pi+a_\chi(\mathcal D_n)$, where $a_\chi$ is the amortisation error. By the lemma, the minimiser of the pretraining loss is a Bayes rule, whose properties depend on the prior and on the training target. The amortisation error of a fixed network is not guaranteed to vanish as $n$ grows, so rate conditions on in-context nuisances cannot be verified from the pretraining objective alone.
+A trained network computes $\hat\theta_\chi=\hat\theta_\Pi+a_\chi(\mathcal D_n)$, where $a_\chi$ is the amortisation error. By the lemma, the minimiser of the pretraining loss is a Bayes rule, whose properties depend on the prior and on the training target. The amortisation error of a fixed network is not guaranteed to vanish as $n$ grows, so rate conditions on in-context nuisances cannot be verified from the pretraining objective alone. -->
 
+<!-- 
 ## First-order insensitivity {.smaller}
 
 [Outcome shifts.]{.label} For a direction $h\in L^2(P_Z)$ and $\delta\in\mathbb{R}$, let $P_{\delta h}$ be the law of $(Y+\delta h(Z),Z)$. Under $P_{\delta h}$ the outcome regression is $g_0+\delta h$ and the target is $\theta_0+\delta\langle\alpha_0,h\rangle$. Write $b_n(\delta;h)=\mathbb{E}_{\delta h}[\hat\theta]-\theta(P_{\delta h})$ for the bias of an estimator $\hat\theta$ along the shift.
@@ -262,7 +266,9 @@ Write a task as $\xi=(\xi_X,\xi_D,\xi_Y)$ with $P_\xi=P_{X;\xi_X}\otimes P_{D\mi
 
 : {tbl-colwidths="[22,28,26,24]"}
 
-[Proposed result.]{.label} Under independent mechanisms, the Bayes rule for a training target that is a function of $(\xi_X,\xi_Y,\mathcal D_n)$ does not involve the treatment likelihood. The minimiser of the squared pretraining loss therefore involves the treatment likelihood only when the training target depends on $\xi_D$ or the prior couples $\xi_D$ with $(\xi_X,\xi_Y)$, as the priors of @li2023bayesian [Sec. 5] do, and the label correction and the prior correction of @melnychuk2026debiased are instances of the two cases.
+[Proposed result.]{.label} Under independent mechanisms, the Bayes rule for a training target that is a function of $(\xi_X,\xi_Y,\mathcal D_n)$ does not involve the treatment likelihood. The minimiser of the squared pretraining loss therefore involves the treatment likelihood only when the training target depends on $\xi_D$ or the prior couples $\xi_D$ with $(\xi_X,\xi_Y)$, as the priors of @li2023bayesian [Sec. 5] do, and the label correction and the prior correction of @melnychuk2026debiased are instances of the two cases. -->
+
+# Research question and contribution
 
 ## Project question and motivation {.smaller}
 
@@ -275,7 +281,7 @@ Write a task as $\xi=(\xi_X,\xi_D,\xi_Y)$ with $P_\xi=P_{X;\xi_X}\otimes P_{D\mi
 3. Which training targets and priors make the Bayes rule of an in-context learner first-order insensitive?
 4. Are trained networks first-order insensitive when they use the corrections of @melnychuk2026debiased, or in-context nuisances with cross-fitting and an AIPW layer?
 
-## Core contribution and positioning {.smaller .dense}
+## Contribution and positioning {.smaller .dense}
 
 | Proposed contribution | Closest work | What is new |
 |:--|:--|:--|
