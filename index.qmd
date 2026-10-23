@@ -1,7 +1,8 @@
 # Slides
 
 ### Neyman Orthogonality
-- [Slides](vector/neyman/slides_v3/orthogonality-intro.html)
+- [Slides, revealjs](vector/neyman/slides_v3/orthogonality-intro.html)
+- [PDF version](vector/neyman/slides_v3/orthogonality-intro.pdf)
 
 ### Long-Term Causal Inference
 - **Paper:** Lal, Imbens & Hull: *Long-Term Causal Inference with Many Noisy Proxies*
