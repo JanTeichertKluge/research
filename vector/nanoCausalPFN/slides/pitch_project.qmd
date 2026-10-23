@@ -1,0 +1,124 @@
+---
+title: "nanoCausalPFN"
+subtitle: "Pretrained nuisances and an in-context AIPW layer for treatment effects"
+author: "Jan Teichert-Kluge"
+title-slide-attributes:
+  data-background-image: images/logos.png
+  data-background-size: 30%
+  data-background-position: 50% 92%
+format:
+  revealjs:
+    theme: [simple, custom.scss]
+    width: 1280
+    height: 720
+    margin: 0.06
+    slide-number: true
+    embed-resources: true
+    html-math-method: mathjax
+    pdf-max-pages-per-slide: 6
+bibliography: [../../references.bib, references.bib]
+---
+
+## The estimation problem {.small}
+
+- We observe an outcome $Y$, a binary treatment $D$ and covariates $X$, and we want the average treatment effect
+  $$\theta_0 = \mathbb{E}\big[g_0(1, X) - g_0(0, X)\big], \qquad g_0(d, x) = \mathbb{E}[Y \mid D = d, X = x].$$
+- Double machine learning (DML) fits the outcome regression $g_0$ and the propensity score
+  $m_0(x) = \mathbb{P}(D = 1 \mid X = x)$ on every new data set and combines them in the augmented inverse
+  probability weighting (AIPW) score [@chernozhukov2018double; @robins1994estimation].
+- AIPW is doubly robust: its bias is minus the inner product of the errors of the outcome regression and of the
+  Riesz representer $\alpha_0(d, x) = d / m_0(x) - (1 - d) / (1 - m_0(x))$. Under overlap, cross-fitted AIPW gives
+  valid confidence intervals at the parametric rate when the product of the two error rates is $o(n^{-1/2})$.
+- The cost is a new round of model fitting and tuning for every data set.
+
+## Prior-data fitted networks {.small}
+
+- A prior-data fitted network (PFN) is a transformer pretrained on millions of tables simulated from a prior. On a
+  new table it predicts in one forward pass, with the table as context and no fitting
+  [@muller2022transformers; @hollmann2025accurate].
+- Causal PFNs such as Do-PFN [@robertson2025dopfn], CausalPFN [@balazadeh2025causalpfn] and CausalFM
+  [@ma2026causalfm] are trained end to end to output the effect directly.
+- With fixed weights, a PFN is a statistical estimator [@nagler2023statistical]. Its effect estimate can carry a
+  prior-induced confounding bias that more data does not remove [@melnychuk2026frequentist].
+- The existing remedies correct the effect estimate, either on the posterior after pretraining or by changing the
+  training labels or the prior [@melnychuk2026frequentist; @melnychuk2026debiased]. The network still hides the nuisances.
+
+## Idea {.small}
+
+- The simulator knows the exact nuisances of every task $\xi$: the propensity score $m_\xi$, the outcome regression
+  $g_\xi$ and the Riesz representer $\alpha_\xi$. They are privileged information, available in training and never
+  at deployment [@vapnik2009new].
+- We supervise read-out heads of a small PFN with these noise-free nuisances.
+- A parameter-free AIPW score layer combines the heads into the estimate
+  $$\hat\theta = \frac{1}{n}\sum_{i=1}^n \Big[\hat g(1, X_i) - \hat g(0, X_i) + \hat\alpha(D_i, X_i)\big(Y_i - \hat g(D_i, X_i)\big)\Big]$$
+  with an influence-function standard error.
+- The nuisances are outputs, and the correction is computed exactly from them, in context.
+
+## Architecture {.small}
+
+- **Backbones.** nanoTabPFN [@pfefferle2025nanotabpfn] and nanoTabICL [@qu2026tabiclv2], about 5 million
+  parameters each, trained on one prior over a range of
+  sample sizes (50 to 2,000 rows) and numbers of covariates (1 to 30).
+- **Heads.** Read-out heads for $m$, $g$ and $\alpha$, and a CATE decoder whose mean gives the plug-in estimate.
+- **Cross-fitting in context.** The rows are split into $K$ folds. Each fold is predicted with the other folds as
+  context, so its nuisances never read its own rows. This costs $K$ forward passes and no training.
+- **Variants.** V0 trains end to end on the effect, V1 adds the head losses, V2 trains through the score layer,
+  and V3 anneals the head losses.
+
+<!-- ## Why this design {.smaller}
+
+- **Double robustness survives the network.** By the mixed-bias identity, the scores of each fold have mean
+  $-\langle \hat\alpha_k - \alpha_0, \hat g_k - g_0 \rangle$ given the other folds, whatever the source of the head
+  errors, including the approximation error of the trained network.
+- **Cross-fitting replaces assumptions.** Query isolation gives the sample-splitting structure of DML, so the
+  empirical-process term needs only the $L_2$ consistency of the heads and no Donsker or equicontinuity condition.
+- **Noise-free targets.** Supervising with $m_\xi(X_i)$ in place of $D_i$ keeps the mean of the stochastic gradient
+  and removes part of its variance (Rao-Blackwellization).
+- **Checkable inference.** Under rate conditions on the heads, the influence-function interval is asymptotically
+  valid, and its coverage can be tested at fixed truths. -->
+
+## Hypotheses {.small}
+
+- **H1, training rate.** Supervising the nuisances reduces the synthetic tasks and the time needed to reach a fixed
+  causal error.
+- **H2, behavior out of prior.** The error of the score layer is governed by the product of its nuisance errors,
+  and it degrades gracefully when one nuisance leaves the prior (weak overlap, strong heterogeneity, large effects,
+  strong confounding).
+- **H3, inference.** The influence-function intervals cover at fixed truths, and their coverage is compared with
+  that of posterior credible intervals, including a credible interval trained with the label correction of [@melnychuk2026debiased].
+
+## Study design {.small}
+
+<!-- - **Pre-registered.** Every hypothesis, statistic, margin and outcome rule is fixed in a plan before the runs, and
+  the plan is frozen by a tag. -->
+- **Paired seeds.** Variants of one backbone share seeds, initialization and task streams, so each contrast is
+  paired.
+- **Two backbones.** A claim holds across architectures only if both families support it.
+- **Fixed truths.** Bias and coverage are measured over 100 data sets per truth, in prior and in cells outside
+  the prior.
+- **Comparisons.** CausalPFN, CausalFM, Do-PFN, tuned DML [@bach2022doubleml], gradient-boosting learners and the
+  post hoc correction of [@melnychuk2026frequentist].
+
+<!-- ## Scale and infrastructure {.smaller}
+
+- **Cluster.** Hummel-2 (H100 GPUs), with a sweep runner that freezes every command line, chains jobs and collects
+  results into the repository.
+- **Simulator.** A prior with SCM covariates, heteroscedastic noise and overlap down to propensities of 0.005,
+  drawn by compiled kernels fast enough to feed the GPU.
+- **Main grid.** V0, V1 and V3 of both backbones at 10 seeds, followed by a size ladder, ablations, an $n$ grid
+  for inference and benchmarks.
+- **Budget.** About 2,900 GPU-hours for the standard version. -->
+
+## Contribution {.small}
+
+- **Method.** A causal PFN whose nuisances are supervised outputs and whose estimate comes from an exact,
+  cross-fitted AIPW layer, as an alternative to correcting the effect posterior.
+- **Theory for trained networks.** In-context cross-fitting, Rao-Blackwellized supervision, and the result that
+  the loss through the score layer does not identify the nuisances.
+- **Evidence at scale.** A pre-registered test of training rate, behavior out of prior and coverage across two
+  architectures, with a direct comparison of explicit and learned debiasing in a causal PFN.
+
+## References {.smaller .scrollable}
+
+::: {#refs}
+:::

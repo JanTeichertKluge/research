@@ -1,0 +1,301 @@
+\documentclass[11pt]{article}
+
+\usepackage[a4paper,margin=2.2cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs,longtable,array}
+\usepackage{enumitem}
+\usepackage[colorlinks,linkcolor=black,urlcolor=blue!50!black]{hyperref}
+
+\setlist[itemize]{itemsep=1pt,topsep=2pt,leftmargin=*}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\indep}{\perp\!\!\!\perp}
+
+\title{Presenter Guide for the Slides on Neyman Orthogonality}
+\author{}
+\date{October 2026}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\section{Symbols and how to read them}
+
+\subsection{Conventions}
+
+\begin{itemize}
+\item A subscript $0$ marks the true value: $\theta_0$ is read ``theta zero'' or ``theta naught'', $g_0$ ``g zero''.
+\item A hat marks an estimate: $\hat\theta$ is read ``theta hat'', $\hat\eta_k$ ``eta hat k'', the nuisance estimated without fold $k$.
+\item A subscript $\xi$ marks a quantity of a simulated data-generating process in pretraining: $g_\xi$ is ``g of xi'', the outcome regression of the simulated process $\xi$.
+\item A subscript $\Pi$ marks a posterior mean under the prior $\Pi$: $\hat g_\Pi$ is ``g hat pi'', the posterior mean of the outcome regression.
+\item Letters in calligraphic font are sets or classes: $\mathcal T_N$ ``script T N'', $\mathcal H$ ``script H'', $\mathcal D_n$ ``script D n'' for the data set.
+\end{itemize}
+
+\subsection{Greek letters}
+
+\begin{longtable}{@{}l l p{10.2cm}@{}}
+\toprule
+Symbol & Name & Meaning on the slides\\
+\midrule
+\endhead
+$\theta$, $\theta_0$, $\hat\theta$ & theta & target parameter, its true value, its estimate; $\theta(g)$ is the target computed at a regression $g$\\
+$\eta$, $\eta_0$ & eta & nuisance (all unknown functions besides the target), and its true value\\
+$\alpha$, $\alpha_0$ & alpha & Riesz representer; for the ATE $\alpha_0=D/m_0-(1-D)/(1-m_0)$, the inverse propensity weights\\
+$\nu$ & nu & the map that defines the target, $\theta(g)=\E[\nu(W;g)]$; for the ATE $\nu(W;g)=g(1,X)-g(0,X)$\\
+$\psi$ & psi & score, the function inside the estimating equation $\E[\psi]=0$; $\psi_{\mathrm{DR}}$ is the AIPW score, $\psi_{\mathrm{IV}}$ and $\psi_{\mathrm{PO}}$ the scores of the partially linear model\\
+$\varphi$, $\varphi_\xi$ & phi (curly) & efficient influence function (EIF), or a gradient\\
+$\varepsilon$ & epsilon & outcome noise in the partially linear model\\
+$\rho$ & rho & residual in a conditional moment restriction $\E[\rho\mid Z]=0$\\
+$\omega$, $\varrho$ & omega, rho (curly) & weight density of the average derivative, and conditional density of $D$ given $X$\\
+$\delta$ & delta & size of a shift of the outcome regression, $Y\mapsto Y+\delta h(Z)$\\
+$\delta_N$, $\Delta_N$, $\lambda_N$ & delta, Delta, lambda & sequences tending to zero in the conditions of the DML theorem; $\lambda_N$ bounds the derivative under near-orthogonality\\
+$\lambda$ & lambda & ridge penalty in the Gaussian simulation (appendix)\\
+$\xi$ & xi & a data-generating process drawn from the pretraining prior\\
+$\Pi$ & capital pi & prior over data-generating processes\\
+$\kappa$ & kappa & coefficient of the shift along the Riesz representer in the prior correction, $g_\xi+\kappa\alpha_\xi$\\
+$\sigma_n^2$, $\sigma^2$ & sigma squared & variance of $\kappa$ in the prior correction; asymptotic variance in the DML theorem\\
+$\varpi_i$ & pi (curly, ``varpi'') & Bayesian bootstrap weights in the label correction\\
+$\chi$ & chi & parameters of a trained network $F_\chi$\\
+$\tau$, $\tau_\xi$ & tau & conditional average treatment effect function $g(1,x)-g(0,x)$; in $F_\tau$ the mixing weight of a path\\
+$\gamma$, $\beta$ & gamma, beta & coefficients of the treatment and outcome equations in the Gaussian simulation\\
+\bottomrule
+\end{longtable}
+
+\subsection{Other symbols}
+
+\begin{longtable}{@{}l p{4cm} p{7.4cm}@{}}
+\toprule
+Symbol & Read as & Meaning\\
+\midrule
+\endhead
+$W=(Y,Z)$, $Z=(D,X)$ & & observation: outcome $Y$, regressors $Z$, treatment $D$, covariates $X$\\
+$g_0(z)=\E[Y\mid Z=z]$ & ``g zero of z'' & outcome regression\\
+$m_0$, $\ell_0$, $f_0$ & ``m zero'', ``ell zero'', ``f zero'' & propensity score or treatment regression $\E[D\mid X]$; $\E[Y\mid X]$; nonparametric part of the partially linear model\\
+$V$ & & treatment residual $D-m_0(X)$\\
+$\E$, $\E_P$ & ``expectation (under $P$)'' & population mean\\
+$\E[\,\cdot\mid Z]$ & ``given $Z$'' & conditional expectation\\
+$\mathbb P_n$, $\E_{n,k}$ & ``P n'', ``E n k'' & average over the whole sample, average over fold $I_k$\\
+$\langle f,g\rangle$ & ``inner product of f and g'' & $\E[f(Z)g(Z)]$\\
+$\|f\|$ & ``norm of f'' & $\sqrt{\E[f(Z)^2]}$, the root mean squared size\\
+$L^2(P_Z)$ & ``L two of P Z'' & functions of $Z$ with finite mean square\\
+$M(\theta,\eta)$ & ``moment map'' & $\E_P[\psi(W;\theta,\eta)]$, the expected score at a fixed nuisance\\
+$J_0$ & ``J zero'', the Jacobian & derivative of $M$ in $\theta$ at the truth\\
+$\partial_r$, $\partial_\delta$ & ``partial derivative in r'' & derivative in a scalar parameter\\
+$\mathrm D_r[\eta-\eta_0]$ & ``D r applied to eta minus eta zero'' & Gateaux derivative of the moment map in the direction $\eta-\eta_0$; square brackets mark the direction\\
+$\mathcal T_N$ & ``script T N'' & nuisance realisation set, which contains the nuisance estimates with high probability\\
+$T_1,T_2,T_3$ & ``T one'' etc. & the three terms of the error decomposition\\
+$O_P(a_n)$, $o_P(a_n)$ & ``big O P'', ``little o P'' & bounded in probability by a multiple of $a_n$; smaller than $a_n$ in probability\\
+$\rightsquigarrow N(0,\sigma^2)$ & ``converges in distribution to a normal'' & asymptotic normality\\
+$\propto$ & ``proportional to'' & equal up to a constant factor\\
+$\otimes$ & ``product'' & product of distributions, the mechanisms combined\\
+$\indep$ & ``independent of'' & independence\\
+$\sim$ & ``distributed as'' & e.g.\ $\kappa\sim N(0,\sigma_n^2)$\\
+$\mapsto$ & ``maps to'' & e.g.\ $\delta\mapsto b_n(\delta;h)$, the bias as a function of $\delta$\\
+$:=$ & ``is defined as'' & definition\\
+$P_{\delta h}$ & ``P delta h'' & law of the data after the outcomes are shifted by $\delta h(Z)$\\
+$b_n(\delta;h)$ & ``b n of delta and h'' & bias of the estimator at sample size $n$ along this shift\\
+$w_i=n\,\partial\hat\theta/\partial Y_i$ & ``implicit weight of observation i'' & how much the estimate moves when outcome $i$ moves, times $n$\\
+$\mathcal D_n$ & ``script D n'' & data set of $n$ observations, the context of an in-context learner\\
+$F_\chi$, $a_\chi$ & ``F chi'', ``a chi'' & trained network, its amortisation error\\
+\bottomrule
+\end{longtable}
+
+\subsection{How to read the main equations}
+
+\begin{enumerate}[leftmargin=*,itemsep=4pt]
+\item $\theta(g)=\langle\alpha_0,g\rangle$ and $\theta(g_0+h)-\theta_0=\langle\alpha_0,h\rangle$.\\
+``The target at any regression $g$ is the weighted average of $g$ with weights $\alpha_0$. If the regression is wrong by $h$, the target is wrong by the $\alpha_0$-weighted average of $h$.'' This is why $\alpha_0$ is the derivative of the target with respect to the regression.
+
+\item $\psi_{\mathrm{DR}}(W;\theta,g,\alpha)=\nu(W;g)-\theta+\alpha(Z)\{Y-g(Z)\}$.\\
+``Plug-in estimate minus the target, plus the residual weighted by the Riesz representer.'' For the ATE: $g(1,X)-g(0,X)-\theta+\alpha(Z)\{Y-g(Z)\}$, the AIPW score.
+
+\item $\frac1n\sum_k\sum_{i\in I_k}\psi(W_i;\theta,\hat\eta_k)=0$.\\
+``Solve for $\theta$ the sample average of the score, where each observation uses nuisances fitted without its own fold.'' This is DML with cross-fitting.
+
+\item $\E_{n,k}\psi(W;\theta_0,\hat\eta_k)=T_1+T_2+T_3$.\\
+``The score at the estimated nuisance splits into noise at the true nuisance ($T_1$), the fluctuation of the difference ($T_2$), and the bias from the nuisance error ($T_3$).'' $T_3=M(\theta_0,\hat\eta_k)$ is the expected score at the estimated nuisance.
+
+\item $\mathrm D_r[\eta-\eta_0]=\partial_r\E_P[\psi(W;\theta_0,\eta_0+r(\eta-\eta_0))]$ and $\mathrm D_0[\eta-\eta_0]=0$.\\
+``Move the nuisance from the truth a fraction $r$ of the way towards $\eta$ and differentiate the expected score in $r$. Orthogonality says that this slope is zero at $r=0$ for every admissible $\eta$.'' In the figure it is the slope of each curve at the origin.
+
+\item $\mathrm D_0[h]=\langle\alpha_0-A,h\rangle$.\\
+``With correction weights $A$, the slope in direction $h$ is the gap between $\alpha_0$ and $A$, averaged against $h$.'' It vanishes for all $h$ only when $A=\alpha_0$.
+
+\item $M(\theta_0,g,\alpha)=-\langle g-g_0,\alpha-\alpha_0\rangle$.\\
+``The bias of the AIPW score is minus the product of the two nuisance errors.'' This is the mixed bias property; the bias is second order and vanishes if either error is zero.
+
+\item $M_{\mathrm{PO}}=\langle\ell-\ell_0,m-m_0\rangle-\theta_0\|m-m_0\|^2$.\\
+``The partialling-out bias contains a square of the treatment error.'' The score is orthogonal, but not doubly robust when $\theta_0\neq0$.
+
+\item $\E[\alpha(Z)^2-2\nu(W;\alpha)]=\|\alpha-\alpha_0\|^2-\|\alpha_0\|^2$.\\
+``The Riesz loss equals the squared distance to the true representer, up to a constant.'' Minimising it learns $\alpha_0$ without a formula for it.
+
+\item $\sqrt N(\hat\theta-\theta_0)=-J_0^{-1}N^{-1/2}\sum_i\psi(W_i;\theta_0,\eta_0)+o_P(1)\rightsquigarrow N(0,\sigma^2)$ (appendix).\\
+``The scaled error behaves like an average of the score at the true nuisance, so it is asymptotically normal.''
+
+\item $\theta_\xi+\sum_i\varpi_i\varphi_\xi(W_i)$.\\
+``The training label of the label correction: the true target of the simulated process plus a randomly weighted average of its efficient influence function on the simulated data.''
+
+\item $g_\xi+\kappa\alpha_\xi$ with $\kappa\sim N(0,\sigma_n^2)$.\\
+``The prior correction shifts each simulated outcome regression along its own Riesz representer by a random amount.''
+
+\item $P_{\delta h}$, $b_n(\delta;h)=\E_{\delta h}[\hat\theta]-\theta(P_{\delta h})$, $\partial_\delta b_n(0;h)=0$.\\
+``Shift all outcomes by $\delta h(Z)$; the bias of the estimator after the shift is $b_n$. First-order insensitivity says the bias does not change to first order in $\delta$.''
+
+\item $\Pi(\mathrm d\xi_X,\mathrm d\xi_Y\mid\mathcal D_n)\propto\Pi_{X,Y}(\mathrm d\xi_X,\mathrm d\xi_Y)\prod_ip(X_i;\xi_X)\,p(Y_i\mid D_i,X_i;\xi_Y)$.\\
+``Under independent mechanisms, the posterior of the covariate and outcome mechanisms is the prior times the covariate and outcome likelihood. The treatment likelihood does not appear.''
+
+\item $\partial_\delta b_n(0;h)=\E_P[n^{-1}\sum_iw_ih(Z_i)]-\langle\alpha_0,h\rangle$ (appendix).\\
+``The sensitivity of an estimator equals the expected average of its implicit weights times $h$, minus the true change of the target.'' The estimator is insensitive when its implicit weights act like the Riesz representer.
+\end{enumerate}
+
+\section{Speaker notes}
+
+\subsection*{Title slide}
+\begin{itemize}
+\item Three parts: what Neyman orthogonality is, how the literature generalises it, and a project on estimators without a score.
+\item Notation follows the draft of the planned paper, close to Chernozhukov et al.\ (2018) and Chernozhukov, Newey and Singh (2022).
+\end{itemize}
+
+\subsection*{Data, target and Riesz representer}
+\begin{itemize}
+\item All targets are linear functionals of the outcome regression $g_0$; the ATE is the running example.
+\item The Riesz representer $\alpha_0$ is the derivative of the target in the regression; for the ATE it is the inverse propensity weight.
+\item Errors in $g$ move the target by $\langle\alpha_0,h\rangle$, the source of plug-in bias.
+\end{itemize}
+
+\subsection*{Scores, moment conditions and cross-fitting}
+\begin{itemize}
+\item A score turns the target into an estimating equation $\E[\psi]=0$; three examples, AIPW and the two partially linear scores.
+\item The choice of instrument in a conditional moment restriction decides sensitivity and efficiency.
+\item DML solves the cross-fitted sample equation, so each observation uses nuisances fitted without it.
+\end{itemize}
+
+\subsection*{Three-term decomposition}
+\begin{itemize}
+\item $T_1$ is the oracle noise, $T_2$ the overfitting term, $T_3$ the nuisance bias.
+\item Each term has its own remedy: CLT, cross-fitting, orthogonality and rates.
+\item For the plug-in score $T_3=\langle\alpha_0,\hat g-g_0\rangle$ exactly, which is too large for machine learning rates.
+\end{itemize}
+
+\subsection*{Definition}
+\begin{itemize}
+\item Orthogonality: the Gateaux derivative of the expected score in the nuisance vanishes at the truth.
+\item It is a joint property of score, law and the set $\mathcal T_N$.
+\item Near-orthogonality allows a derivative of order $o(N^{-1/2})$.
+\end{itemize}
+
+\subsection*{Moment maps along a nuisance direction}
+\begin{itemize}
+\item Each curve is the expected score as the nuisance moves away from the truth.
+\item Orthogonal scores have zero slope at $r=0$: AIPW in (a), both partially linear scores in (b).
+\item Plug-in and IPW in (a) and the instrument $D$ in (b) have a nonzero slope.
+\end{itemize}
+
+\subsection*{Construction of orthogonal scores}
+\begin{itemize}
+\item For linear functionals the only orthogonal correction is the Riesz representer times the residual.
+\item In the partially linear model any instrument with $\E[A\mid X]=0$ works, so orthogonal scores are not unique.
+\item Historically, Neyman's residual score projects off the nuisance scores.
+\end{itemize}
+
+\subsection*{Double robustness and the mixed bias property}
+\begin{itemize}
+\item Hierarchy: mixed bias implies double robustness, which implies orthogonality.
+\item The converse fails; $\psi_{\mathrm{PO}}$ is orthogonal but not doubly robust for $\theta_0\neq0$.
+\item For AIPW the bias is minus the product of the two errors, at every sample size.
+\end{itemize}
+
+\subsection*{Properties and limits of orthogonal scores}
+\begin{itemize}
+\item Gains: any learner with $n^{-1/4}$ rates or a product rate, no Donsker conditions, valid Wald intervals, efficiency.
+\item Limits: only first-order bias, overlap, identification assumptions, and the definition needs an estimating equation.
+\item The last limit is the bridge to Part 3.
+\end{itemize}
+
+\subsection*{Approaches by term of the decomposition}
+\begin{itemize}
+\item The literature can be sorted by which term of the decomposition a method handles.
+\item Most methods address the first-order part of $T_3$; cross-fitting and stability address $T_2$.
+\end{itemize}
+
+\subsection*{Automatic debiased machine learning}
+\begin{itemize}
+\item The Riesz loss learns $\alpha_0$ without a formula; Lasso, neural nets and forests.
+\item Extensions to functionals of M-estimands and numerical influence functions.
+\end{itemize}
+
+\subsection*{Orthogonality without an explicit correction}
+\begin{itemize}
+\item Targeting, sieves, balancing weights and priors reach the same first-order cancellation without adding a correction term.
+\item Priors: invariance along the least-favourable direction, propensity-dependent priors, posterior corrections, generalised Bayes.
+\end{itemize}
+
+\subsection*{Learned representations and in-context nuisance learners}
+\begin{itemize}
+\item Representation learning and TabPFN are used as nuisance learners inside DML.
+\item Wang, Secrest and Tchakoute (2026) add a propensity head to CausalPFN and run AIPW and TMLE on it.
+\end{itemize}
+
+\subsection*{Causal prior-data fitted networks}
+\begin{itemize}
+\item Causal PFNs return the effect directly and have no orthogonal score.
+\item Evidence of bias and miscoverage, prior uncoverage, and prior-induced confounding.
+\item Zhang (2026) pretrains on one-step labels.
+\end{itemize}
+
+\subsection*{Debiased prior-data fitted networks}
+\begin{itemize}
+\item Closest work, Melnychuk, Javurek and Feuerriegel (2026): two corrections inside pretraining.
+\item Label correction adds a bootstrap average of the EIF; prior correction shifts the simulated regression along the representer.
+\item Their guarantees concern the idealised network; amortisation error is set aside.
+\end{itemize}
+
+\subsection*{Estimators without a score}
+\begin{itemize}
+\item Posterior means, regularised plug-ins, end-to-end networks and in-context learners have no estimating equation.
+\item The best network under squared loss is the posterior mean, so the prior and the training target decide its properties.
+\item The amortisation error of a trained network need not vanish with $n$.
+\end{itemize}
+
+\subsection*{First-order insensitivity}
+\begin{itemize}
+\item Proposed replacement for orthogonality: shift the outcome regression and ask whether the bias moves to first order.
+\item It is the derivative part of local asymptotic unbiasedness and is equivalent to regularity along these shifts.
+\item It applies to trained networks, not only to idealised ones.
+\end{itemize}
+
+\subsection*{Causal PFNs under independent mechanisms}
+\begin{itemize}
+\item If the prior draws the treatment mechanism independently, the posterior ignores the treatment likelihood (Bayesian ignorability).
+\item The posterior mean is then a Bayesian outcome regression with an uncorrected first-order term.
+\item The treatment mechanism enters only through the training target or a coupled prior; both corrections of Melnychuk et al.\ are instances.
+\end{itemize}
+
+\subsection*{Project question and motivation}
+\begin{itemize}
+\item Main question: when is a trained estimator without a score first-order insensitive, and how can we check it from data and network alone?
+\item Four sub-questions: the criterion, the diagnostic, Bayes rules, trained networks with corrections.
+\end{itemize}
+
+\subsection*{Core contribution and positioning}
+\begin{itemize}
+\item Four contributions, each with its closest work and what is new.
+\item The diagnostic, the imbalance of the implicit weights, needs one backward pass.
+\item Positioning against Melnychuk et al.\ (2026): trained networks, not the idealised posterior.
+\item If asked for evidence: appendix slides on the simulation and the work plan.
+\end{itemize}
+
+\subsection*{Appendix}
+\begin{itemize}
+\item DML theorem: conditions and asymptotic normality, if asked about rates.
+\item Efficient influence functions and formulations: equivalent definitions of orthogonality.
+\item Local robustness, higher-order terms, forms of robustness: further literature.
+\item Implicit weights and proposed results: the technical content behind the contributions.
+\item Simulation: posterior mean biased by 4.8 sd at the aligned truth; the imbalance orders the five estimators by their bias.
+\item Work plan and risks, and further research questions.
+\end{itemize}
+
+\end{document}

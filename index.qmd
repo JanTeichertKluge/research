@@ -1,6 +1,7 @@
-# Reading Group
+# Slides
 
-Find my notes and slides for the reading group sessions I attend.
+### Neyman Orthogonality
+- [Slides](vector/neyman/slides_v3/orthogonality-intro.html)
 
 ### Long-Term Causal Inference
 - **Paper:** Lal, Imbens & Hull: *Long-Term Causal Inference with Many Noisy Proxies*
@@ -9,6 +10,9 @@ Find my notes and slides for the reading group sessions I attend.
 ### Probabilistic Modelling for Causal Inference
 - **Paper:** Mlodozeniec, Krueger & Turner: *Probabilistic Modelling is Sufficient for Causal Inference*
 - [Slides](ReadingGroup/Probabilistic_Modelling_Causal_Inference/propmod_for_causal.html)
+
+### 2024 ESIF Economics and AI+ML Meeting
+- [Slides](conferences/ESIF_2024/presentation.html)
 
 ### Comparing Experimental and Nonexperimental Methods: What Lessons Have We Learned Four Decades After LaLonde (1986)?
 - **Paper:** Guido Imbens, Yiqing Xu: Comparing Experimental and Nonexperimental Methods: What Lessons Have We Learned Four Decades After LaLonde (1986)?
@@ -26,10 +30,6 @@ Find my notes and slides for the reading group sessions I attend.
 - **Topic:** Estimation of Causal Effects with Multimodal Data
 - [Slides](ReadingGroup/RG_20_02_24/presentation.html)
 
-
-# Conference Talks
-
-Find my notes and slides for selected conference talks I attend.
-
-### 2024 ESIF Economics and AI+ML Meeting
-- [Slides](conferences/ESIF_2024/presentation.html)
+### Modular Learning of Deep Causal Generative Models for High-dimensional Causal Inference
+- **Paper:** Md Musfiqur Rahman, Murat Kocaoglu: *Modular Learning of Deep Causal Generative Models for High-dimensional Causal Inference*
+- [Slides](ReadingGroup/DeepGenerativeCausalModels/Input/Input.html)
