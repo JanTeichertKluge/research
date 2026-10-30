@@ -78,9 +78,10 @@ mean of a sensitive estimator (orange) differs and its bias changes with $\delta
   estimator is therefore locally insensitive in every direction exactly when its weights act in expectation as
   $\alpha_0$.
 - A network that standardises the outcomes of its context and reports the estimate on the original scale returns
-  exactly the weighted mean $n^{-1}\sum_iw_iY_i$ wherever it is differentiable. Subtracting the imbalance of its
+  exactly the weighted mean $n^{-1}\sum_iw_iY_i$ wherever it is differentiable. If it is also invariant under permutations of the observations, subtracting the
+  imbalance of its
   weights on an estimate of the outcome regression from an independent sample gives a corrected estimate whose bias
-  given that estimate is minus the inner product of the error of the mean implicit weight $\mathbb{E}[w_i\mid D_i,X_i]$,
+  given the estimated regression is minus the inner product of the error of the mean implicit weight $\mathbb{E}[w_i\mid D_i,X_i]$,
   relative to $\alpha_0$, with the error of the estimated regression, plus a curvature term, the expected weighted
   sample mean of the residuals $Y_i-\mathbb{E}[Y_i\mid D_i,X_i]$, which vanishes for estimators linear in the
   outcomes.
@@ -88,37 +89,38 @@ mean of a sensitive estimator (orange) differs and its bias changes with $\delta
 ## Contributions of the paper {.smaller .dense}
 
 1. We give a joint account, with equivalent formulations, of moment conditions, Neyman orthogonality, double
-   robustness and the mixed bias property, under which the mean of a score at the true target is minus the inner
-   product of the errors in the outcome regression and in the Riesz representer. We also sort the extensions of
+   robustness and the mixed bias property, under which the mean of a score at the true target is the expected product
+   of a known function and the errors in the outcome regression and in the Riesz representer. We also sort the extensions of
    orthogonality and the alternatives to it by the part of the estimation error that they address.
 2. We define local insensitivity of an estimator without a score through shifts of the outcome regression and
    characterise it through the implicit weights, whose sample imbalance we use as a diagnostic. For estimators that
    are equivariant under shifts and rescalings of the outcomes, such as PFNs that standardise the outcomes of their
    context and report the estimate on the original scale, we give an exact weighting representation and derive from
    it a decomposition of the error and the correction by the estimated imbalance.
-3. For compositions of learned components, we bound the bias by products of errors, both for the population least
-   squares fit on the concatenation of a representation learned for the outcome regression with one for the Riesz
-   representer and for two regressions composed sequentially over two time points with binary treatments, with a
-   correction at each stage and propensities bounded away from zero.
+3. For compositions of learned components, we bound the bias by products of errors, both for two regressions
+   composed sequentially over two time points with binary treatments, with a correction at each stage and
+   propensities bounded away from zero, and for the population least squares fit on the concatenation of a
+   representation learned for the outcome regression with one for the Riesz representer.
 4. For in-context learners such as PFNs, we derive the Bayes rules under priors that draw the law of $D$ given $X$
    independently of the laws of $X$ and of $Y$ given $(D,X)$ and under the corrected labels of @melnychuk2026debiased.
-   In a partially linear model with Gaussian noise and a known linear treatment regression, we derive the posterior
+   In a partially linear model that is linear in $X$, with Gaussian noise of known variance and a known treatment
+   regression, we derive the posterior
    mean under a prior that adds a random multiple of the Riesz representer to the outcome regression, in the limit of
    a diffuse prior on this multiple. We also measure the sensitivity of pretrained causal PFNs.
 
 # Setting and notation
 
-## The target and its Riesz representer {.smaller}
+## The target and its Riesz representer {.smaller .dense}
 
 We observe $n$ independent copies of $W=(Y,Z)$ with law $P$, where $Y$ is an outcome with $\mathbb{E}[Y^2]<\infty$
 and $Z$ collects the regressors, with outcome regression $g_0(z)=\mathbb{E}[Y\mid Z=z]$ and inner product
 $\langle f,g\rangle=\mathbb{E}[f(Z)g(Z)]$ on $L^2(P_Z)$.
 
 The target is a linear functional $\theta_0=\theta(g_0)$ with $\theta(g)=\mathbb{E}[\nu(W;g)]$, where $\nu(W;g)$ is
-linear in $g$ on a dense linear subspace of $L^2(P_Z)$ that contains $g_0$ and depends on $W$ only through $Z$ and on
-$P$ only through the law of $Z$. For a law $Q$ of $W$, $\theta(Q)$ is the target computed with the outcome
-regression and the law of $Z$ under $Q$. When $\theta$ is mean-square continuous, it extends uniquely to
-$L^2(P_Z)$, and by the Riesz representation theorem there is a unique $\alpha_0\in L^2(P_Z)$ with
+defined and linear in $g$ on a dense linear subspace of $L^2(P_Z)$ that contains $g_0$, and $\nu(W;g)$ depends on $W$
+only through $Z$ and on $P$ only through the law of $Z$. For a law $Q$ of $W$, $\theta(Q)$ is the target computed with the outcome
+regression and the law of $Z$ under $Q$. When $\theta$ is mean-square continuous, it extends uniquely to a
+continuous linear functional on $L^2(P_Z)$, and by the Riesz representation theorem there is a unique $\alpha_0\in L^2(P_Z)$ with
 $$
 \theta(g)=\langle\alpha_0,g\rangle\quad\text{for all }g\in L^2(P_Z),\qquad\text{hence}\qquad
 \theta(g_0+h)-\theta_0=\langle\alpha_0,h\rangle
@@ -167,7 +169,7 @@ estimator without a score corresponds to the mixed bias property of the AIPW sco
 | propensity score | $m_0(x)$ | $\pi_0(z)$ | $P(T=1\mid\mathbf X=\mathbf x)$ | $\mathbb{P}_{\mathrm{obs}}(A=1\mid X=x)$ | $\pi(x)$ | $e_s$, $e(x)$ |
 | Riesz representer | $\alpha_0$ | $\alpha_0(X)$ | | | $w_\pi(Z)$ | |
 | ATE or target | $\theta_0$ | $\theta_0=\mathbb{E}[m(W,\gamma_0)]$ | $\lambda$ | $Q(\mathbb{P}_{\mathrm{int}})$ | $\psi$, $\psi(\eta)$ | $\theta(P)$ |
-| score, EIF | $\psi(W;\theta,\eta)$, $\varphi$ | $\psi(w,\theta,\gamma,\alpha)$, $\psi(w)$ | | | $\phi_\psi(Z;\eta)$ | $\phi_P$, $\psi_P$ |
+| score, EIF | $\psi(W;\theta,\eta)$, $\psi_{\mathrm{DR}}(\cdot;\theta_0,\eta_0)$ | $\psi(w,\theta,\gamma,\alpha)$, $\psi(w)$ | | | $\phi_\psi(Z;\eta)$ | $\phi_P$, $\psi_P$ |
 
 : {tbl-colwidths="[16,16,18,13,16,12,9]"}
 
@@ -269,7 +271,7 @@ of the mixed bias property of the score.
 
 # Implicit weights
 
-## Sensitivity as expected imbalance {.smaller}
+## Sensitivity as expected imbalance {.smaller .dense}
 
 [Definition.]{.label} For an estimator that is differentiable in the outcomes, the implicit weights are
 $w_i=n\,\partial\hat\theta_n/\partial Y_i$, $i=1,\dots,n$, which are functions of the whole data set. Their sample
@@ -280,9 +282,9 @@ $h$ in expectation if $\mathbb{E}[\hat\Delta(h)]=0$.
 every data set, $\delta\mapsto\hat\theta_n(Z_{1:n},Y_{1:n}+\delta h(Z_{1:n}))$ is differentiable on
 $(-\delta_0,\delta_0)$ and its derivative is bounded by an integrable function that does not depend on $\delta$. Then
 $$
-\partial_\delta b_n(0;h)=\mathbb{E}_P\Big[\frac1n\sum_{i=1}^nw_i\,h(Z_i)\Big]-\langle\alpha_0,h\rangle
-=\mathbb{E}_P[\hat\Delta(h)].
+\partial_\delta b_n(0;h)=\mathbb{E}_P\Big[\frac1n\sum_{i=1}^nw_i\,h(Z_i)\Big]-\langle\alpha_0,h\rangle ,
 $$
+and for $h$ in the domain of $\nu(W;\cdot)$ the right side is $\mathbb{E}_P[\hat\Delta(h)]$.
 
 - The estimator is locally insensitive in the direction $h$ exactly when its implicit weights balance $h$ in
   expectation, and over a class $\mathcal H$ exactly when they act in expectation as the Riesz representer on
@@ -290,7 +292,8 @@ $$
   with respect to the auxiliary outcomes, and the sum runs over both samples.
 - [Proof.]{.label} Under $P_{\delta h}$ the data have the law of $(Z_{1:n},Y_{1:n}+\delta h(Z_{1:n}))$ under $P$.
   Differentiate inside the expectation by the chain rule and dominated convergence, and use
-  $\theta(P_{\delta h})=\theta_0+\delta\langle\alpha_0,h\rangle$ and $\mathbb{E}[\nu(W;h)]=\langle\alpha_0,h\rangle$.
+  $\theta(P_{\delta h})=\theta_0+\delta\langle\alpha_0,h\rangle$. The second form follows from
+  $\mathbb{E}[\nu(W;h)]=\langle\alpha_0,h\rangle$.
 
 ## Estimators that are linear in the outcomes {.smaller}
 
@@ -436,8 +439,8 @@ $$
   $\nu(W;h)=h(1,X)-h(0,X)$, so $\hat\Delta(h)$ can be computed on real data without $g_0$ or $\alpha_0$, and for a
   direction estimated on an independent sample, Proposition 1 applies conditionally on that estimate. In the
   partially linear model, $\langle\alpha_0,h\rangle=0$ for every $h$ that depends on $X$ only, and in such directions
-  we replace the sample mean of $\nu(W_i;h)$, a function of the unknown $m_0$, by its expectation $0$ and use
-  $\hat\Delta(h)=n^{-1}\sum_iw_ih(X_i)$.
+  we use the imbalance $n^{-1}\sum_iw_ih(X_i)$, which replaces the sample mean of $\nu(W_i;h)$, a function of the
+  unknown $m_0$, by its expectation $0$.
 - [Directions.]{.label} Informative directions are those along which the outcome regression can vary and which are
   correlated with the treatment, such as an estimate $\hat m(X)$ of the propensity score or of the treatment
   regression from an independent sample. A plug-in estimator that shrinks the outcome regression in such a direction
@@ -506,7 +509,7 @@ which for $T=\theta_\xi$ is the posterior mean $\hat\theta_\Pi(\mathcal D_n)$.
 
 : {tbl-colwidths="[14,15,13,12,13,12,11,10]"}
 
-[@ma2026causalfm and @javurek2026sensitivity share most of their notation and appear in one column. The superscript $in$ of the query point of @robertson2025dopfn and the arguments of $\pi^{\mu_t}$ in the posterior mean of @balazadeh2025causalpfn are omitted.]{.source}
+[@ma2026causalfm and @javurek2026sensitivity share most of their notation and appear in one column, and only @ma2026causalfm write $T_n$. The superscript $in$ of the query point of @robertson2025dopfn and the arguments of $\pi^{\mu_t}$ in the posterior mean of @balazadeh2025causalpfn are omitted.]{.source}
 
 ## Symbols with other meanings in the sources {.smaller .dense}
 
@@ -529,7 +532,7 @@ Write a data-generating process as $\xi=(\xi_X,\xi_D,\xi_Y)$ with
 $P_\xi=P_{X;\xi_X}\otimes P_{D\mid X;\xi_D}\otimes P_{Y\mid D,X;\xi_Y}$, with treatment mechanism
 $P_{D\mid X;\xi_D}$, outcome mechanism $P_{Y\mid D,X;\xi_Y}$ and densities $p(x;\xi_X)$, $p(d\mid x;\xi_D)$ and
 $p(y\mid d,x;\xi_Y)$. The prior has independent mechanisms if $\xi_D$ is independent of $(\xi_X,\xi_Y)$ under $\Pi$,
-and $\Pi_{X,Y}$ is the marginal prior of $(\xi_X,\xi_Y)$.
+and we write $\Pi_{X,Y}$ for the marginal prior of $(\xi_X,\xi_Y)$.
 
 [Proposition 7.]{.label} Under independent mechanisms the posterior of $(\xi_X,\xi_Y)$ is proportional to
 $\Pi_{X,Y}(\mathrm d\xi_X,\mathrm d\xi_Y)\prod_ip(X_i;\xi_X)\,p(Y_i\mid D_i,X_i;\xi_Y)$ and does not involve the
@@ -541,7 +544,7 @@ likelihood of the treatments, so the posterior mean of the ATE is the estimate o
 | Do-PFN [@robertson2025dopfn] | node of a random structural causal model | node of the same graph | shared graph |
 | CausalPFN [@balazadeh2025causalpfn] | propensity score whose logit is a linear, possibly constant, function of $X$ or a random network | columns of a base table relabelled as means of the potential outcomes | independent draws |
 | CausalFM [@ma2026causalfm] | random network $f_A(X,U_A)$ | separate random network $f_Y(X,A,U_Y)$ | independent parameters and noise |
-| Debiased PFNs, training prior for the ATE | propensity score drawn independently of the outcome regressions | random outcome regressions | independent of the outcome regressions |
+| Debiased PFNs, training prior for the ATE before the prior correction | propensity score drawn independently of the outcome regressions | random outcome regressions | independent of the outcome regressions |
 
 : {tbl-colwidths="[20,31,29,20]"}
 
@@ -598,8 +601,8 @@ $$
 \beta=\tilde\beta+\kappa\gamma,\qquad\tilde\beta\sim N(0,\tau_b^2I/p),\qquad\kappa\sim N(0,s^2),
 $$
 with $s$ large, so the component of $\beta$ along $\gamma$ has a diffuse prior and $\beta$ and $\gamma$ are dependent
-a priori. Since $\alpha_0=(D-X\gamma)/\sigma_V^2$, a shift of the outcome regression by $\kappa\alpha_0$ changes $\theta$
-by $\kappa/\sigma_V^2$ and $\beta$ by $-\kappa\gamma/\sigma_V^2$, so under the flat prior on $\theta$ the augmented
+a priori. Since $\alpha_0=(D-X\gamma)/\sigma_V^2$, a shift of the outcome regression by $-\sigma_V^2\kappa\alpha_0$
+changes $\theta$ by $-\kappa$ and $\beta$ by $\kappa\gamma$, so under the flat prior on $\theta$ the augmented
 prior adds a random multiple of the Riesz representer to the outcome regression.
 
 [Proposition 9.]{.label} Let $\gamma$ be known and $s\to\infty$, and write
@@ -615,7 +618,7 @@ In this model the augmented prior with a flat prior on $\kappa$ is the prior of 
 
 ## Cross-fitting in context {.smaller}
 
-- [Cross-fitting in context.]{.label} Split the observations into $K$ folds $I_1,\dots,I_K$. When query rows, the rows
+- Split the observations into $K$ folds $I_1,\dots,I_K$. When query rows, the rows
   for which the network outputs predictions, attend to context rows and to no other query row, and context rows to no
   query rows, predicting fold $I_k$ as a query set with the other folds as context gives predictions
   $\hat g_k(Z_i)$, $i\in I_k$, where $\hat g_k$ depends only on the observations outside $I_k$. This is cross-fitting
@@ -740,11 +743,10 @@ $\mathbb{E}[n^{-1}\sum_iw_ih(Z_i)]=\langle\omega_n,h\rangle$.
 | $g_0$, $m_0$, $\alpha_0$ | outcome regression, propensity score, Riesz representer | $\Pi$, $\xi$, $P_\xi$, $\theta_\xi$ | prior, data-generating process or task, its law, its target |
 | $\theta_0=\mathbb{E}[\nu(W;g_0)]$ | target, linear in $g_0$ | $F_\chi$, $\chi$ | network and its parameters, $F_\phi$ and $\phi$ in the paper |
 | $\psi(W;\theta,\eta)$, $\eta$ | score, nuisance | $\hat\theta_\Pi$, $a_\chi$ | posterior mean, amortisation error |
-| $\varphi$ | influence function, the EIF in a nonparametric model | $w_i=n\,\partial\hat\theta/\partial Y_i$ | implicit weights |
+| $\varphi$ | influence function | $w_i=n\,\partial\hat\theta/\partial Y_i$ | implicit weights |
 | $P_{\delta h}$, $b_n(\delta;h)$ | shifted law, bias along the shift | $\hat\Delta(h)$ | sample imbalance of the weights on $h$ |
 | $\hat S$, $\tau$ | linear smoother, CATE | $\omega_n$, $\varpi_i$ | mean implicit weight, Bayesian bootstrap weights |
 
 : {tbl-colwidths="[18,32,18,32]"}
 
-In the paper, $\phi$ denotes the network parameters, written $\chi$ in these slides, and $\varpi_j$ is also used for
-the weights of a linear smoother.
+In the paper, $\varpi_j$ also denotes the weights of a linear smoother.
