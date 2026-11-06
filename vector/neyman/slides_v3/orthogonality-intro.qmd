@@ -270,8 +270,10 @@ Write a task as $\xi=(\xi_X,\xi_D,\xi_Y)$ with $P_\xi=P_{X;\xi_X}\otimes P_{D\mi
 
 # Research question and contribution
 
+::: {.content-visible when-format="revealjs"}
 ::: {.notes}
 Here the talk moves from the literature to our own project.
+:::
 :::
 
 ## Project question and motivation {.smaller}
@@ -285,6 +287,7 @@ Here the talk moves from the literature to our own project.
 3. Which training targets and priors make the Bayes rule of an in-context learner first-order insensitive?
 4. Are trained networks first-order insensitive when they use the corrections of @melnychuk2026debiased, or in-context nuisances with cross-fitting and an AIPW layer?
 
+::: {.content-visible when-format="revealjs"}
 ::: {.notes}
 - A score $\psi(W;\theta,\eta)$ is an estimating function whose mean is zero at the true $\theta_0$ and the true nuisance $\eta_0$. Neyman orthogonality says that this mean does not move to first order when the nuisance moves.
 - A causal PFN returns the estimate in one forward pass and has no score, so orthogonality cannot be checked for it.
@@ -294,6 +297,7 @@ Here the talk moves from the literature to our own project.
 - Sub-question 1 is answered by first-order insensitivity in the next section, sub-question 2 by the diagnostic and the block test. Sub-questions 3 and 4 concern training targets, priors and designs, and today only the variants of the loss touch them.
 
 *Say it like this.* Orthogonality is a property of a score. Our networks have no score, so we need a property of the estimator itself, and a way to check it from the data.
+:::
 :::
 
 <!-- ## Contribution and positioning {.smaller .dense}
@@ -308,6 +312,7 @@ Here the talk moves from the literature to our own project.
 
 : {tbl-colwidths="[34,26,40]"}
 
+::: {.content-visible when-format="revealjs"}
 ::: {.notes}
 Read each row from the left column (what we propose) to the right column (what is new relative to the closest work).
 
@@ -316,10 +321,12 @@ Read each row from the left column (what we propose) to the right column (what i
 3. The weighting representation $\hat\theta=n^{-1}\sum_iw_iY_i$ is known for linear estimators (Armstrong and Kolesár 2021), and we show it for nonlinear equivariant estimators.
 4. The Bayes rules of in-context learners are theory work that is not on today's slides.
 5. The measurement on trained causal PFNs is the experimental part.
+:::
 ::: -->
 
 # First-order insensitivity and implicit weights
 
+::: {.content-visible when-format="revealjs"}
 ::: {.notes}
 Notation used from here on.
 
@@ -330,6 +337,7 @@ Notation used from here on.
 - $\langle a,b\rangle=\mathbb E[a(Z)b(Z)]$ and $\|a\|^2=\langle a,a\rangle$. $L^2(P_Z)$ is the set of functions $h$ of $Z$ with $\mathbb E[h(Z)^2]<\infty$.
 - For the ATE, $\alpha_0(d,x)=d/m_0(x)-(1-d)/\{1-m_0(x)\}$, and $\mathbb E[\alpha_0(Z)g(Z)]=\mathbb E[g(1,X)-g(0,X)]$ for every $g$, because $\mathbb E[D\,g(D,X)/m_0(X)\mid X]=g(1,X)$.
 - $\mathbb E[\cdot]$ is the mean over many data sets drawn from $P$, so $\mathbb E[\hat\theta]-\theta_0$ is the bias.
+:::
 :::
 
 ## Outcome shifts and first-order insensitivity {.smaller}
@@ -346,6 +354,7 @@ Notation used from here on.
 - Neyman orthogonality requires that a moment condition does not respond to first-order errors in a nuisance, and first-order insensitivity requires the same of the mean of the estimate along shifts of the outcome regression.
 - As $n\to\infty$, the condition is the derivative part of local asymptotic unbiasedness [@hirano2012impossibility].
 
+::: {.content-visible when-format="revealjs"}
 ::: {.notes}
 **What is $h$?** A function of the treatment and the covariates with $\mathbb E[h(Z)^2]<\infty$. It gives the shape of a change of the outcome regression.
 
@@ -365,6 +374,7 @@ Notation used from here on.
 
 *Say it like this.* We imagine a slightly different world in which the outcome regression is moved by $\delta$ times $h$. The true ATE then moves by $\delta\langle\alpha_0,h\rangle$. If the average estimate moves by the same amount, errors in learning the regression along $h$ do not turn into bias.
 :::
+:::
 
 ## Implicit weights {.smaller .dense}
 
@@ -380,6 +390,7 @@ The estimator is first-order insensitive in the direction $h$ exactly when its w
 
 [Sample imbalance.]{.label} The sample imbalance $\hat\Delta(h)=n^{-1}\sum_iw_ih(Z_i)-n^{-1}\sum_i\nu(W_i;h)$ has the sensitivity as its mean when $\nu$ does not depend on $P$, as for the ATE, and it needs neither $g_0$ nor $\alpha_0$. In simulations, where $\alpha_0$ is known, we report $S_\alpha=\mathbb{E}[\hat\Delta(\alpha_0)]/\|\alpha_0\|^2$. A value $S_\alpha=0$ means that the mean of the estimate follows a shift of the target along $\alpha_0$ fully, and $S_\alpha=-0.2$ means that it follows only 80% of it.
 
+::: {.content-visible when-format="revealjs"}
 ::: {.notes}
 - **Reading $w_i$.** If the outcome of row $i$ increases by a small amount $e$, the estimate increases by about $e\,w_i/n$. The factor $n$ puts the weights on the scale of inverse propensity weights. Automatic differentiation gives all $n$ derivatives in one backward pass.
 - **Examples.** For inverse propensity weighting $w_i=\hat\alpha(Z_i)$. For the difference in means $w_i=n/n_1$ for treated and $-n/n_0$ for control rows. For a network the weights depend on all outcomes and are computed at the observed data.
@@ -390,6 +401,7 @@ The estimator is first-order insensitive in the direction $h$ exactly when its w
 - **Why $S_\alpha$.** Along $h=\alpha_0$ the target moves by $\delta\|\alpha_0\|^2$ and the mean of the estimate by $\delta\|\alpha_0\|^2(1+S_\alpha)$, so $1+S_\alpha$ is the share of the change that the estimate follows. $S_\alpha=-1$ means no response at all. It needs the true $\alpha_0$, so we compute it only in simulations.
 
 *Say it like this.* The weights show how the estimate reacts to each outcome. If they act on average like inverse propensity weights, the estimate follows every shift of the regression, and otherwise the gap is the sensitivity.
+:::
 :::
 
 ## Estimators that are equivariant in the outcomes {.smaller .dense}
@@ -406,6 +418,7 @@ $$
 - For every law of the noise, the bias is the sensitivity along the true regression $g_0$ plus the mean of the noise term. An equivariant estimator that is first-order insensitive along $g_0$ is therefore unbiased up to the noise term.
 <!-- - The noise term has mean zero for estimators linear in the outcomes with weights that depend on the covariates only, and otherwise it comes from the dependence of the weights on the outcomes. For normal noise, by Stein's lemma, its mean is $\sum_i\mathbb{E}[\sigma^2(Z_i)\,\partial^2\hat\theta/\partial Y_i^2]$, the curvature of the estimate in the outcomes. -->
 
+::: {.content-visible when-format="revealjs"}
 ::: {.notes}
 - **Why it matters.** Weights are derivatives and in general describe only small changes. For equivariant estimators the estimate is exactly the weighted mean $n^{-1}\sum_iw_iY_i$, so the weights describe the whole estimate and its bias.
 - **Reading the definition.** Add $a$ to every outcome and the estimate moves by $a\kappa_n$; multiply every outcome by $b>0$ and the estimate is multiplied by $b$. Adding a constant to all outcomes changes no treatment effect, so $\kappa_n=0$ for the ATE.
@@ -415,6 +428,7 @@ $$
 - For the small networks the bias is almost all imbalance along $g_0$ (correlation 0.98 to 0.99), so their noise term is small.
 
 *Say it like this.* Because the networks standardise the outcomes, their estimate is exactly a weighted mean of the outcomes. The error then splits into an imbalance part, which our diagnostic targets, a sampling part and a curvature part.
+:::
 :::
 
 ## A diagnostic from one data set {.smaller .dense}
@@ -437,6 +451,7 @@ The network is run on the other $n_e=n-n_s$ rows, the evaluation rows.
 - Without the clipping, rows with propensity scores close to 0 or 1 receive very large inverse propensities and dominate the imbalance.
 - The candidates for $\hat m$ are logistic regression, gradient boosting and the propensity head of the network, and we take the one whose representer has the smallest Riesz loss on the split.
 
+::: {.content-visible when-format="revealjs"}
 ::: {.notes}
 - **Goal.** Test the hypothesis that the sensitivity along $\hat h$ is zero, with one data set and the network, without $g_0$ or $\alpha_0$.
 - **The imbalance.** The first sum is the weighted mean of $\hat h$ with the weights of the network, the second how much the ATE would change if the regression moved by $\hat h$. Under the hypothesis they agree in expectation.
@@ -444,6 +459,7 @@ The network is run on the other $n_e=n-n_s$ rows, the evaluation rows.
 - **The split.** $n_s$ is 50 rows at $n=250$ and 100 rows at $n=500$, and the network runs on the other 200 or 400 rows. Given the split, $\hat h$ is a fixed function for the evaluation rows, so the mean of the imbalance is the sensitivity along $\hat h$. Fitting $\hat h$ on the same rows would use the data twice.
 - **The clipping.** With $\hat m$ in $[0.3,0.7]$, $|\hat\alpha_{0.3}|\le 1/0.3\approx 3.3$, and rows with $\hat m$ near 0 or 1 cannot dominate.
 - **Choice of $\hat m$.** The Riesz loss of a candidate representer $a$ is $n_s^{-1}\sum_i\{a(Z_i)^2-2[a(1,X_i)-a(0,X_i)]\}$. Its mean is $\|a-\alpha_0\|^2-\|\alpha_0\|^2$, so it is smallest for the candidate closest to $\alpha_0$.
+:::
 :::
 
 <!-- ## Block test of zero sensitivity {.smaller .dense}
@@ -461,6 +477,7 @@ The network is run on the other $n_e=n-n_s$ rows, the evaluation rows.
 
 The power is the rejection rate for the plug-in estimate of the network, which is sensitive.
 
+::: {.content-visible when-format="revealjs"}
 ::: {.notes}
 - **Why blocks.** One run gives one imbalance, and there is no variance formula for a network. With 5 blocks of 80 rows at $n=500$, each run on its own context, the block imbalances are independent given the split, so their spread estimates the uncertainty. Each has the sensitivity at the block size as its mean.
 - **The test.** The usual one-sample $t$-statistic of the $q$ block values. The critical values are 3.18 for $q=4$ and 2.78 for $q=5$. Ibragimov and Müller (2010) show that with normal block values the test keeps its level for $2\le q\le14$, also with unequal variances.
@@ -470,12 +487,15 @@ The power is the rejection rate for the plug-in estimate of the network, which i
 - Both use the network's data, so the test sees realistic contributions while the hypothesis holds. The power is the rejection rate for the plug-in estimate of the network.
 
 *Say it like this.* We split the data into a few independent blocks, compute the imbalance in each block and run a $t$-test across the blocks. Hall's correction removes the skewness that inverse propensities create.
+:::
 ::: -->
 
 # Experiments with trained networks
 
+::: {.content-visible when-format="revealjs"}
 ::: {.notes}
 Here we move from the method to its evaluation on our small trained networks and on released networks.
+:::
 :::
 
 ## Networks, priors and truths {.smaller .dense}
@@ -488,12 +508,14 @@ Here we move from the method to its evaluation on our small trained networks and
 
 [Released networks.]{.label} CausalPFN [@balazadeh2025causalpfn], CausalFM [@ma2026causalfm] and Do-PFN [@robertson2025dopfn] are evaluated at the 16 truths per prior on 8 data sets each. We use them as black boxes, so their sensitivities are central finite differences of the estimate along the direction.
 
+::: {.content-visible when-format="revealjs"}
 ::: {.notes}
 - A causal PFN is trained on many simulated tasks drawn from a prior. Each task is a data-generating process, and the network learns to predict the CATE of the rows from a context of rows. The plug-in estimate of the ATE is the mean of the predicted CATEs.
 - The twelve small networks are 4 variants times 3 seeds. V0 has no nuisance heads, V1 has heads for $m$, $g$ and $\alpha$ supervised with the exact nuisances, V2 adds an AIPW layer with cross-fitting in context, and in V3 the head losses are annealed to zero by the middle of training.
 - $\rho$ is the correlation between the baseline outcome and the logit of the propensity score, which creates confounding. Strong confounding uses $|\rho|\in[0.7,0.9]$ and a propensity logit scaled by 1.5 to 2.5, which gives weak overlap. Both ranges lie inside the training prior, so these truths are a hard region of the prior.
 - A truth is one fixed data-generating process. Units are standard deviations of $Y$, so a bias of 0.2 is 0.2 standard deviations.
 - Released networks are black boxes, so their sensitivity is the central finite difference $\{\hat\theta(Y+\eta h)-\hat\theta(Y-\eta h)\}/(2\eta)$.
+:::
 :::
 
 ## Sensitivity of trained networks along the Riesz representer {.smaller}
@@ -502,12 +524,14 @@ Here we move from the method to its evaluation on our small trained networks and
 
 [The values are averages of the plug-in estimates at the 16 truths per prior over five small networks. At $n=500$, $S_\alpha$ is $-0.21$ on the training prior and $-0.39$ under strong confounding, so the mean of the estimate follows only 79% and 61% of a shift of the outcome regression along $\alpha_0$, and the magnitude of $S_\alpha$ decreases only slightly from $n=100$ to $500$.]{.source}
 
+::: {.content-visible when-format="revealjs"}
 ::: {.notes}
 - Top panels show $S_\alpha$, bottom panels the RMS bias, the root mean square over truths of the bias at each truth, against $n$.
 - At $n=500$ the average estimate follows only 79% and 61% of a shift along $\alpha_0$. The values hardly change from $n=100$ to 500, so the shrinkage does not disappear with more rows in this range.
 - Strong confounding is worse because the networks shrink most where the overlap is weak.
 
 *Say it like this.* The small networks follow only about 80% of a change of the true effect on the training prior, and about 60% under strong confounding.
+:::
 :::
 
 ## Released causal PFNs {.smaller}
@@ -518,9 +542,11 @@ Under a prior in which the treatment mechanism is drawn independently of the cov
 
 [The bars are for $n=500$ with 8 data sets per truth at the 16 truths per prior. CausalPFN follows 83% of a shift along $\alpha_0$ on the training prior and 70% under strong confounding, with an RMS bias of 0.11 and 0.22, and CausalFM and Do-PFN follow only 26% to 65% of such a shift, with an RMS bias of 0.46 to 0.83. At the same truths, $S_\alpha$ is $-0.21$ and $-0.39$ for our small networks.]{.source}
 
+::: {.content-visible when-format="revealjs"}
 ::: {.notes}
 - Under independent mechanisms the treatments carry no information about the outcome regression, so the posterior mean of the ATE is the ATE of the posterior mean regression $\hat g_\Pi$. Its error contains $\langle\alpha_0,\hat g_\Pi-g_0\rangle$, the plug-in error that AIPW would correct.
 - CausalPFN follows 83% and 70% of a shift, CausalFM and Do-PFN only 26% to 65%. Our small networks, with $S_\alpha$ of $-0.21$ and $-0.39$, are slightly more sensitive than CausalPFN.
+:::
 :::
 
 ## Noise term and corrections {.smaller}
@@ -531,12 +557,14 @@ Under a prior in which the treatment mechanism is drawn independently of the cov
 
 - The correction uses only the implicit weights of the network and an outcome regression fitted on other rows.
 
+::: {.content-visible when-format="revealjs"}
 ::: {.notes}
 - The correction is a plug-in with $\hat g$ plus the residuals weighted by the network's own weights, so it looks like AIPW with the network's weights in place of $\hat\alpha$.
 - Its bias is the product of a weight error, $\omega_n-\alpha_0$ with the average weight $\omega_n$, and a regression error, plus the noise term.
 - With $\hat g$ from gradient boosting fitted on other rows, the RMS bias of the small networks at $n=500$ falls by about half.
 
 *Say it like this.* The network's own weights can be used to correct its estimate, and the correction halves the bias of the small networks.
+:::
 :::
 
 <!-- ## Level of the block test {.smaller}
@@ -545,11 +573,13 @@ Under a prior in which the treatment mechanism is drawn independently of the cov
 
 [Each bar is the larger of the rejection rates at $n=250$ and $500$ on the small networks, pooled over both priors. Along the estimated representer $\hat\alpha_{0.01}$ and with the clipping bound 0.1, the test rejects too often. The excess rejections lie in the lower tail, since the contributions of the rows are skewed to the right, with a median skewness of 2.9 to 7.7 over the data sets, and a $t$-statistic of a mean of such contributions is skewed to the left [@hall1992removal]. We chose the bound 0.3 on 24 further truths per prior that do not enter these rates, and with it the block test with $q=4$ rejects in 4.7% to 6.4% of the data sets pooled over both priors and in at most 6.8% on each prior.]{.source}
 
+::: {.content-visible when-format="revealjs"}
 ::: {.notes}
 - Each bar is the larger of the two rejection rates at $n=250$ and $500$ for the two estimators with zero sensitivity, pooled over both priors, along four directions. The dotted line is the nominal 5%.
 - Along the almost unclipped representer and with the bound 0.1, the test rejects too often, in the lower tail, because the contributions are strongly skewed.
 - The bound 0.3 was chosen on 24 separate truths per prior.
 - The overlap direction $h_{\mathrm o}=(2d-1)\hat m(1-\hat m)$ is bounded and puts weight on rows with good overlap.
+:::
 ::: -->
 <!-- 
 ## Estimand of the diagnostic {.smaller}
@@ -558,10 +588,12 @@ Under a prior in which the treatment mechanism is drawn independently of the cov
 
 [The bars are correlations over truths on the small networks at $n=500$ between $S_\alpha$ and the mean share of the plug-in estimate along a direction, which is its imbalance as a share of the change of the target along that direction. Along $\alpha_0$ the correlation is at least 0.99, and along the directions fitted on the split it is at most 0.55 and 0.24 on the two priors, so the diagnostic does not estimate $S_\alpha$, and we use it as a test of zero sensitivity along the fitted direction.]{.source}
 
+::: {.content-visible when-format="revealjs"}
 ::: {.notes}
 - The share along a direction is the imbalance divided by the change of the target along that direction, the analogue of $S_\alpha$ for that direction.
 - Along the true $\alpha_0$ the share is $S_\alpha$ itself up to sampling noise, so the correlation is at least 0.99.
 - Along the fitted directions the correlation is low, because $S_\alpha$ comes mostly from rows with weak overlap, which the clipping downweights. So the diagnostic does not estimate $S_\alpha$, and we use it only as a test.
+:::
 :::
 
 ## Results of the diagnostic on the small networks {.smaller}
@@ -580,19 +612,21 @@ Under a prior in which the treatment mechanism is drawn independently of the cov
 - The share along the fitted direction is only weakly correlated with $S_\alpha$, so we make no claim that it estimates $S_\alpha$ or its sign.
 - At $n=500$, central differences of the estimate from forward passes agree with the backward pass within two Monte Carlo standard errors in 99% of 384 pairs of truth and network, so for a network available only as a black box the imbalance can be computed from forward passes.
 
+::: {.content-visible when-format="revealjs"}
 ::: {.notes}
 - The middle column is the block test with $q=4$ without the transformation on the 16 truths per prior. The right column is the block test with $q=5$ after Hall's transformation on new truths that played no role in choosing the test, which guards against a test that looks good by chance.
 - The level is close to the nominal 5%.
 - The test detects the sensitivity of the plug-in estimate in 58% to 70% of the data sets with at most 500 rows. Power is lower at $n=500$ than at $n=250$, possibly because the sensitivity per block is smaller with larger blocks, and this is open.
 - Without the transformation the level is too high on the new truths, so the correction is needed.
 - The finite differences agree with the backward pass, so the test also works for black-box networks.
+:::
 ::: -->
 
 ## Status and next steps {.smaller .dense}
 
 | Part | Status |
 |:--|:--|
-| First-order insensitivity, implicit weights, equivariant estimators and the corrections | propositions with proofs in the draft of the paper |
+| First-order insensitivity, implicit weights, equivariant estimators and the corrections | propositions in the draft of the paper, working on proofs |
 | Block test of zero sensitivity | level at most nominal for normal block values, and with the transformation of Hall rejection rates under zero sensitivity of at most 5.3% on each prior on new truths for the small networks |
 | Small networks | evaluated at $n\le500$ |
 | Released networks CausalPFN, CausalFM and Do-PFN | evaluated at the 16 truths per prior |
@@ -601,10 +635,12 @@ Under a prior in which the treatment mechanism is drawn independently of the cov
 
 [Next steps.]{.label} We evaluate larger networks, compute the power of the test up to $n=2{,}000$ and evaluate the corrections. The target venue of the paper is ICML 2027, with the ATE in the main text, and CausalPFN is evaluated on IHDP [@hill2011bayesian] and on the LaLonde PSID data [@lalonde1986evaluating; @dehejia1999causal] in the version of RealCause [@neal2020realcause], against tuned DoubleML [@bach2024doubleml] and AIPW with TabPFN nuisances [@hollmann2025tabpfn].
 
+::: {.content-visible when-format="revealjs"}
 ::: {.notes}
 - The theory, with definitions, propositions and proofs, is drafted. The level result for the block test holds for normal block values and the untransformed statistic, and the level after the transformation rests on the simulations.
 - Next come larger networks, the power up to $n=2{,}000$ and the corrections.
 - IHDP is a semi-synthetic benchmark with known outcome surfaces, and the RealCause version of the LaLonde PSID data is a simulation fitted to real data, so in both the true effect is known.
+:::
 :::
 
 ## Questions for discussion {.smaller}
@@ -614,6 +650,7 @@ Under a prior in which the treatment mechanism is drawn independently of the cov
 3. How can the level be controlled under skewed contributions with few blocks, for example by the transformation of @hall1992removal or by a bootstrap-$t$?
 4. Which released networks and which benchmarks with known outcome regressions should the evaluation include?
 
+::: {.content-visible when-format="revealjs"}
 ::: {.notes}
 Own positions, if asked.
 
@@ -630,6 +667,7 @@ Likely questions and short answers.
 - *Why not the bootstrap?* A bootstrap needs many forward passes and theory for a nonlinear estimator, while independent blocks give a $t$-test that keeps its level with few groups.
 - *Why clip at 0.3?* Clipping trades power for level, and the bound was chosen on separate truths.
 - *Are the networks out of distribution under strong confounding?* No, both parameters lie inside the ranges of the training prior.
+:::
 :::
 
 ## References {.scrollable}
