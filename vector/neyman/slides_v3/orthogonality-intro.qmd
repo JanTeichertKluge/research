@@ -647,8 +647,8 @@ Under a prior in which the treatment mechanism is drawn independently of the cov
 
 1. Which fixed directions of a sensitivity, such as the constant shift $h(d,x)=d$ of the treatment effect, have a meaning in applications?
 2. Would users of a pretrained causal estimator run a test of zero sensitivity along such directions before reporting the estimate?
-3. How can the level be controlled under skewed contributions with few blocks, for example by the transformation of @hall1992removal or by a bootstrap-$t$?
-4. Which released networks and which benchmarks with known outcome regressions should the evaluation include?
+<!-- 3. How can the level be controlled under skewed contributions with few blocks, for example by the transformation of @hall1992removal or by a bootstrap-$t$? -->
+3. Which released networks and which benchmarks with known outcome regressions should the evaluation include?
 
 ::: {.content-visible when-format="revealjs"}
 ::: {.notes}
