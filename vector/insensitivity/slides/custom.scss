@@ -1,0 +1,77 @@
+/*-- scss:defaults --*/
+$body-color: #111111;
+$link-color: #1f4e79;
+$presentation-heading-color: #111111;
+$presentation-font-size-root: 30px;
+$presentation-h2-font-size: 1.25em;
+$presentation-h1-font-size: 1.6em;
+$presentation-font-smaller: 0.8;
+
+/*-- scss:rules --*/
+.reveal .slide-title,
+.reveal h1,
+.reveal h2 {
+  font-weight: 600;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.reveal h2 {
+  border-bottom: 1px solid #b0b0b0;
+  padding-bottom: 0.2em;
+  margin-bottom: 0.6em;
+}
+
+.reveal p,
+.reveal li {
+  line-height: 1.35;
+}
+
+.reveal ul li {
+  margin-bottom: 0.3em;
+}
+
+.reveal table {
+  font-size: 0.8em;
+}
+
+.reveal section.smaller table {
+  font-size: 0.95em;
+}
+
+.reveal table th {
+  font-weight: 600;
+  border-bottom: 1px solid #555555;
+}
+
+.reveal table td {
+  vertical-align: top;
+}
+
+.reveal .label {
+  font-weight: 600;
+}
+
+.reveal .source {
+  font-size: 0.7em;
+  color: #444444;
+}
+
+.reveal #refs {
+  font-size: 0.56em;
+  line-height: 1.3;
+}
+
+.reveal #refs .csl-entry {
+  margin-bottom: 0.35em;
+}
+
+.reveal .slides section.dense p,
+.reveal .slides section.dense li {
+  font-size: 0.86em;
+  line-height: 1.3;
+}
+
+.reveal section.dense table {
+  font-size: 0.85em;
+}

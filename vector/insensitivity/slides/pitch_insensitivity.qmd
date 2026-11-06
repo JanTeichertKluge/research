@@ -1,0 +1,160 @@
+---
+title: "First-Order Insensitivity of Trained Causal PFNs"
+subtitle: "A criterion through implicit weights, and first measurements"
+author: "Jan Teichert-Kluge"
+date: 2026-10-29
+title-slide-attributes:
+  data-background-image: images/logos.png
+  data-background-size: 30%
+  data-background-position: 50% 92%
+format:
+  revealjs:
+    theme: [simple, custom.scss]
+    width: 1280
+    height: 720
+    margin: 0.06
+    slide-number: true
+    embed-resources: true
+    html-math-method: mathjax
+    pdf-max-pages-per-slide: 6
+bibliography: [../../references.bib, references.bib]
+---
+
+## Starting point {.smaller}
+
+- We observe $n$ rows $W_i=(Y_i,D_i,X_i)$ with an outcome, a binary treatment and covariates. The outcome regression
+  is $g_0(d,x)=\mathbb{E}[Y\mid D=d,X=x]$, the target is the average treatment effect (ATE)
+  $\theta_0=\mathbb{E}[g_0(1,X)-g_0(0,X)]$, and its Riesz representer is
+  $\alpha_0(d,x)=d/m_0(x)-(1-d)/\{1-m_0(x)\}$ with the propensity score $m_0$.
+- Causal prior-data fitted networks (PFNs) such as Do-PFN [@robertson2025dopfn], CausalPFN
+  [@balazadeh2025causalpfn] and CausalFM [@ma2026causalfm] return an estimate of $\theta_0$ in one forward pass,
+  without an estimating equation, so Neyman orthogonality cannot be checked for them.
+- @melnychuk2026debiased correct the training label or the pretraining prior, and their guarantees hold for the
+  idealised network, which returns the posterior of the target exactly. A trained network computes
+  $\hat\theta_\chi=\hat\theta_\Pi+a_\chi(\mathcal D_n)$, the Bayes rule plus an amortisation error.
+- [Question.]{.label} Is a trained network, with or without these corrections, first-order insensitive to errors in
+  the outcome regression, and can we measure this from the trained network alone?
+
+## Outcome shifts and first-order insensitivity {.smaller}
+
+[Outcome shifts.]{.label} For a direction $h(d,x)$ and $\delta\in\mathbb{R}$, let $P_{\delta h}$ be the law of
+$(Y+\delta h(D,X),D,X)$. Under $P_{\delta h}$ the outcome regression is $g_0+\delta h$ and the ATE is
+$\theta_0+\delta\langle\alpha_0,h\rangle$. The bias of an estimator $\hat\theta$ along the shift is
+$b_n(\delta;h)=\mathbb{E}_{\delta h}[\hat\theta]-\theta(P_{\delta h})$.
+
+[Definition.]{.label} The estimator $\hat\theta$ is first-order insensitive in the direction $h$ if
+$\partial_\delta b_n(0;h)=0$, and asymptotically first-order insensitive over a class of directions if this
+derivative tends to zero uniformly over the class.
+
+- The condition is the derivative part of local asymptotic unbiasedness [@hirano2012impossibility].
+- It uses only the map from data sets to estimates, so it applies to a trained network.
+- The direction $\alpha_0$ is least favourable for the ATE in the outcome regression when the conditional variance of
+  $Y$ is constant, and we report the sensitivity along it as $S_\alpha=\partial_\delta b_n(0;\alpha_0)/\|\alpha_0\|^2$.
+  An estimate with $S_\alpha=0$ follows the shift of the target, and one with $S_\alpha=-1$ does not respond to it.
+
+## Implicit weights {.smaller}
+
+[Definition.]{.label} For an estimator that is differentiable in the outcomes, the implicit weights are
+$w_i=n\,\partial\hat\theta/\partial Y_i$. For a network they take one backward pass, and for a network available
+only as a black box we estimate the sensitivity by central finite differences in the outcomes.
+
+[Proposition.]{.label} Under a domination condition on the derivative of
+$\delta\mapsto\hat\theta(Y_{1:n}+\delta h)$,
+$$
+\partial_\delta b_n(0;h)=\mathbb{E}\big[\hat\Delta(h)\big],\qquad
+\hat\Delta(h)=\frac1n\sum_{i=1}^n w_i\,h(D_i,X_i)-\frac1n\sum_{i=1}^n\{h(1,X_i)-h(0,X_i)\}.
+$$
+
+- The estimator is first-order insensitive in the direction $h$ exactly when its implicit weights balance $h$ in
+  expectation, and over a class of directions exactly when they act in expectation as $\alpha_0$.
+- For estimators linear in the outcomes, the $w_i$ are the implied weights of @chattopadhyay2023implied and the
+  outcome weights of @knaus2024weighted. For posterior means in multilevel regression and poststratification they are
+  the locally equivalent weights of @giordano2026locally.
+
+## Estimators equivariant in the outcomes {.smaller}
+
+[Equivariance.]{.label} For the ATE, the estimator is equivariant in the outcomes if
+$\hat\theta(a+bY_{1:n})=b\,\hat\theta(Y_{1:n})$ for $a\in\mathbb{R}$ and $b>0$. A network that standardises the
+outcomes with the mean and the standard deviation of the context and returns the estimate on the original scale has
+this property.
+
+[Proposition.]{.label} By Euler's theorem for functions that are homogeneous of degree one,
+$\hat\theta=n^{-1}\sum_iw_iY_i$ and $n^{-1}\sum_iw_i=0$, and therefore for every data set
+$$
+\hat\theta-\theta_0=\hat\Delta(g_0)+\Big\{\frac1n\sum_{i=1}^n\tau_0(X_i)-\theta_0\Big\}
++\frac1n\sum_{i=1}^nw_i\{Y_i-g_0(D_i,X_i)\},
+$$
+with $\tau_0=g_0(1,\cdot)-g_0(0,\cdot)$.
+
+- The first term is the imbalance of the implicit weights on the true outcome regression, and the second has mean
+  zero. The third has mean zero when the weights do not depend on the noise.
+- The weights depend on the outcomes for a network, so the representation holds at the observed data and does not
+  make the estimator linear.
+
+## First measurements on small networks {.smaller .dense}
+
+[Networks.]{.label} We use the 12 pilot networks of nanoCausalPFN, with a nanoTabPFN backbone of about 0.2M
+parameters trained for 3,000 steps on 50 to 250 rows and 1 to 5 covariates. Read-out heads for $m$, $g$ and $\alpha$ are trained
+on the simulator's exact nuisances, and an AIPW score layer combines them with cross-fitting in context.
+
+[Truths.]{.label} We draw 16 truths from the training prior and 16 from a prior with strong confounding and weak
+overlap, and 32 data sets per truth, with outcomes in units of $\mathrm{sd}(Y)$.
+
+| Seed 0, V1, $n=500$ | $S_\alpha$, training prior | $S_\alpha$, strong confounding | RMS bias, training prior | RMS bias, strong confounding |
+|:--|--:|--:|--:|--:|
+| plug-in | $-0.22$ | $-0.40$ | — | — |
+| AIPW, cross-fitted | $-0.21$ | $-0.37$ | 0.191 | 0.330 |
+| AIPW, cross-fitted, true $\alpha_0$ | $0.00$ | $0.01$ | 0.011 | 0.016 |
+
+: {tbl-colwidths="[32,17,17,17,17]"}
+
+- Over all networks and estimators, $S_\alpha$ lies between $-0.15$ and $-0.46$, so the estimates follow about 55%
+  to 85% of a shift along $\alpha_0$. The sensitivity changes little from $n=100$ to $n=500$, and the bias does not
+  decrease with $n$.
+- With the true representer in place of the predicted one, the sensitivity of the AIPW estimate vanishes and its
+  RMS bias over truths falls by a factor between 17 and 32, so the error of the representer head determines the
+  sensitivity of the AIPW estimate.
+- Over truths, the bias of every estimator correlates at 0.96 or more with the imbalance $\hat\Delta(g_0)$.
+
+## Further observations {.smaller}
+
+- [Directions without the truth.]{.label} The imbalance along the centred propensity predicted by the network, or along
+  the fitted values of a logistic regression of $D$ on $X$, has correlations with the bias between $-0.15$ and $0.51$,
+  so these directions recover only part of $\hat\Delta(g_0)$.
+- [Fine-tuning with a penalty.]{.label} A penalty $\hat\Delta(\alpha_\xi)^2+\hat\Delta(d)^2$ on the imbalance reduces
+  $S_\alpha$ of the plug-in estimate from $-0.21$ to $-0.03$ on the training prior, with an RMS bias of 0.183 against
+  0.162 without the penalty. A penalty that matches the weights to $\alpha_\xi$ pointwise raises the RMS bias to 0.241.
+- [Larger networks.]{.label} With nanoTabPFN and nanoTabICL backbones of about 4.9M parameters and 10 seeds per
+  variant, the mean squared bias of the AIPW estimate at fixed truths of the training prior is 2.1 to 2.4 times that
+  of the plug-in estimate. When overlap weakens, where $\alpha_0$ is large, the squared bias of the AIPW estimate
+  grows more than that of the plug-in estimate.
+
+## Planned study {.smaller}
+
+1. [Networks.]{.label} We evaluate CausalPFN, CausalFM, Do-PFN, debiased PFNs with and without the label and prior
+   corrections, and the larger nanoCausalPFN networks with and without the AIPW score layer.
+2. [Truths.]{.label} We fix data-generating processes inside and outside each training prior, among them truths in
+   which the outcome and the treatment depend on the same covariates.
+3. [Measurements.]{.label} We measure the sensitivity $S_\alpha$, the decomposition of the error, the bias and the
+   coverage as functions of $n$, including $n$ beyond the training contexts.
+4. [Diagnostic without the truth.]{.label} We test the imbalance along the fitted outcome regression of an independent
+   estimator, and we look for conditions under which the implicit weights concentrate, so that $\hat\Delta(h)$ gives
+   a test with a known level.
+
+## Points for discussion {.smaller}
+
+- Are trained debiased PFNs available, and in which form do they return the posterior of the target, so that the
+  derivatives with respect to $Y_i$ can be taken through the standardisation and the output layer?
+- @melnychuk2026debiased report that the total variation distance of all networks to the efficient normal
+  approximation grows with $n$ (Sec. 5), and in the measurements above the bias does not decrease with $n$. How large
+  is the amortisation error $a_\chi$ of the corrected networks at the $n$ of their experiments?
+- Which truths test the corrections where they matter, for example the evaluation prior with more observed
+  confounding of @melnychuk2026debiased?
+- The label correction applies the one-step posterior correction of @yiu2025semiparametric in pretraining, and the
+  prior correction extends that of @ray2020semiparametric. Do the trained networks inherit first-order insensitivity
+  from either correction, and does the answer differ between the two?
+
+## References {.scrollable}
+
+::: {#refs}
+:::

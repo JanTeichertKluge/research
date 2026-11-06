@@ -1,0 +1,198 @@
+---
+title: "When Is a Trained Causal PFN Debiased?"
+subtitle: "First-order insensitivity for estimators without a score"
+author: "Jan Teichert-Kluge"
+date: 2026-10-29
+title-slide-attributes:
+  data-background-image: images/logos.png
+  data-background-size: 30%
+  data-background-position: 50% 92%
+format:
+  revealjs:
+    theme: [simple, custom.scss]
+    width: 1280
+    height: 720
+    margin: 0.06
+    slide-number: true
+    embed-resources: true
+    html-math-method: mathjax
+    pdf-max-pages-per-slide: 6
+bibliography: [../../references.bib, references.bib]
+---
+
+# Debiased prior-data fitted networks
+
+## Setting of the debiased PFNs {.smaller}
+
+- We observe $\mathcal D_n=(W_1,\dots,W_n)$ with $W_i=(Y_i,D_i,X_i)$ from a law $P_0$. The target $\theta(P)$, for
+  example the average treatment effect (ATE), has the efficient influence function $\varphi_P$ and the expansion
+  $\theta(P)-\theta(P_0)=-P_0\varphi_P+R_2(P,P_0)$ with a remainder of second order.
+- A prior-data fitted network (PFN) for $\theta$ is trained on data sets simulated from laws $P\sim\Pi$, with the log
+  loss of its output density $q(\theta\mid\mathcal D_n)$ at the label $\theta(P)$ [@muller2022transformers].
+  @melnychuk2026debiased call the network idealised when its output is the posterior of $\theta$ under $\Pi$.
+- [Theorem 1 of the paper.]{.label} The error of the posterior of the target is bounded by the posterior average of the
+  nuisance error plus the remainder. Under assumptions on where the posterior puts its mass, it concentrates no faster
+  than the nuisance posteriors. For the ATE this first-order term is the error of the outcome regressions and the
+  covariate law, and the authors read the theorem as a generalisation of the prior-induced bias
+  [@hahn2018regularization; @melnychuk2026frequentist].
+
+## Two corrections in pretraining {.smaller}
+
+[Label correction.]{.label} The network is trained on the label
+$$
+\tilde\theta(P)=\theta(P)+\sum_{i=1}^n\varpi_i\,\varphi_P(W_i),\qquad(\varpi_1,\dots,\varpi_n)\sim\mathrm{Dirichlet}(1,\dots,1),
+$$
+with the influence function computed from the nuisances of the simulated law $P$. This moves the one-step posterior
+correction of @yiu2025semiparametric into pretraining. For the ATE the label is a Bayesian bootstrap average of AIPW
+pseudo-outcomes.
+
+[Prior correction.]{.label} Each simulated law $P$ is perturbed along a least-favourable submodel, a one-dimensional
+submodel through $P$ whose score is $\varphi_P$, with a coefficient $\lambda\sim N(0,\sigma_n^2)$ and
+$n\sigma_n^2\to\infty$, which extends the prior correction of @ray2020semiparametric. For the ATE with Gaussian noise
+of unit variance, the outcome regression $g$ becomes $g+\lambda\alpha$, with the Riesz representer
+$\alpha(d,x)=d/m(x)-(1-d)/\{1-m(x)\}$, and the covariate law is reweighted.
+
+In both cases the network keeps its interface. It returns the posterior of $\theta$ and no nuisances, so no correction
+step runs at test time.
+
+## Guarantees and their scope {.smaller}
+
+- [Theorem 2.]{.label} With either correction, the posterior concentrates at the rate $n^{-1/2}$ plus the
+  posterior average of the remainder, under a stochastic equicontinuity condition on the empirical term
+  $(\mathbb P_n-P_0)(\varphi_P-\varphi_{P_0})$.
+- [Theorem 3.]{.label} When the remainder is $o_P(n^{-1/2})$, a semiparametric Bernstein–von Mises theorem holds with
+  the efficient variance, so credible intervals have an asymptotic frequentist reading.
+- [Theorem 4.]{.label} The worst-case risk of the corrected posterior mean is of order $n^{-1}$ plus the squared rate of
+  the remainder, which is the minimax rate when a matching lower bound holds.
+
+Every theorem assumes the idealised network, a network trained for one fixed $n$, and a true law $P_0$ in the support
+of the prior. The approximation error of a trained network is set aside.
+
+# The planned contribution
+
+## The open problem {.smaller}
+
+- A trained network computes $\hat\theta_\chi(\mathcal D_n)=\hat\theta_\Pi(\mathcal D_n)+a_\chi(\mathcal D_n)$, the
+  Bayes rule $\hat\theta_\Pi=\mathbb E_\Pi[\theta\mid\mathcal D_n]$ plus an amortisation error. The theorems concern
+  $\hat\theta_\Pi$, and $a_\chi$ enters the estimate directly.
+- Pretraining controls $a_\chi$ only on average under the prior, and on data sets that differ from those of pretraining,
+  for example in $n$ or in the number of covariates, nothing bounds it.
+- In double machine learning, Neyman orthogonality of the score guarantees that nuisance errors have no first-order
+  effect on the estimate [@chernozhukov2018double]. A PFN has no score, so this property cannot be checked for it.
+
+[Question.]{.label} When is an estimator without a score, in particular a trained in-context learner, first-order
+insensitive to errors in the outcome regression, and how can we check this from the data and the trained network
+alone?
+
+## The idea: move the truth and watch the estimate {.smaller}
+
+- Shift the outcome regression $g_0(d,x)=\mathbb E[Y\mid D=d,X=x]$ to $g_0+\delta h$ for a direction $h(d,x)$, for
+  instance by adding $\delta h(D_i,X_i)$ to every outcome. By the Riesz representation theorem the ATE moves by
+  $\delta\langle\alpha_0,h\rangle$.
+- An estimator whose mean moves by the same amount keeps its bias along the shift. An estimator whose mean moves less
+  acquires a bias of order $\delta$.
+- In the partially linear model, a plug-in estimate with a ridge penalty on the covariates moves less along
+  $\alpha_0$. The penalised covariate part of the fit absorbs only part of the shift along the treatment regression,
+  and the treatment coefficient absorbs the rest, which is the regularisation-induced confounding of
+  @hahn2018regularization.
+- The condition needs only the map $\mathcal D_n\mapsto\hat\theta$, so it applies to a trained network, which has no
+  score.
+
+## First-order insensitivity {.smaller}
+
+[Outcome shifts.]{.label} For a direction $h$ and $\delta\in\mathbb R$, let $P_{\delta h}$ be the law of
+$(Y+\delta h(D,X),D,X)$. The bias of $\hat\theta$ along the shift is
+$b_n(\delta;h)=\mathbb E_{\delta h}[\hat\theta]-\theta(P_{\delta h})$, with $\theta(P_{\delta h})=\theta_0+\delta\langle\alpha_0,h\rangle$.
+
+[Definition.]{.label} The estimator $\hat\theta$ is first-order insensitive in the direction $h$ if
+$\partial_\delta b_n(0;h)=0$, and asymptotically first-order insensitive over a class of directions if this
+derivative tends to zero uniformly over the class.
+
+- The condition is the derivative part of local asymptotic unbiasedness [@hirano2012impossibility], and it is stated
+  at fixed $n$.
+- The direction $\alpha_0$ is the least-favourable direction for the ATE in the outcome regression when the conditional
+  variance of $Y$ is constant, and for the ATE with Gaussian noise of unit variance it is the direction along which the
+  prior correction perturbs $g$.
+
+## Implicit weights {.smaller}
+
+[Definition.]{.label} For an estimator that is differentiable in the outcomes, the implicit weights are
+$w_i=n\,\partial\hat\theta/\partial Y_i$. They describe how the estimate responds to each outcome.
+
+[Proposition.]{.label} Under a domination condition on the derivative of $\delta\mapsto\hat\theta(Y_{1:n}+\delta h)$,
+$$
+\partial_\delta b_n(0;h)=\mathbb E\Big[\frac1n\sum_{i=1}^n w_i\,h(D_i,X_i)\Big]-\langle\alpha_0,h\rangle .
+$$
+The estimator is first-order insensitive in the direction $h$ exactly when its implicit weights balance $h$ in
+expectation, and over a class of directions exactly when they act in expectation as $\alpha_0$.
+
+- For inverse probability weighting with the true propensity score, $w_i=\alpha_0(D_i,X_i)$, and the estimator is
+  insensitive in every direction.
+- For estimators linear in the outcomes, the $w_i$ are the implied weights of @chattopadhyay2023implied and the outcome
+  weights of @knaus2024weighted. For posterior means in multilevel regression and poststratification they are the
+  locally equivalent weights of @giordano2026locally.
+
+## Checking a trained network {.smaller}
+
+- For a network, the implicit weights take one backward pass. For a network available only as a black box, finite
+  differences in the outcomes give the derivative along a chosen direction.
+- The sample imbalance
+  $\hat\Delta(h)=n^{-1}\sum_iw_ih(D_i,X_i)-n^{-1}\sum_i\{h(1,X_i)-h(0,X_i)\}$ estimates the sensitivity, and for
+  directions $h$ estimated from the data, such as a fitted propensity score or a fitted outcome regression, it can be
+  computed without the truth.
+- A network that standardises the outcomes with the context mean and standard deviation satisfies
+  $\hat\theta(a+bY_{1:n})=b\,\hat\theta(Y_{1:n})$. By Euler's theorem, $\hat\theta=n^{-1}\sum_iw_iY_i$ and
+  $n^{-1}\sum_iw_i=0$, so its error splits exactly into the imbalance $\hat\Delta(g_0)$, a sampling term of mean zero
+  and a weighted noise term.
+- [Open.]{.label} A test with a known level needs conditions under which the implicit weights of a nonlinear estimator
+  concentrate.
+
+## Bayes rules of in-context learners {.smaller}
+
+- [Lemma.]{.label} Over all measurable maps, the squared pretraining loss for a label $T(\xi,\mathcal D_n)$ is
+  minimised by $\mathbb E_\Pi[T\mid\mathcal D_n]$, the Bayes rule of the network.
+- [Independent mechanisms.]{.label} If the prior draws the treatment mechanism independently of the covariate and
+  outcome mechanisms, as the priors of CausalPFN and CausalFM do, the posterior does not involve the treatment
+  likelihood, and the Bayes rule for the ATE is a Bayesian outcome regression [@li2023bayesian].
+- [Corollary.]{.label} The Bayes rule uses the treatment mechanism only if the label depends on it or the prior couples
+  it with the outcome mechanism. The label correction is an instance of the first case, and the prior correction of the
+  second.
+- [One-step labels.]{.label} Under independent mechanisms, the Bayes rule for the one-step label
+  $n^{-1}\sum_i[\tau_\xi(X_i)+\alpha_\xi(Z_i)\{Y_i-g_\xi(Z_i)\}]$, the conditional mean of the label of the label
+  correction, is the AIPW estimator at the posterior means of the nuisances [@antonelli2022causal; @zhang2026fluctuate].
+  The nuisances are evaluated on the rows to which they were fitted, so the empirical process term has to be controlled
+  without sample splitting [@chen2022debiased].
+
+## Relation of the two works {.smaller}
+
+| | Debiased PFNs | Planned contribution |
+|:--|:--|:--|
+| Question | which pretraining makes the posterior debiased | how to check whether a given estimator is debiased |
+| Object | the idealised network | any map $\mathcal D_n\mapsto\hat\theta$, including a trained network |
+| Criterion | rates and a Bernstein–von Mises theorem as $n\to\infty$ | first-order insensitivity at fixed $n$ |
+| Tool | label and prior corrections | implicit weights from one backward pass |
+| Role of the corrections | the method | objects to evaluate, analysed through their Bayes rules |
+
+: {tbl-colwidths="[22,39,39]"}
+
+By Theorems 2 to 4 the corrections debias the idealised network, and the criterion measures how far a trained network
+attains this.
+
+## Planned contribution {.smaller}
+
+1. A criterion for estimators without a score, first-order insensitivity along shifts of the outcome regression, with
+   its characterisation through implicit weights and its relation to local asymptotic unbiasedness.
+2. A diagnostic from one backward pass, the imbalance of the implicit weights, with conditions under which it gives a
+   test with a known level.
+3. The Bayes rules of in-context learners under the label and prior corrections, and the conditions under which they
+   use the treatment mechanism.
+4. The measurement of trained causal PFNs with this criterion, among them debiased PFNs with and without their
+   corrections and networks with in-context nuisances, cross-fitting and an AIPW layer.
+
+[Points for discussion.]{.label} Shifts of the treatment mechanism and of the covariate law, the empirical process term
+without sample splitting, and the access to trained debiased PFNs.
+
+## References {.scrollable}
+
+::: {#refs}
+:::
