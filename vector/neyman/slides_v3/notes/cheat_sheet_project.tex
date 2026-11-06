@@ -1,0 +1,372 @@
+\documentclass[10pt]{article}
+\usepackage[margin=0.75in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb}
+\usepackage{enumitem}
+\usepackage[colorlinks,linkcolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+\setlist{itemsep=1pt,topsep=2pt}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\slide}[1]{\subsection*{Slide ``#1''}}
+\newcommand{\say}[1]{\par\textit{Say it like this.} #1\par}
+
+\title{Cheat Sheet for the Project Part of Slides v3}
+\author{}
+\date{6 November 2026}
+
+\begin{document}
+\maketitle
+
+This sheet covers the slides from the section ``Research question and contribution'' to ``Questions for discussion''.
+For each slide it gives the reading of every symbol, the argument in plain words, a sentence to say and the answers
+to likely questions.
+
+\section*{Notation used throughout}
+
+\begin{itemize}
+\item $W=(Y,Z)$ is one row of the data, with the outcome $Y$ and $Z=(D,X)$, the binary treatment $D$ and the
+covariates $X$. A data set has $n$ independent rows $W_1,\dots,W_n$, all with the law $P$, the data-generating
+process.
+\item The subscript $0$ marks the true object under $P$. So $g_0$, $\theta_0$, $m_0$ and $\alpha_0$ are the true
+outcome regression, the true target, the true propensity score and the true Riesz representer. The $0$ does not mean
+that anything is set to zero. The estimator name \texttt{aipw\_cf\_alpha0} means AIPW with the true $\alpha_0$.
+\item In $\hat\alpha_{0.3}$ and $\hat\alpha_{0.01}$ the subscript has another meaning. It is the clipping bound $c$
+of the estimated propensity score, so $\hat\alpha_{0.3}$ uses $\hat m$ clipped to $[0.3,0.7]$ and $\hat\alpha_{0.01}$
+is almost unclipped.
+\item $g_0(z)=\E[Y\mid Z=z]$ is the outcome regression, so $g_0(1,x)$ and $g_0(0,x)$ are the mean outcomes of treated
+and of control units with covariates $x$. The noise is $\varepsilon=Y-g_0(Z)$, with $\E[\varepsilon\mid Z]=0$.
+\item The target is the ATE $\theta_0=\E[g_0(1,X)-g_0(0,X)]$. With $\nu(W;g)=g(1,X)-g(0,X)$ we write
+$\theta(g)=\E[\nu(W;g)]$, the ATE that a regression function $g$ implies, so $\theta_0=\theta(g_0)$.
+\item $m_0(x)=P(D=1\mid X=x)$ is the propensity score.
+\item $\langle a,b\rangle=\E[a(Z)b(Z)]$ and $\|a\|^2=\langle a,a\rangle$. $L^2(P_Z)$ is the set of functions $h$ of
+$Z$ with $\E[h(Z)^2]<\infty$, the functions for which these means exist.
+\item The Riesz representer $\alpha_0$ is the function with $\theta(g)=\langle\alpha_0,g\rangle$ for every $g$. For
+the ATE, $\alpha_0(d,x)=d/m_0(x)-(1-d)/\{1-m_0(x)\}$, the inverse propensity weight with a sign. To check it, note
+that $\E[D\,g(D,X)/m_0(X)\mid X]=g(1,X)$, so $\E[\alpha_0(Z)g(Z)]=\E[g(1,X)-g(0,X)]$.
+\item $\hat\theta=\hat\theta(Z_{1:n},Y_{1:n})$ is any estimator, for example the trained network, written as a function
+of the covariates and treatments $Z_{1:n}=(Z_1,\dots,Z_n)$ and the outcomes $Y_{1:n}=(Y_1,\dots,Y_n)$.
+\item $\E[\cdot]$ or $\E_P[\cdot]$ is the mean over many data sets drawn from $P$, so $\E[\hat\theta]-\theta_0$ is the
+bias.
+\end{itemize}
+
+\section*{Section ``Research question and contribution''}
+
+\slide{Project question and motivation}
+A score $\psi(W;\theta,\eta)$ is an estimating function whose mean is zero at the true $\theta_0$ and the true
+nuisance $\eta_0$, and Neyman orthogonality says that the mean of the score does not move to first order when the
+nuisance moves. A causal PFN returns the estimate in one forward pass and has no score, so this property cannot be
+checked for it. In simulations based on clinical data, \textit{Mour\~ao et al.\ (2026)} found that CausalPFN was
+biased and that its credible intervals covered poorly. \textit{Melnychuk et al.\ (2026)} prove guarantees for an
+idealised network that returns the exact posterior, and the difference between a trained network and this idealised
+network, the amortisation error, is outside their theory.
+\begin{itemize}
+\item Main question in words. When does an estimator without a score have a bias that does not react to small errors in
+the outcome regression, and how can we check this with one data set and the network?
+\item Sub-question 1 is answered by first-order insensitivity (next section). Sub-question 2 is the diagnostic and the
+block test. Sub-questions 3 and 4 concern training targets, priors and network designs, and today only the variants of
+the loss touch them.
+\end{itemize}
+\say{Orthogonality is a property of a score. Our networks have no score, so we need a property of the estimator
+itself, and a way to check it from the data.}
+
+\slide{Contribution and positioning}
+Read the table row by row, from the left column (what we propose) to the right column (what is new relative to the
+closest work).
+\begin{enumerate}
+\item The criterion is a derivative condition on the bias at a fixed sample size. \textit{Hirano and Porter (2012)}
+define local asymptotic unbiasedness for $n\to\infty$, and \textit{Giordano et al.\ (2026)} study local balance of
+posterior means.
+\item The diagnostic is the imbalance of the implicit weights. Balance checks of weights exist for estimators linear in
+the outcomes (\textit{Chattopadhyay and Zubizarreta 2023, Knaus 2024}). New are nonlinear estimators such as networks,
+the fact that the expected imbalance equals the sensitivity, and a test with a known level.
+\item The weighting representation $\hat\theta=n^{-1}\sum_iw_iY_i$ is known for linear estimators (\textit{Armstrong
+and Koles\'ar 2021}), and we show it for nonlinear equivariant estimators.
+\item The Bayes rules of in-context learners are theory work that is not on today's slides.
+\item The measurement on trained causal PFNs is the experimental part.
+\end{enumerate}
+
+\section*{Section ``First-order insensitivity and implicit weights''}
+
+\slide{Outcome shifts and first-order insensitivity}
+\textbf{What is $h$?} A function of $(d,x)$, that is, of the treatment and the covariates, with $\E[h(Z)^2]<\infty$. It
+gives the shape of a change of the outcome regression. Three examples are useful.
+\begin{itemize}
+\item $h(d,x)=d$ adds the same amount to every treated outcome. The ATE changes by exactly that amount.
+\item $h(d,x)=x_1$ moves the outcomes of both arms in the same way. The ATE does not change, since
+$h(1,x)-h(0,x)=0$.
+\item $h=\alpha_0$ is the direction in which the ATE changes most per unit size of the change, since
+$|\langle\alpha_0,h\rangle|\le\|\alpha_0\|\,\|h\|$ by the Cauchy--Schwarz inequality, with equality for $h$
+proportional to $\alpha_0$.
+\end{itemize}
+\textbf{What is $\delta$?} A real number, the size of the shift. $\delta=0$ is the true law $P$, and we only need small
+$\delta$, because the errors of a learned regression are small.
+
+\textbf{What is $P_{\delta h}$?} The law of $(Y+\delta h(Z),Z)$. Take every row, keep $Z$, and add $\delta h(Z)$ to its
+outcome. The noise does not change, and the outcome regression becomes $g_0+\delta h$. Since $\theta$ is linear,
+\[
+\theta(P_{\delta h})=\theta(g_0+\delta h)=\theta_0+\delta\,\theta(h)=\theta_0+\delta\langle\alpha_0,h\rangle,
+\]
+and for the ATE $\langle\alpha_0,h\rangle=\E[h(1,X)-h(0,X)]$.
+
+\textbf{How to read $b_n(\delta;h)=\E_{\delta h}[\hat\theta]-\theta(P_{\delta h})$.} Read it as ``$b$ n of delta and
+h is the expected value of theta hat under P delta h, minus theta of P delta h''. The first term is the average of the
+estimate over many data sets of size $n$ drawn from the shifted law, and the second term is the true ATE in that
+shifted world. So $b_n(\delta;h)$ is the bias of the estimator in a world whose outcome regression is moved by
+$\delta h$. The index $n$ is there because the bias of a learner depends on the sample size, and $b_n(0;h)$ is the
+ordinary bias at $P$.
+
+\textbf{What is $\partial_\delta b_n(0;h)$?} The slope of the bias as a function of $\delta$, taken at $\delta=0$, that
+is, at the true law. The $0$ inside the bracket is the value of $\delta$ at which the derivative is taken. A slope of
+zero means that, to first order, the bias does not change when the regression moves along $h$. Equivalently, the mean
+of the estimate moves by $\delta\langle\alpha_0,h\rangle$, as much as the target. A negative slope means that the
+estimate moves less than the target, which is what shrinkage does.
+
+\textbf{Relation to Neyman orthogonality.} Orthogonality asks that the mean of the score does not react to first-order
+errors in the nuisance. First-order insensitivity asks that the mean of the estimate does not react to first-order
+changes of the outcome regression. Both are statements about derivatives at the truth.
+\say{We imagine a slightly different world in which the outcome regression is moved by $\delta$ times $h$. The true
+ATE then moves by $\delta$ times $\langle\alpha_0,h\rangle$. If the average estimate moves by the same amount, the
+estimator is first-order insensitive in direction $h$, and errors in learning the regression along $h$ do not turn into
+bias.}
+
+If asked about the last bullet. Local asymptotic unbiasedness looks at shifts of size $\delta=t/\sqrt n$ and asks that
+$\sqrt n$ times the bias vanishes as $n\to\infty$; our condition is its derivative part at a fixed $n$.
+
+\slide{Implicit weights}
+\textbf{Reading of $w_i=n\,\partial\hat\theta/\partial Y_i$.} If the outcome of row $i$ increases by a small amount $e$,
+the estimate increases by about $e\,w_i/n$. The factor $n$ puts the weights on the scale of the weights of an average,
+which gives $1/n$ to each row, so they are comparable with inverse propensity weights. Automatic differentiation gives
+all $n$ derivatives in one backward pass.
+
+\textbf{Examples.} For inverse propensity weighting, $\hat\theta=n^{-1}\sum_i\hat\alpha(Z_i)Y_i$ and $w_i=\hat\alpha(Z_i)$.
+For the difference in means, $w_i=n/n_1$ for treated and $w_i=-n/n_0$ for control rows. For a network the weights
+depend on all outcomes, and they are computed at the observed data.
+
+\textbf{Derivation of the formula.} Under the shift, $Y_i$ becomes $Y_i+\delta h(Z_i)$. By the chain rule, the
+derivative of $\hat\theta$ in $\delta$ is $\sum_i(\partial\hat\theta/\partial Y_i)h(Z_i)=n^{-1}\sum_iw_ih(Z_i)$. The
+mean of the estimate therefore moves by $\E[n^{-1}\sum_iw_ih(Z_i)]$ per unit of $\delta$, the target moves by
+$\langle\alpha_0,h\rangle$, and the sensitivity is the difference. The domination condition allows us to exchange the
+derivative and the mean.
+
+\textbf{Balance.} The weights balance $h$ when their weighted mean of $h$ equals, in expectation, the change of the
+target. The true $\alpha_0$ satisfies $\E[\alpha_0(Z)h(Z)]=\E[h(1,X)-h(0,X)]$ for every $h$. Weights that behave on
+average like $\alpha_0$ therefore have zero sensitivity in every direction, and for an estimator that treats the rows
+symmetrically this is the condition $\E[w_i\mid Z_i]=\alpha_0(Z_i)$.
+
+\textbf{Plug-in and AIPW.} $\hat Sh$ is the regression method applied to $h$ as if $h$ were the outcome. For the plug-in
+estimator the sensitivity is $\E\langle\alpha_0,\hat Sh-h\rangle$, the error the method makes when the truth moves by
+$h$, weighted by $\alpha_0$. For AIPW it is $\E\langle\alpha_0-\hat a,\hat Sh-h\rangle$, the product of two errors,
+which is why AIPW is less sensitive.
+
+\textbf{Sample imbalance.} $\hat\Delta(h)=n^{-1}\sum_iw_ih(Z_i)-n^{-1}\sum_i\nu(W_i;h)$ is the weighted mean of $h$ minus
+the sample version of the change of the ATE, $n^{-1}\sum_i\{h(1,X_i)-h(0,X_i)\}$. Its mean is the sensitivity, and it
+needs only the weights and $h$, neither $g_0$ nor $\alpha_0$.
+
+\textbf{Why $S_\alpha=\E[\hat\Delta(\alpha_0)]/\|\alpha_0\|^2$.} Along $h=\alpha_0$ the target moves by
+$\delta\langle\alpha_0,\alpha_0\rangle=\delta\|\alpha_0\|^2$, and the mean of the estimate moves by
+$\delta(\|\alpha_0\|^2+\E[\hat\Delta(\alpha_0)])=\delta\|\alpha_0\|^2(1+S_\alpha)$. So $1+S_\alpha$ is the share of the
+change of the target that the estimate follows. $S_\alpha=0$ means full response, $S_\alpha=-0.2$ means 80\%, and
+$S_\alpha=-1$ means no response at all. It needs the true $\alpha_0$, so we compute it only in simulations.
+\say{The weights tell us how the estimate reacts to each outcome. If they act on average like inverse propensity
+weights, the estimate follows every shift of the regression, and if not, the gap is the sensitivity.}
+
+\slide{Estimators that are equivariant in the outcomes}
+\textbf{Why it matters.} Weights are derivatives, so in general they only describe small changes. For equivariant
+estimators the estimate is exactly the weighted mean $n^{-1}\sum_iw_iY_i$, so the weights describe the whole estimate
+and its bias.
+
+\textbf{Reading of the definition.} Add $a$ to every outcome and the estimate moves by $a\kappa_n$; multiply every
+outcome by $b>0$ and the estimate is multiplied by $b$. For the ATE, adding a constant to all outcomes changes no
+treatment effect, so $\kappa_n=0$.
+
+\textbf{Why our networks are equivariant.} They compute $\tilde Y_i=(Y_i-\bar Y)/s_Y$ from the context, predict on this
+scale and multiply the result by $s_Y$. Adding $a$ leaves $\tilde Y$ unchanged, so the estimate does not change, and
+multiplying by $b$ leaves $\tilde Y$ unchanged and multiplies $s_Y$ by $b$, so the estimate is multiplied by $b$.
+
+\textbf{Euler's theorem.} From $\hat\theta(bY)=b\,\hat\theta(Y)$, the derivative in $b$ at $b=1$ gives
+$\sum_iY_i\,\partial\hat\theta/\partial Y_i=\hat\theta$, which is $\hat\theta=n^{-1}\sum_iw_iY_i$.
+
+\textbf{The decomposition.} Insert $Y_i=g_0(Z_i)+\varepsilon_i$, and add and subtract $n^{-1}\sum_i\nu(W_i;g_0)$.
+\begin{itemize}
+\item Imbalance along $g_0$. $\hat\Delta(g_0)=n^{-1}\sum_iw_ig_0(Z_i)-n^{-1}\sum_i\nu(W_i;g_0)$. Its mean is the
+sensitivity in the direction $h=g_0$, the direction that scales the regression and the target together.
+\item Mean zero. $n^{-1}\sum_i\nu(W_i;g_0)-\theta_0$ is sampling noise, the same for every estimator, because
+$\E[\nu(W;g_0)]=\theta_0$.
+\item Noise term. $n^{-1}\sum_iw_i\varepsilon_i$. When the weights depend only on $Z_{1:n}$, its mean is zero because
+$\E[\varepsilon_i\mid Z_{1:n}]=0$. For a network the weights depend on the outcomes and therefore on the noise, and
+the mean is the covariance of weights and noise. For normal noise it equals the curvature
+$\sum_i\E[\sigma^2(Z_i)\partial^2\hat\theta/\partial Y_i^2]$, which is zero for linear estimators.
+\end{itemize}
+Taking means gives bias $=$ sensitivity along $g_0$ $+$ mean of the noise term. For the small networks the bias is
+almost all imbalance along $g_0$ (correlation 0.98 to 0.99), so their noise term is small.
+\say{Because the networks standardise the outcomes, their estimate is exactly a weighted mean of the outcomes. Then the
+error splits into an imbalance part, which our diagnostic targets, a pure sampling part and a curvature part.}
+
+\slide{A diagnostic from one data set}
+\textbf{Goal.} Test the hypothesis that the sensitivity along a direction $\hat h$ is zero, with one data set and the
+network, and without $g_0$ or $\alpha_0$.
+
+\textbf{The imbalance for the ATE.} The first sum is the weighted mean of $\hat h$ with the weights of the network. The
+second sum is how much the ATE would change if the regression moved by $\hat h$. Under the hypothesis they agree in
+expectation.
+
+\textbf{Why a direction close to $\alpha_0$.} The sensitivity $S_\alpha$ comes mostly from rows with weak overlap, where
+$|\alpha_0|$ is large and the networks shrink most. A test along an unrelated direction, such as $h=x_1$, would have
+little power.
+
+\textbf{The split.} The last $n_s=\max(50,\lceil 0.2n\rceil)$ rows, which are 50 rows at $n=250$ and 100 rows at
+$n=500$, are used only to fit the direction. The network is run on the other $n_e$ rows (200 or 400). Given the split,
+$\hat h$ is a fixed function for the evaluation rows, so the mean of the imbalance is the sensitivity along $\hat h$.
+If $\hat h$ were fitted on the same rows, the data would be used twice and this would fail.
+
+\textbf{The clipping.} $\hat m$ is clipped to $[0.3,0.7]$, so $|\hat\alpha_{0.3}|\le1/0.3\approx3.3$. Without it, rows
+with $\hat m$ near 0 or 1 get huge weights and dominate the imbalance.
+
+\textbf{Choice of $\hat m$.} Among logistic regression, gradient boosting and the propensity head of the network, we take
+the one whose representer $a$ has the smallest Riesz loss $n_s^{-1}\sum\{a(Z_i)^2-2[a(1,X_i)-a(0,X_i)]\}$ on the
+split. The mean of this loss is $\|a-\alpha_0\|^2-\|\alpha_0\|^2$, so it is smallest for the candidate closest to
+$\alpha_0$.
+
+\slide{Block test of zero sensitivity}
+\textbf{Why blocks.} One run gives one imbalance, and there is no formula for its variance for a network. We cut the
+$n_e$ evaluation rows into $q$ disjoint blocks, for example 5 blocks of 80 rows at $n=500$, run the network on each
+block alone as its own context, and compute one imbalance per block. Because the rows are independent and the blocks
+are disjoint, the $q$ imbalances are independent given the split, so their spread estimates the uncertainty.
+Each block imbalance has as its mean the sensitivity of the network at the block size, $n_e/q$ rows.
+
+\textbf{The test.} $t_q=\sqrt q\,\bar\Delta/s_\Delta$ is the usual one-sample $t$-statistic of the $q$ block values. We
+reject at 5\% when $|t_q|$ exceeds $t_{q-1,0.975}$, which is 3.18 for $q=4$ and 2.78 for $q=5$.
+\textit{Ibragimov and M\"uller (2010)} show that with normal block values this test keeps its level for $2\le q\le14$,
+also when the blocks have different variances.
+
+\textbf{Skewness and Hall.} Each row contributes $w_i\hat h(Z_i)-\nu(W_i;\hat h)$, and these contributions contain
+inverse propensities, so they are skewed to the right. With few rows per block, the mean and the standard deviation
+of the blocks are positively correlated, the $t$-statistic is skewed to the left, and the test rejects too often in the
+lower tail. \textit{Hall (1992)} gives a transformation of $t_q$ that uses the estimated skewness $\gamma$ and removes
+this skewness to first order, $t_q+\gamma(t_q^2/3+1/6)/\sqrt q+\gamma^2t_q^3/(27q)$.
+
+\textbf{How we check level and power in simulations.} The level is the rejection rate when the hypothesis is true. We
+use two estimators whose sensitivity is zero by construction.
+\begin{itemize}
+\item AIPW with the true $\alpha_0$ and the outcome regression $\hat g$ of the network, cross-fitted. Its mean is
+$\theta(\hat g)+\langle\alpha_0,g-\hat g\rangle=\langle\alpha_0,g\rangle$ for every true regression $g$, so it is
+unbiased in every shifted world, its bias is always zero, and so is its slope. This is why we use the true $\alpha_0$.
+\item AIPW with both true nuisances. Its weights are exactly $\alpha_0(Z_i)$, so it balances every direction.
+\end{itemize}
+Both use the network's data and rows, so the test sees realistic contributions while the hypothesis holds. The power is
+the rejection rate for the plug-in estimate of the network, which is sensitive.
+\say{We split the data into a few independent blocks, compute the imbalance in each block and run a $t$-test across the
+blocks. Hall's correction removes the skewness that inverse propensities create.}
+
+\section*{Section ``Experiments with trained networks''}
+
+\slide{Networks, priors and truths}
+A causal PFN is trained on many simulated tasks drawn from a prior. Each task is a data-generating process, and the
+network learns to predict the CATE of the rows from a context of rows. Our plug-in estimate of the ATE is the mean of
+the predicted CATEs over the sample. The twelve small networks are 4 variants of the loss times 3 seeds (V0 no
+nuisance heads, V1 heads for $m$, $g$ and $\alpha$ supervised with the exact nuisances, V2 additionally an AIPW layer
+with cross-fitting in context, V3 head losses annealed to zero by the middle of training).
+\begin{itemize}
+\item $\rho$ is the correlation between the baseline outcome and the logit of the propensity score, which creates
+confounding. The prior with strong confounding uses $|\rho|\in[0.7,0.9]$ and a propensity logit scaled by 1.5 to 2.5,
+which gives weak overlap. Both ranges lie inside the training prior, so these truths are a hard region of the prior
+and not new territory.
+\item A truth is one fixed data-generating process. We have 16 truths per prior with 32 data sets at each $n$, and for
+the diagnostic 40 (128 for the AIPW estimate with true nuisances) new truths per prior drawn with another seed.
+\item Units are standard deviations of $Y$, so a bias of 0.2 is 0.2 standard deviations.
+\item Released networks are black boxes, so their sensitivity is the central finite difference
+$\{\hat\theta(Y+\eta h)-\hat\theta(Y-\eta h)\}/(2\eta)$ of the estimate.
+\end{itemize}
+
+\slide{Sensitivity of trained networks along the Riesz representer}
+Top panels show $S_\alpha$, bottom panels the RMS bias, the root mean square over truths of the bias at each truth,
+against $n$. At $n=500$, $S_\alpha=-0.21$ on the training prior and $-0.39$ under strong confounding, so the average
+estimate follows only 79\% and 61\% of a shift along $\alpha_0$. The values hardly change from $n=100$ to 500, so the
+shrinkage does not disappear with more rows in this range. Strong confounding is worse because the networks shrink
+most where the overlap is weak.
+\say{The small networks follow only about 80\% of a change of the true effect on the training prior, and about 60\%
+under strong confounding.}
+
+\slide{Released causal PFNs}
+Under independent mechanisms the prior draws the treatment mechanism independently of the outcome mechanism. The
+treatments then carry no information about the outcome regression, and the posterior mean of the ATE is the ATE of the
+posterior mean regression $\hat g_\Pi$. Its error contains $\langle\alpha_0,\hat g_\Pi-g_0\rangle$, the plug-in error
+that AIPW would correct. CausalPFN follows 83\% and 70\% of a shift along $\alpha_0$, with RMS bias 0.11 and 0.22, and
+CausalFM and Do-PFN follow only 26\% to 65\%, with RMS bias 0.46 to 0.83. Our small networks, with $S_\alpha$ of
+$-0.21$ and $-0.39$, are slightly more sensitive than CausalPFN.
+
+\slide{Noise term and corrections}
+$\hat\theta^{\mathrm c}=\hat\theta-\hat\Delta(\hat g)$ is a plug-in with $\hat g$ plus the residuals $Y_i-\hat g(Z_i)$
+weighted by the network's own weights, so it looks like AIPW with the network's weights in place of $\hat\alpha$. Its
+bias is $\langle\omega_n-\alpha_0,g_0-\hat g\rangle$ plus the noise term, where $\omega_n(z)=\E[w_1\mid Z_1=z]$ is the
+average weight. This is a product of a weight error and a regression error. With $\hat g$ from gradient boosting fitted
+on other rows, the RMS bias of the small networks at $n=500$ falls from 0.215 to 0.091 and from 0.344 to 0.164.
+\say{The network's own weights can be used to correct its estimate, and the correction halves the bias of the small
+networks.}
+
+\slide{Level of the block test}
+Each bar is the larger of the two rejection rates at $n=250$ and $500$ for the two estimators with zero sensitivity,
+pooled over both priors, along four directions. The dotted line is the nominal 5\%. Along the almost unclipped
+representer $\hat\alpha_{0.01}$ and with the bound 0.1, the test rejects too often, in the lower tail, because the
+contributions are strongly skewed (median skewness 2.9 to 7.7). With the bound 0.3, chosen on 24 separate truths per
+prior, the rates are 4.7\% to 6.4\% pooled and at most 6.8\% on one prior. The direction $h_{\mathrm o}=(2d-1)\hat
+m(1-\hat m)$ is the overlap direction, which is bounded and puts weight on rows with good overlap.
+
+\slide{Estimand of the diagnostic}
+The share along a direction is the imbalance divided by the change of the target along that direction, the analogue of
+$S_\alpha$ for that direction. The bars are correlations over truths between its mean and $S_\alpha$. Along the true
+$\alpha_0$ the share is $S_\alpha$ itself up to sampling noise, so the correlation is at least 0.99. Along the fitted
+directions it is at most 0.55 and 0.24, because $S_\alpha$ comes mostly from rows with weak overlap, which the clipping
+downweights. So the diagnostic does not estimate $S_\alpha$, and we use it only as a test of zero sensitivity.
+
+\slide{Results of the diagnostic on the small networks}
+The middle column is the block test with $q=4$ without the transformation on the 16 truths per prior. The right column
+is the block test with $q=5$ after Hall's transformation on new truths that played no role in choosing the test, which
+guards against a test that looks good by chance.
+\begin{itemize}
+\item Level. 3.9\% to 5.2\% pooled and at most 5.3\% on one prior, close to the nominal 5\%.
+\item Power. The test detects the sensitivity of the plug-in estimate in 58\% to 70\% of the data sets with at most 500
+rows. It is lower at $n=500$ than at $n=250$, possibly because the sensitivity per block is smaller with larger blocks,
+and this is open.
+\item Without the transformation, the $q=4$ test rejects in 7.8\% pooled and 9.0\% under strong confounding on the new
+truths, so the correction is needed.
+\item Finite differences agree with the backward pass in 99\% of 384 pairs, so the test also works for black-box
+networks.
+\end{itemize}
+
+\slide{Status and next steps}
+The theory (definitions, propositions and proofs) is drafted. The level result for the block test holds for normal block
+values and the untransformed statistic, and the level after the transformation rests on the simulations. Next come
+larger networks, the power up to $n=2{,}000$ and the corrections. The paper targets ICML 2027, with the ATE in the main
+text. IHDP is a semi-synthetic benchmark with known outcome surfaces, and the RealCause version of the LaLonde PSID data
+is a simulation fitted to real data, so in both the true effect is known.
+
+\slide{Questions for discussion}
+\begin{enumerate}
+\item The shift $h(d,x)=d$ asks whether the estimate follows when every treated outcome is one unit higher, which is
+easy to explain to users. Shifts of the effect in one covariate are another candidate.
+\item The test plays the role of a balance check after matching, run before the estimate is reported.
+\item Hall's transformation works in our simulations. A bootstrap-$t$ is the alternative, and theory for both is open.
+\item IHDP and LaLonde are planned. ACIC data are a further candidate.
+\end{enumerate}
+
+\section*{Likely questions and short answers}
+\begin{itemize}
+\item \textit{Why not just compute the bias?} It needs the true effect, which is unknown in an application. The
+sensitivity can be tested from the data.
+\item \textit{Is an insensitive estimator unbiased?} Insensitivity is about the slope of the bias. For an equivariant
+estimator, insensitivity along $g_0$ makes it unbiased up to the noise term.
+\item \textit{Does running the network on blocks change the estimator?} Yes, each block is a smaller context. The test
+concerns the sensitivity at the block size, which is the honest statement.
+\item \textit{Why not the bootstrap?} A bootstrap needs many forward passes and theory for a nonlinear estimator, while
+independent blocks give a $t$-test that keeps its level with few groups.
+\item \textit{Why clip at 0.3?} Clipping trades power for level. The bound was chosen on separate truths.
+\item \textit{Why the true $\alpha_0$ in the null estimators?} AIPW with the true $\alpha_0$ is unbiased for every
+outcome regression, so its sensitivity is zero by construction, and its rejection rate is the level.
+\item \textit{Are the networks out of distribution under strong confounding?} No, both parameters lie inside the
+ranges of the training prior.
+\end{itemize}
+
+\end{document}
